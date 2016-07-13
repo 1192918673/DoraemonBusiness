@@ -1,21 +1,30 @@
 package com.sangebaba.doraemon.business.control;
 
+import android.content.Context;
+
 public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     private volatile static Doraemon instance;
+    private final Context context;
     private IEar ear;
     private IEye eye;
     private ILimbs limbs;
     private IMouth mouth;
-    private Doraemon() {
+    private Brain brain;
+
+    private Doraemon(Context context) {
+        this.context = context;
         ear = new AISpeechEar();
         eye = new ReadSenseEye();
+        limbs = new SDLimbs();
+        mouth = new AISpeechMouth();
+        brain = new Brain(mouth, limbs);
     }
 
-    public static Doraemon getInstance() {
+    public static Doraemon getInstance(Context context) {
         if (instance == null) {
             synchronized (Doraemon.class) {
                 if (instance == null) {
-                    instance = new Doraemon();
+                    instance = new Doraemon(context);
                 }
             }
         }
