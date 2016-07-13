@@ -14,4 +14,10 @@ public interface IEye {
      * 停止语音识别
      */
     void stopRecognition();
+
+    void setAFRListener(AFRListener listener);
+
+    interface AFRListener {
+        void onDetectFace();
+    }
 }
