@@ -12,4 +12,6 @@ public class Brain {
         this.limbs = limbs;
         this.mouth = mouth;
     }
+
+    //针对不同的输出有不同的处理队列，分别对两个队列进行处理
 }

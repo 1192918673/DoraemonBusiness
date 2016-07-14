@@ -2,6 +2,9 @@ package com.sangebaba.doraemon.business.control;
 
 import android.content.Context;
 
+/**
+ * 哆啦A梦
+ */
 public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     private volatile static Doraemon instance;
     private final Context context;
