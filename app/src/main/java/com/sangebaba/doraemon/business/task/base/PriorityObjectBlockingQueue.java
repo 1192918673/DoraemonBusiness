@@ -4,7 +4,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package com.sangebaba.doraemon.business.task;
+package com.sangebaba.doraemon.business.task.base;
 
 import java.util.AbstractQueue;
 import java.util.Collection;

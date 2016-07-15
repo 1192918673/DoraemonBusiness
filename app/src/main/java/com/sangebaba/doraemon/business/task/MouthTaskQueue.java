@@ -1,6 +1,7 @@
 package com.sangebaba.doraemon.business.task;
 
 import com.sangebaba.doraemon.business.control.IMouth;
+import com.sangebaba.doraemon.business.task.base.Priority;
 
 public class MouthTaskQueue {
     private static IMouth mouth;

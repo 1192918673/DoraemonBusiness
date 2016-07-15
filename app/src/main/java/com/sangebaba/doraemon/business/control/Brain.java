@@ -1,7 +1,7 @@
 package com.sangebaba.doraemon.business.control;
 
 import com.sangebaba.doraemon.business.task.MouthTaskQueue;
-import com.sangebaba.doraemon.business.task.Priority;
+import com.sangebaba.doraemon.business.task.base.Priority;
 
 /**
  * 大脑中枢
@@ -23,10 +23,18 @@ public class Brain {
         this.mouth = mouth;
 
         mouthTaskQueue = new MouthTaskQueue();
-        mouthTaskQueue.setMouth(mouth);
+        MouthTaskQueue.setMouth(mouth);
     }
 
     public void addCommand(Command command) {
-        mouthTaskQueue.addTask(Priority.DEFAULT, command.getContent());
+        switch (command.getType()) {
+            case PLAY_SOUND:
+                MouthTaskQueue.addTask(Priority.DEFAULT, command.getContent());
+                break;
+            case MECHANICAL_MOVEMENT:
+                break;
+            case SHOW_EXPRESSION:
+                break;
+        }
     }
 }

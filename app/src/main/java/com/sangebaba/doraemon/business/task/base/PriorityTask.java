@@ -1,4 +1,4 @@
-package com.sangebaba.doraemon.business.task;
+package com.sangebaba.doraemon.business.task.base;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -21,14 +21,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public abstract class PriorityAsyncTask<Params, Progress, Result> {
+public abstract class PriorityTask<Params, Progress, Result> {
 
     /**
      * An {@link Executor} that executes tasks one at a time in serial
      * order.  This serialization is global to a particular process.
      */
     public static final Executor SERIAL_EXECUTOR = new SerialExecutor();
-    private static final String LOG_TAG = PriorityAsyncTask.class.getSimpleName();
+    private static final String LOG_TAG = PriorityTask.class.getSimpleName();
     private static final int CORE_POOL_SIZE = 1;
     private static final int MAXIMUM_POOL_SIZE = 1;
     private static final int KEEP_ALIVE = 1;
@@ -65,7 +65,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
     private volatile Status mStatus = Status.PENDING;
     private Priority priority;
 
-    public PriorityAsyncTask(Priority priority) {
+    public PriorityTask(Priority priority) {
         this.priority = priority;
         mWorker = new WorkerRunnable<Params, Result>() {
             public Result call() throws Exception {
@@ -77,7 +77,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
 
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
                 //noinspection unchecked
-                return postResult(doInBackground(mParams));
+                return postResult(performTask(mParams));
             }
         };
 
@@ -90,7 +90,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
                 } catch (InterruptedException e) {
                     android.util.Log.w(LOG_TAG, e);
                 } catch (ExecutionException e) {
-                    throw new RuntimeException("An error occured while executing doInBackground()",
+                    throw new RuntimeException("An error occured while executing performTask()",
                             e.getCause());
                 } catch (CancellationException e) {
                     postResultIfNotInvoked(null);
@@ -112,7 +112,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
     }
 
     private static Handler getHandler() {
-        synchronized (PriorityAsyncTask.class) {
+        synchronized (PriorityTask.class) {
             if (sHandler == null) {
                 sHandler = new InternalHandler();
             }
@@ -165,17 +165,17 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      * @see #onPostExecute
      * @see #publishProgress
      */
-    protected abstract Result doInBackground(Params... params);
+    protected abstract Result performTask(Params... params);
 
     /**
-     * <p>Runs on the UI thread after {@link #doInBackground}. The
-     * specified result is the value returned by {@link #doInBackground}.</p>
+     * <p>Runs on the UI thread after {@link #performTask}. The
+     * specified result is the value returned by {@link #performTask}.</p>
      * <p/>
      * <p>This method won't be invoked if the task was cancelled.</p>
      *
-     * @param result The result of the operation computed by {@link #doInBackground}.
+     * @param result The result of the operation computed by {@link #performTask}.
      * @see #onPreExecute
-     * @see #doInBackground
+     * @see #performTask
      * @see #onCancelled(Object)
      */
     @SuppressWarnings({"UnusedDeclaration"})
@@ -188,7 +188,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      *
      * @param values The values indicating progress.
      * @see #publishProgress
-     * @see #doInBackground
+     * @see #performTask
      */
     @SuppressWarnings({"UnusedDeclaration"})
     protected void onProgressUpdate(Progress... values) {
@@ -196,14 +196,14 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
 
     /**
      * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-     * {@link #doInBackground(Object[])} has finished.</p>
+     * {@link #performTask(Object[])} has finished.</p>
      * <p/>
      * <p>The default implementation simply invokes {@link #onCancelled()} and
      * ignores the result. If you write your own implementation, do not call
      * <code>super.onCancelled(result)</code>.</p>
      *
      * @param result The result, if any, computed in
-     *               {@link #doInBackground(Object[])}, can be null
+     *               {@link #performTask(Object[])}, can be null
      * @see #cancel(boolean)
      * @see #isCancelled()
      */
@@ -218,7 +218,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      * {@link #onCancelled(Object)}.</p>
      * <p/>
      * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-     * {@link #doInBackground(Object[])} has finished.</p>
+     * {@link #performTask(Object[])} has finished.</p>
      *
      * @see #onCancelled(Object)
      * @see #cancel(boolean)
@@ -231,7 +231,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      * Returns <tt>true</tt> if this task was cancelled before it completed
      * normally. If you are calling {@link #cancel(boolean)} on the task,
      * the value returned by this method should be checked periodically from
-     * {@link #doInBackground(Object[])} to end the task as soon as possible.
+     * {@link #performTask(Object[])} to end the task as soon as possible.
      *
      * @return <tt>true</tt> if task was cancelled before it completed
      * @see #cancel(boolean)
@@ -251,11 +251,11 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      * an attempt to stop the task.</p>
      * <p/>
      * <p>Calling this method will result in {@link #onCancelled(Object)} being
-     * invoked on the UI thread after {@link #doInBackground(Object[])}
+     * invoked on the UI thread after {@link #performTask(Object[])}
      * returns. Calling this method guarantees that {@link #onPostExecute(Object)}
      * is never invoked. After invoking this method, you should check the
      * value returned by {@link #isCancelled()} periodically from
-     * {@link #doInBackground(Object[])} to finish the task as early as
+     * {@link #performTask(Object[])} to finish the task as early as
      * possible.</p>
      *
      * @param mayInterruptIfRunning <tt>true</tt> if the thread executing this
@@ -323,13 +323,13 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      * <p>This method must be invoked on the UI thread.
      *
      * @param params The parameters of the task.
-     * @return This instance of PriorityAsyncTask.
+     * @return This instance of PriorityTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
+     *                               {@link PriorityTask.Status#RUNNING} or {@link PriorityTask.Status#FINISHED}.
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      * @see #execute(Runnable)
      */
-    public final PriorityAsyncTask<Params, Progress, Result> execute(Params... params) {
+    public final PriorityTask<Params, Progress, Result> execute(Params... params) {
         return executeOnExecutor(sDefaultExecutor, params);
     }
 
@@ -339,7 +339,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      * <p/>
      * <p>This method is typically used with {@link #THREAD_POOL_EXECUTOR} to
      * allow multiple tasks to run in parallel on a pool of threads managed by
-     * PriorityAsyncTask, however you can also use your own {@link Executor} for custom
+     * PriorityTask, however you can also use your own {@link Executor} for custom
      * behavior.
      * <p/>
      * <p><em>Warning:</em> Allowing multiple tasks to run in parallel from
@@ -358,13 +358,13 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      * @param exec   The executor to use.  {@link #THREAD_POOL_EXECUTOR} is available as a
      *               convenient process-wide thread pool for tasks that are loosely coupled.
      * @param params The parameters of the task.
-     * @return This instance of PriorityAsyncTask.
+     * @return This instance of PriorityTask.
      * @throws IllegalStateException If {@link #getStatus()} returns either
-     *                               {@link PriorityAsyncTask.Status#RUNNING} or {@link PriorityAsyncTask.Status#FINISHED}.
+     *                               {@link PriorityTask.Status#RUNNING} or {@link PriorityTask.Status#FINISHED}.
      * @see #execute(Object[])
      */
-    private final PriorityAsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                                Params... params) {
+    private final PriorityTask<Params, Progress, Result> executeOnExecutor(Executor exec,
+                                                                           Params... params) {
         if (mStatus != Status.PENDING) {
             switch (mStatus) {
                 case RUNNING:
@@ -387,7 +387,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
     }
 
     /**
-     * This method can be invoked from {@link #doInBackground} to
+     * This method can be invoked from {@link #performTask} to
      * publish updates on the UI thread while the background computation is
      * still running. Each call to this method will trigger the execution of
      * {@link #onProgressUpdate} on the UI thread.
@@ -397,7 +397,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
      *
      * @param values The progress values to update the UI with.
      * @see #onProgressUpdate
-     * @see #doInBackground
+     * @see #performTask
      */
     protected final void publishProgress(Progress... values) {
         if (!isCancelled()) {
@@ -429,7 +429,7 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
          */
         RUNNING,
         /**
-         * Indicates that {@link PriorityAsyncTask#onPostExecute} has finished.
+         * Indicates that {@link PriorityTask#onPostExecute} has finished.
          */
         FINISHED,
     }
@@ -487,10 +487,10 @@ public abstract class PriorityAsyncTask<Params, Progress, Result> {
 
     @SuppressWarnings({"RawUseOfParameterizedType"})
     private static class AsyncTaskResult<Data> {
-        final PriorityAsyncTask mTask;
+        final PriorityTask mTask;
         final Data[] mData;
 
-        AsyncTaskResult(PriorityAsyncTask task, Data... data) {
+        AsyncTaskResult(PriorityTask task, Data... data) {
             mTask = task;
             mData = data;
         }

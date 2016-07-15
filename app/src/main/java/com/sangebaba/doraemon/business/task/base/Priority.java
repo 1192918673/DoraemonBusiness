@@ -1,4 +1,4 @@
-package com.sangebaba.doraemon.business.task;
+package com.sangebaba.doraemon.business.task.base;
 
 public enum Priority {
     FG_TOP,
