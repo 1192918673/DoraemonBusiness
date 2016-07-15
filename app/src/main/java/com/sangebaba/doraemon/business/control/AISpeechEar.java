@@ -1,5 +1,7 @@
 package com.sangebaba.doraemon.business.control;
 
+import com.sangebaba.doraemon.business.control.base.IEar;
+
 /**
  * 思必驰 实现 ear
  */
