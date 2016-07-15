@@ -9,9 +9,10 @@ import com.sangebaba.doraemon.business.task.base.Priority;
  * 输出行为有 语音| 四肢运动|显示表情|播放电影等
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
-public class Brain {
+public class Brain implements SoundTranslator.OnTranslatorListener {
     private ILimbs limbs;
     private IMouth mouth;
+    private SoundTranslator soundTranslator;
 
     /**
      * 喇叭终端队列
@@ -22,8 +23,15 @@ public class Brain {
         this.limbs = limbs;
         this.mouth = mouth;
 
+        soundTranslator = new SoundTranslator();
+        soundTranslator.setTranslatorListener(this);
+
         mouthTaskQueue = new MouthTaskQueue();
         MouthTaskQueue.setMouth(mouth);
+    }
+
+    public void translateSound(String s) {
+        soundTranslator.addTask(s);
     }
 
     public void addCommand(Command command) {
@@ -35,6 +43,13 @@ public class Brain {
                 break;
             case SHOW_EXPRESSION:
                 break;
+        }
+    }
+
+    @Override
+    public void onTranslateComplete(Command... commands) {
+        for (Command command : commands) {
+            addCommand(command);
         }
     }
 }

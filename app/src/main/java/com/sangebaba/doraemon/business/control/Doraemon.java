@@ -1,6 +1,7 @@
 package com.sangebaba.doraemon.business.control;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 /**
  * 哆啦A梦
@@ -70,11 +71,19 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     /**
      * 语音识别结果
      *
-     * @param result
+     * @param originSoundString
+     * @param outputString
      */
     @Override
-    public void onASRResult(String result) {
-
+    public void onASRResult(String originSoundString, String outputString) {
+        /**
+         * 如果返回有对应的响应直接声音播放(比如思必驰后台直接返回对应的答复)，
+         * 否则需要通过后台服务器进行解析
+         */
+        if (TextUtils.isEmpty(outputString))
+            brain.translateSound(originSoundString);
+        else
+            brain.addCommand(new Command(CommandType.PLAY_SOUND, originSoundString));
     }
 
     /**
