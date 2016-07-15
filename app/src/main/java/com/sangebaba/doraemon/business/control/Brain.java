@@ -1,5 +1,8 @@
 package com.sangebaba.doraemon.business.control;
 
+import com.sangebaba.doraemon.business.task.MouthTaskQueue;
+import com.sangebaba.doraemon.business.task.Priority;
+
 /**
  * 大脑中枢
  * 对声音、人脸输入 进行各种响应
@@ -10,13 +13,20 @@ public class Brain {
     private ILimbs limbs;
     private IMouth mouth;
 
+    /**
+     * 喇叭终端队列
+     */
+    private MouthTaskQueue mouthTaskQueue;
+
     public Brain(IMouth mouth, ILimbs limbs) {
         this.limbs = limbs;
         this.mouth = mouth;
+
+        mouthTaskQueue = new MouthTaskQueue();
+        mouthTaskQueue.setMouth(mouth);
     }
 
     public void addCommand(Command command) {
+        mouthTaskQueue.addTask(Priority.DEFAULT, command.getContent());
     }
-
-    //针对不同的输出有不同的处理队列，分别对两个队列进行处理
 }
