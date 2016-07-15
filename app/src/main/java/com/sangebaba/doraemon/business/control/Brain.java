@@ -5,6 +5,8 @@ import com.sangebaba.doraemon.business.control.base.IMouth;
 import com.sangebaba.doraemon.business.task.MouthTaskQueue;
 import com.sangebaba.doraemon.business.task.base.Priority;
 
+import java.util.List;
+
 /**
  * 大脑中枢
  * 对声音、人脸输入 进行各种响应
@@ -29,7 +31,7 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
         soundTranslator.setTranslatorListener(this);
 
         mouthTaskQueue = new MouthTaskQueue();
-        MouthTaskQueue.setMouth(mouth);
+        MouthTaskQueue.setMouth(this.mouth);
     }
 
     public void translateSound(String s) {
@@ -49,7 +51,7 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
     }
 
     @Override
-    public void onTranslateComplete(Command... commands) {
+    public void onTranslateComplete(List<Command> commands) {
         for (Command command : commands) {
             addCommand(command);
         }
