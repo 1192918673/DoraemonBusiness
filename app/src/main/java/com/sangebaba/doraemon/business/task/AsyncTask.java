@@ -5,7 +5,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 
-import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -19,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class AsyncTask<Params, Progress, Result> {
 
@@ -52,19 +53,30 @@ public abstract class AsyncTask<Params, Progress, Result> {
 
     private static volatile Executor sDefaultExecutor = SERIAL_EXECUTOR;
     private static InternalHandler sHandler;
+    /**
+     * 当前正在执行的currentFutureTask
+     */
+    private static FutureTask currentFutureTask;
+    private static Lock lock = new ReentrantLock();
 
     private final WorkerRunnable<Params, Result> mWorker;
     private final FutureTask<Result> mFuture;
     private final AtomicBoolean mCancelled = new AtomicBoolean();
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
     private volatile Status mStatus = Status.PENDING;
+    private Priority priority;
 
     /**
      * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
      */
-    public AsyncTask() {
+    public AsyncTask(Priority priority) {
+        this.priority = priority;
         mWorker = new WorkerRunnable<Params, Result>() {
             public Result call() throws Exception {
+                lock.lock();
+                currentFutureTask = mFuture;
+                lock.unlock();
+
                 mTaskInvoked.set(true);
 
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
@@ -76,6 +88,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
         mFuture = new FutureTask<Result>(mWorker) {
             @Override
             protected void done() {
+                lock.lock();
                 try {
                     postResultIfNotInvoked(get());
                 } catch (InterruptedException e) {
@@ -85,9 +98,21 @@ public abstract class AsyncTask<Params, Progress, Result> {
                             e.getCause());
                 } catch (CancellationException e) {
                     postResultIfNotInvoked(null);
+                } finally {
+                    currentFutureTask = null;
+                    lock.unlock();
                 }
             }
         };
+    }
+
+    /**
+     * 取消当前的task
+     */
+    public static void cancelCurrentTask() {
+        if (currentFutureTask != null) {
+            currentFutureTask.cancel(true);
+        }
     }
 
     private static Handler getHandler() {
@@ -104,18 +129,6 @@ public abstract class AsyncTask<Params, Progress, Result> {
      */
     public static void setDefaultExecutor(Executor exec) {
         sDefaultExecutor = exec;
-    }
-
-    /**
-     * Convenience version of {@link #execute(Object...)} for use with
-     * a simple Runnable object. See {@link #execute(Object[])} for more
-     * information on the order of execution.
-     *
-     * @see #execute(Object[])
-     * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
-     */
-    public static void execute(Runnable runnable) {
-        sDefaultExecutor.execute(runnable);
     }
 
     private void postResultIfNotInvoked(Result result) {
@@ -363,8 +376,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      *                               {@link AsyncTask.Status#RUNNING} or {@link AsyncTask.Status#FINISHED}.
      * @see #execute(Object[])
      */
-    public final AsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                       Params... params) {
+    private final AsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
+                                                                        Params... params) {
         if (mStatus != Status.PENDING) {
             switch (mStatus) {
                 case RUNNING:
@@ -382,7 +395,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
         onPreExecute();
 
         mWorker.mParams = params;
-        exec.execute(mFuture);
+
+        exec.execute(new PriorityRunnable(priority, mFuture));
 
         return this;
     }
@@ -436,7 +450,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
     }
 
     private static class SerialExecutor implements Executor {
-        final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
+        private final PriorityObjectBlockingQueue<Runnable> mTasks = new PriorityObjectBlockingQueue<Runnable>();
         Runnable mActive;
 
         public synchronized void execute(final Runnable r) {
