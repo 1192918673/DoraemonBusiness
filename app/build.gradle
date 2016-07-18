@@ -6,9 +6,9 @@ ext {
     TestVersionCode = 1000001
     Version = '1.0.0'
     VersionCode = 10000
-    DevURLDOMAIN = '"http://192.168.1.117:12306"'
-    BetaURLDOMAIN = "https://ol.api.xhkhealth.com"
-    OnlineURLDOMAIN = "https://ol.api.xhkhealth.com"
+    DevURLDOMAIN = '"http://112.126.73.73:12306"'
+    BetaURLDOMAIN = '"https://ol.api.xhkhealth.com"'
+    OnlineURLDOMAIN = '"https://ol.api.xhkhealth.com"'
 }
 
 android {
