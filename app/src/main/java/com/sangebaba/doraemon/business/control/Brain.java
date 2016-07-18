@@ -4,6 +4,8 @@ import com.sangebaba.doraemon.business.control.base.ILimbs;
 import com.sangebaba.doraemon.business.control.base.IMouth;
 import com.sangebaba.doraemon.business.task.MouthTaskQueue;
 import com.sangebaba.doraemon.business.task.base.Priority;
+import com.sangebaba.doraemon.business.util.Constant;
+import com.sangebaba.doraemon.business.util.LogUtils;
 
 import java.util.List;
 
@@ -39,6 +41,7 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
     }
 
     public void addCommand(Command command) {
+        LogUtils.d(Constant.TAG_COMMAND, "add command:" + command.toString());
         switch (command.getType()) {
             case PLAY_SOUND:
                 MouthTaskQueue.addTask(Priority.DEFAULT, command.getContent());
@@ -52,6 +55,7 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
 
     @Override
     public void onTranslateComplete(List<Command> commands) {
+        if (commands == null || commands.isEmpty()) return;
         for (Command command : commands) {
             addCommand(command);
         }

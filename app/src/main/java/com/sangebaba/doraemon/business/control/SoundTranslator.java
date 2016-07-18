@@ -1,6 +1,8 @@
 package com.sangebaba.doraemon.business.control;
 
 import com.sangebaba.doraemon.business.task.SoundTranslateTask;
+import com.sangebaba.doraemon.business.util.Constant;
+import com.sangebaba.doraemon.business.util.LogUtils;
 
 import java.util.List;
 
@@ -16,6 +18,8 @@ public class SoundTranslator {
     }
 
     public synchronized void addTask(String s) {
+        LogUtils.d(Constant.TAG_COMMAND, "add sound translate task:" + s);
+
         new SoundTranslateTask(translatorListener).execute(s);
     }
 
