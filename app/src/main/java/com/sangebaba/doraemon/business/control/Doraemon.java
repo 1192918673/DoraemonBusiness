@@ -44,8 +44,8 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
      * 开始自动声音识别 Automatic Speech Recognition
      */
     public void startASR() {
-        ear.startRecognition();
         ear.setASRListener(this);
+        ear.startRecognition();
     }
 
     /**

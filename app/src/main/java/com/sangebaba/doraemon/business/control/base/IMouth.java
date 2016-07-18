@@ -6,4 +6,6 @@ package com.sangebaba.doraemon.business.control.base;
  */
 public interface IMouth {
     boolean talk(String param);
+
+    boolean stop();
 }
