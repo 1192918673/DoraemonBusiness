@@ -1,5 +1,16 @@
 apply plugin: 'com.android.application'
 
+
+ext {
+    TestVersion = '1.0.0.1'
+    TestVersionCode = 1000001
+    Version = '1.0.0'
+    VersionCode = 10000
+    DevURLDOMAIN = '"http://192.168.1.117:12306"'
+    BetaURLDOMAIN = "https://ol.api.xhkhealth.com"
+    OnlineURLDOMAIN = "https://ol.api.xhkhealth.com"
+}
+
 android {
     compileSdkVersion 22
     buildToolsVersion "23.0.3"
@@ -17,8 +28,39 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
+    productFlavors {
+        //开发版
+        Dev {
+            versionName TestVersion
+            versionCode TestVersionCode
+            buildConfigField "String", "URLDOMAIN", DevURLDOMAIN
+        }
+        //测试版
+        Beta {
+            versionName TestVersion
+            versionCode TestVersionCode
+            buildConfigField "String", "URLDOMAIN", BetaURLDOMAIN
+        }
+
+        //发布版
+        Online {
+            buildConfigField "String", "URLDOMAIN", OnlineURLDOMAIN
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(output.outputFile.parent, "Doraemon_Business" + variant.productFlavors.get(0).name + "_"
+                    + variant.buildType.name + "_" + variant.versionName + ".apk")
+        }
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0'
 }
