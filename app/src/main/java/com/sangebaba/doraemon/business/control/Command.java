@@ -19,4 +19,9 @@ public class Command {
     public String getContent() {
         return content;
     }
+
+    @Override
+    public String toString() {
+        return "command type:" + type.ordinal() + " content:" + content;
+    }
 }

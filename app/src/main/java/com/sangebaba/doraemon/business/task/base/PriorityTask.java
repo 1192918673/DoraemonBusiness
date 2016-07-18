@@ -5,6 +5,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 
+import com.sangebaba.doraemon.business.util.LogUtils;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -32,11 +34,12 @@ public abstract class PriorityTask<Params, Progress, Result> {
     private static final int CORE_POOL_SIZE = 1;
     private static final int MAXIMUM_POOL_SIZE = 1;
     private static final int KEEP_ALIVE = 1;
+    private static final String TAG = PriorityTask.class.getSimpleName();
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         public Thread newThread(Runnable r) {
-            return new Thread(r, "priority queue thread #" + mCount.getAndIncrement());
+            return new Thread(r, TAG + this.toString() + " priority queue thread #" + mCount.getAndIncrement());
         }
     };
     private static final BlockingQueue<Runnable> sPoolWorkQueue =
@@ -73,6 +76,7 @@ public abstract class PriorityTask<Params, Progress, Result> {
                 currentFutureTask = mFuture;
                 lock.unlock();
 
+                LogUtils.d(TAG, this.getClass().getSimpleName() + " begin call future");
                 mTaskInvoked.set(true);
 
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
@@ -85,6 +89,7 @@ public abstract class PriorityTask<Params, Progress, Result> {
             @Override
             protected void done() {
                 lock.lock();
+                LogUtils.d(TAG, this.getClass().getSimpleName() + "future done");
                 try {
                     postResultIfNotInvoked(get());
                 } catch (InterruptedException e) {
