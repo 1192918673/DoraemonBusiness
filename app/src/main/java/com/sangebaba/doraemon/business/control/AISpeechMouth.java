@@ -19,6 +19,10 @@ public class AISpeechMouth implements IMouth {
     private String TAG = AISpeechMouth.class.getSimpleName();
     private AILocalTTSEngine mTTSEngine;
 
+    public AISpeechMouth() {
+        init();
+    }
+
     private AILocalTTSEngine init() {
         if (mTTSEngine != null) {
             return mTTSEngine;

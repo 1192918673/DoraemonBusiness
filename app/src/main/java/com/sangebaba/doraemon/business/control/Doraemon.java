@@ -7,6 +7,7 @@ import com.sangebaba.doraemon.business.control.base.IEar;
 import com.sangebaba.doraemon.business.control.base.IEye;
 import com.sangebaba.doraemon.business.control.base.ILimbs;
 import com.sangebaba.doraemon.business.control.base.IMouth;
+import com.sangebaba.doraemon.business.util.LogUtils;
 
 /**
  * 哆啦A梦
@@ -85,10 +86,14 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
          * 如果返回有对应的响应直接声音播放(比如思必驰后台直接返回对应的答复)，
          * 否则需要通过后台服务器进行解析
          */
-        if (TextUtils.isEmpty(outputString))
+        LogUtils.d("Doraemon识别结果：", originSoundString + ":" + outputString);
+        if (!TextUtils.isEmpty(outputString)) {
+            brain.addCommand(new Command(CommandType.PLAY_SOUND, outputString));
+        } else if (!TextUtils.isEmpty(originSoundString)) {
             brain.translateSound(originSoundString);
-        else
-            brain.addCommand(new Command(CommandType.PLAY_SOUND, originSoundString));
+        } else {
+            brain.addCommand(new Command(CommandType.PLAY_SOUND, "啥也没听清，请再说一遍吧"));
+        }
     }
 
     /**

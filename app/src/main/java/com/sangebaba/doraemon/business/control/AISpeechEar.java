@@ -230,8 +230,15 @@ public class AISpeechEar implements IEar {
             if (results.isLast()) {
                 if (results.getResultType() == AIConstant.AIENGINE_MESSAGE_TYPE_JSON) {
                     JSONResultParser parser = new JSONResultParser(results.getResultObject().toString());
+                    String outputString = parser.getResult().optString("output", (String) null);
+                    String originSoundString = "0";
+                    if (outputString == null) {
+                        originSoundString = parser.getRec();
+                    } else if (outputString.startsWith("为您搜索")) {
+                        originSoundString = parser.getInput();
+                    }
                     if (asrListener != null) {
-                        asrListener.onASRResult(parser.getRec(), parser.getResult().optString("output", (String) null));
+                        asrListener.onASRResult(originSoundString, outputString);
                     }
                 }
             }
