@@ -34,5 +34,6 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         bluetoothServiceManager.onDestroy();
+        bluetoothServiceManager = null;
     }
 }
