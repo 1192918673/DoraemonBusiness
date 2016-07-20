@@ -486,7 +486,14 @@ public class BluetoothChatService {
             int bytes;
 
             // Keep listening to the InputStream while connected
-            while (mState == STATE_CONNECTED) {
+            int currentState;
+            synchronized (BluetoothChatService.this) {
+                //和setState 同步
+                currentState = mState;
+            }
+            Log.d(TAG, "connected thread state:" + currentState);
+
+            while (currentState == STATE_CONNECTED) {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
