@@ -35,4 +35,12 @@ public class SDLimbs implements ILimbs {
         }
         return false;
     }
+
+    @Override
+    public boolean send(byte code, char[] buf) {
+        if (port1 != null) {
+            return port1.send(code, buf, buf.length) > 0;
+        }
+        return false;
+    }
 }

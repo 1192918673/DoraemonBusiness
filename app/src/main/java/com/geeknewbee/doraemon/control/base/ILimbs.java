@@ -10,4 +10,6 @@ public interface ILimbs {
     boolean init();
 
     boolean send(LimbFunction limbFunctions, char[] buf);
+
+    boolean send(byte limbFunctions, char[] buf);
 }
