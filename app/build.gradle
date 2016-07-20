@@ -16,7 +16,7 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "com.sangebaba.doraemon.business"
+        applicationId "com.geeknewbee.doraemon"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
