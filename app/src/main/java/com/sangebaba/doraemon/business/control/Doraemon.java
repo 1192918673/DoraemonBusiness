@@ -103,4 +103,13 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     public void onDetectFace() {
 
     }
+
+    /**
+     * 添加指令
+     *
+     * @param command
+     */
+    public void addCommand(Command command) {
+        brain.addCommand(command);
+    }
 }
