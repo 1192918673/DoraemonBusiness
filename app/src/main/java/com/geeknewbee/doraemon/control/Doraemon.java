@@ -7,6 +7,7 @@ import com.geeknewbee.doraemon.control.base.IEar;
 import com.geeknewbee.doraemon.control.base.IEye;
 import com.geeknewbee.doraemon.control.base.ILimbs;
 import com.geeknewbee.doraemon.control.base.IMouth;
+import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.util.LogUtils;
 
 
@@ -29,6 +30,9 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
         limbs = new SDLimbs();
         mouth = new AISpeechMouth();
         brain = new Brain(mouth, limbs);
+
+        boolean init = limbs.init();
+        LogUtils.d(Constant.TAG_COMMAND, "init limbs:" + init);
     }
 
     public static Doraemon getInstance(Context context) {
