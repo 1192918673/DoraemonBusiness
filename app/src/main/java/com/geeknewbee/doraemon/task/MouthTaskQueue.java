@@ -4,6 +4,9 @@ package com.geeknewbee.doraemon.task;
 import com.geeknewbee.doraemon.control.base.IMouth;
 import com.geeknewbee.doraemon.task.base.Priority;
 
+/**
+ * 讲话task queue
+ */
 public class MouthTaskQueue {
     private static IMouth mouth;
 

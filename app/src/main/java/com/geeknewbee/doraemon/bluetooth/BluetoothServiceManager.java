@@ -11,7 +11,10 @@ import android.os.Message;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
 import com.geeknewbee.doraemon.control.Doraemon;
+import com.geeknewbee.doraemon.model.BluetoothCommand;
 import com.geeknewbee.doraemon.util.Constant;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 
 public class BluetoothServiceManager {
@@ -45,7 +48,13 @@ public class BluetoothServiceManager {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    doraemon.addCommand(new Command(CommandType.PLAY_SOUND, readMessage));
+                    Gson gson = new Gson();
+                    try {
+                        BluetoothCommand command = gson.fromJson(readMessage, BluetoothCommand.class);
+                        doraemon.addCommand(command.getCommand());
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case Constant.MESSAGE_DEVICE_NAME:
                     // save the connected device's name

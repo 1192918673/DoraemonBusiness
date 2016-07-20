@@ -2,6 +2,7 @@ package com.geeknewbee.doraemon.control;
 
 import com.geeknewbee.doraemon.control.base.ILimbs;
 import com.geeknewbee.doraemon.control.base.IMouth;
+import com.geeknewbee.doraemon.task.LimbTaskQueue;
 import com.geeknewbee.doraemon.task.MouthTaskQueue;
 import com.geeknewbee.doraemon.task.base.Priority;
 import com.geeknewbee.doraemon.util.Constant;
@@ -20,11 +21,6 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
     private IMouth mouth;
     private SoundTranslator soundTranslator;
 
-    /**
-     * 喇叭终端队列
-     */
-    private MouthTaskQueue mouthTaskQueue;
-
     public Brain(IMouth mouth, ILimbs limbs) {
         this.limbs = limbs;
         this.mouth = mouth;
@@ -32,8 +28,8 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
         soundTranslator = new SoundTranslator();
         soundTranslator.setTranslatorListener(this);
 
-        mouthTaskQueue = new MouthTaskQueue();
         MouthTaskQueue.setMouth(this.mouth);
+        LimbTaskQueue.setLimbs(this.limbs);
     }
 
     public void translateSound(String s) {
@@ -44,20 +40,27 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
         LogUtils.d(Constant.TAG_COMMAND, "add command:" + command.toString());
         switch (command.getType()) {
             case PLAY_SOUND:
+                //讲话
                 MouthTaskQueue.addTask(Priority.DEFAULT, command.getContent());
                 break;
             case MECHANICAL_MOVEMENT:
+                //肢体运动
+                LimbTaskQueue.addTask(Priority.DEFAULT, command.getContent());
                 break;
             case SHOW_EXPRESSION:
                 break;
         }
     }
 
-    @Override
-    public void onTranslateComplete(List<Command> commands) {
+    public void addCommand(List<Command> commands) {
         if (commands == null || commands.isEmpty()) return;
         for (Command command : commands) {
             addCommand(command);
         }
+    }
+
+    @Override
+    public void onTranslateComplete(List<Command> commands) {
+        addCommand(commands);
     }
 }

@@ -10,6 +10,8 @@ import com.geeknewbee.doraemon.control.base.IMouth;
 import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.util.LogUtils;
 
+import java.util.List;
+
 
 /**
  * 哆啦A梦
@@ -116,5 +118,9 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
      */
     public void addCommand(Command command) {
         brain.addCommand(command);
+    }
+
+    public void addCommand(List<Command> commands) {
+        brain.addCommand(commands);
     }
 }
