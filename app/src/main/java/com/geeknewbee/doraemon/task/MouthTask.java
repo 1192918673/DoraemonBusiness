@@ -26,6 +26,7 @@ public class MouthTask extends PriorityTask<Command, Void, Boolean> {
         switch (command.getType()) {
             case PLAY_SOUND:
                 itts.talk(command.getContent());
+
                 break;
             case PLAY_MUSIC:
                 iMusicPlayer.play(command.getContent());

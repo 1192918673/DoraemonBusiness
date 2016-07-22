@@ -1,5 +1,11 @@
 package com.geeknewbee.doraemon.control;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.telephony.TelephonyManager;
+
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.control.base.IMusicPlayer;
 import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.util.LogUtils;
@@ -26,7 +32,9 @@ import java.util.Map;
  */
 public class XMLYMusicPlayer implements IMusicPlayer {
 
+    private String mAppSecret = "0923300ac65e43c946a20c996ac0fe80";
     private XmPlayerManager mPlayerManager;
+    private CommonRequest mXimalaya;
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
 
         @Override
@@ -165,6 +173,11 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     private void init() {
+        mXimalaya = CommonRequest.getInstanse();
+        mXimalaya.init(App.mContext, mAppSecret);
+        mXimalaya.setDefaultPagesize(50);
+
+        mPlayerManager = XmPlayerManager.getInstance(App.mContext);
         mPlayerManager.init();
         mPlayerManager.addPlayerStatusListener(mPlayerStatusListener);
         mPlayerManager.addAdsStatusListener(mAdsListener);
@@ -179,6 +192,15 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         map.put(DTransferConstants.PAGE, "1");
         map.put(DTransferConstants.CALC_DIMENSION, "1");
 
+        ConnectivityManager mgrConn = (ConnectivityManager) App.mContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        TelephonyManager mgrTel = (TelephonyManager) App.mContext
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        boolean isConnected = ((mgrConn.getActiveNetworkInfo() != null && mgrConn
+                .getActiveNetworkInfo().getState() == NetworkInfo.State.CONNECTED) || mgrTel
+                .getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS);
+        LogUtils.d("网络状态", isConnected + "");
+
         CommonRequest.getSearchedTracks(map, new IDataCallBack<SearchTrackList>() {
 
             @Override
@@ -190,7 +212,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
             @Override
             public void onError(int code, String message) {
-                LogUtils.d("搜索声音", message);
+                LogUtils.d("搜索声音", "code:" + code);
             }
         });
         return true;

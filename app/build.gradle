@@ -22,10 +22,24 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    signingConfigs {
+        myConfig {
+            storeFile file("keystore.jks")      //签名文件
+            storePassword "111111"
+            keyAlias "doraemon"
+            keyPassword "111111"  //签名密码
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.myConfig
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.myConfig
+            minifyEnabled false
         }
     }
 

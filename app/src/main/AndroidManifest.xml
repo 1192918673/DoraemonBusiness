@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geeknewbee.doraemon">
 
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -32,8 +33,7 @@
 
         <meta-data
             android:name="app_key"
-            android:value="b617866c20482d133d5de66fceb37da3" />
-
+            android:value="0923300ac65e43c946a20c996ac0fe80" />
         <meta-data
             android:name="pack_id"
             android:value="com.geeknewbee.doraemon" />
@@ -54,6 +54,10 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name="com.ximalaya.ting.android.opensdk.player.service.XmPlayerService"
+            android:process=":player" />
     </application>
 
 </manifest>
