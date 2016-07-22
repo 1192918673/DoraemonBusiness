@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
+import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.utils.FaceUtil;
 
 import java.util.ArrayList;
@@ -44,7 +45,10 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(sound)) {
-            commands.add(new Command(CommandType.PLAY_SOUND, sound));
+            if (sound.equalsIgnoreCase(Constant.STOP_FLAG))
+                commands.add(new Command(CommandType.STOP, sound));
+            else
+                commands.add(new Command(CommandType.PLAY_SOUND, sound));
         }
 
         if (limbCommand != null) {

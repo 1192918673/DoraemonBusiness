@@ -20,15 +20,21 @@ public class MouthTask extends PriorityTask<Command, Void, Boolean> {
         super(priority);
     }
 
+    public static void stop() {
+        iMusicPlayer.stop();
+    }
+
     @Override
     protected Boolean performTask(Command... params) {
         Command command = params[0];
         switch (command.getType()) {
             case PLAY_SOUND:
+                iMusicPlayer.stop();
                 itts.talk(command.getContent());
-
                 break;
             case PLAY_MUSIC:
+                iMusicPlayer.stop();
+                itts.talk("正在为您搜索音乐，请稍等");
                 iMusicPlayer.play(command.getContent());
                 break;
         }

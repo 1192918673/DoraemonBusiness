@@ -51,6 +51,9 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
             case PLAY_MUSIC:
                 MouthTaskQueue.addTask(Priority.DEFAULT, command);
                 break;
+            case STOP:
+                MouthTaskQueue.stop();
+                break;
         }
     }
 

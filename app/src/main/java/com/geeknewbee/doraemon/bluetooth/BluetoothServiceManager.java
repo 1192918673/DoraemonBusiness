@@ -8,8 +8,6 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 
-import com.geeknewbee.doraemon.control.Command;
-import com.geeknewbee.doraemon.control.CommandType;
 import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.model.BluetoothCommand;
 import com.geeknewbee.doraemon.util.Constant;
@@ -28,14 +26,14 @@ public class BluetoothServiceManager {
                 case Constant.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
                         case BluetoothChatService.STATE_CONNECTED:
-                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "已连接"));
+//                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "已连接"));
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
-                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "连接中"));
+//                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "连接中"));
                             break;
                         case BluetoothChatService.STATE_LISTEN:
                         case BluetoothChatService.STATE_NONE:
-                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "断开连接"));
+//                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "断开连接"));
                             break;
                     }
                     break;

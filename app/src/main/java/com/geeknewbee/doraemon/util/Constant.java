@@ -18,4 +18,5 @@ public class Constant {
     public static final String TOAST = "toast";
 
     public static final String DEFAULT_GIF = "default_face.gif";
+    public static final String STOP_FLAG = "停";
 }

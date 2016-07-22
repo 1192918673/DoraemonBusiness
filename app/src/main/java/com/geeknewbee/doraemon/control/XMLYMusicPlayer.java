@@ -78,32 +78,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         @Override
         public void onSoundSwitch(PlayableModel laModel, PlayableModel curModel) {
             LogUtils.d(Constant.TAG_MUSIC, "onSoundSwitch index:");
-            PlayableModel model = mPlayerManager.getCurrSound();
-            if (model != null) {
-                String title = null;
-                String msg = null;
-                String coverUrl = null;
-                String coverSmall = null;
-                if (model instanceof Track) {
-                    Track info = (Track) model;
-                    title = info.getTrackTitle();
-                    msg = info.getAnnouncer() == null ? "" : info.getAnnouncer().getNickname();
-                    coverUrl = info.getCoverUrlLarge();
-                    coverSmall = info.getCoverUrlMiddle();
-                } else if (model instanceof Schedule) {
-                    Schedule program = (Schedule) model;
-                    msg = program.getRelatedProgram().getProgramName();
-                    title = program.getRelatedProgram().getProgramName();
-                    coverUrl = program.getRelatedProgram().getBackPicUrl();
-                    coverSmall = program.getRelatedProgram().getBackPicUrl();
-                } else if (model instanceof Radio) {
-                    Radio radio = (Radio) model;
-                    title = radio.getRadioName();
-                    msg = radio.getRadioDesc();
-                    coverUrl = radio.getCoverUrlLarge();
-                    coverSmall = radio.getCoverUrlSmall();
-                }
-            }
         }
 
         @Override
@@ -227,8 +201,14 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         if (mPlayerManager != null) {
             mPlayerManager.stop();
             mPlayerManager.removePlayerStatusListener(mPlayerStatusListener);
-            mPlayerManager.release();
         }
         return true;
+    }
+
+    @Override
+    public void release() {
+        if (mPlayerManager != null) {
+            mPlayerManager.release();
+        }
     }
 }
