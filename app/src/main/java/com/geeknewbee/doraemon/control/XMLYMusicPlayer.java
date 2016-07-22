@@ -24,7 +24,9 @@ import com.ximalaya.ting.android.opensdk.player.advertis.IXmAdsStatusListener;
 import com.ximalaya.ting.android.opensdk.player.service.IXmPlayerStatusListener;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,8 +35,9 @@ import java.util.Map;
 public class XMLYMusicPlayer implements IMusicPlayer {
 
     private String mAppSecret = "03bf352a5a7d03ed3f8348d8c8281630";
-    private XmPlayerManager mPlayerManager;
-    private CommonRequest mXimalaya;
+    private XmPlayerManager mPlayerManager;// 播放器
+    private CommonRequest mXimalaya; // 命令请求对象
+    private List<Track> tracks = new ArrayList<>();
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
 
         @Override
@@ -192,22 +195,23 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         map.put(DTransferConstants.PAGE, "1");
         map.put(DTransferConstants.CALC_DIMENSION, "1");
 
-        ConnectivityManager mgrConn = (ConnectivityManager) App.mContext
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        TelephonyManager mgrTel = (TelephonyManager) App.mContext
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        boolean isConnected = ((mgrConn.getActiveNetworkInfo() != null && mgrConn
-                .getActiveNetworkInfo().getState() == NetworkInfo.State.CONNECTED) || mgrTel
-                .getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS);
-        LogUtils.d("网络状态", isConnected + "");
+        /*ConnectivityManager mgrConn = (ConnectivityManager) App.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        TelephonyManager mgrTel = (TelephonyManager) App.mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        boolean isConnected = ((mgrConn.getActiveNetworkInfo() != null
+                && mgrConn.getActiveNetworkInfo().getState() == NetworkInfo.State.CONNECTED)
+                || mgrTel.getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS);
+        LogUtils.d("网络状态", isConnected + "");*/
 
         CommonRequest.getSearchedTracks(map, new IDataCallBack<SearchTrackList>() {
 
             @Override
             public void onSuccess(SearchTrackList searchTrackList) {
                 LogUtils.d("搜索声音数量", searchTrackList.getTracks().size() + "");
-                LogUtils.d("搜索声音", searchTrackList.getTracks().get(0).toString());
-                mPlayerManager.playList(searchTrackList.getTracks(), 0);
+                //LogUtils.d("搜索声音", searchTrackList.getTracks().get(0).toString());
+                if (searchTrackList.getTracks() != null && searchTrackList.getTracks().size() > 0) {
+                    tracks.add(searchTrackList.getTracks().get(0));
+                    mPlayerManager.playList(tracks, 0);
+                }
             }
 
             @Override
