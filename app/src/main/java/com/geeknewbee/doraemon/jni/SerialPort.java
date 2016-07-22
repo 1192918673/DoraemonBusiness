@@ -80,6 +80,7 @@ public class SerialPort {
 
     public native static int send(byte functioncode, char[] buf, int len);
 
+    public native static char getCrc(byte functioncode, char[] buf, int len);
     public native static int receive(char[] buf, int timeout);
 
     // Getters and setters

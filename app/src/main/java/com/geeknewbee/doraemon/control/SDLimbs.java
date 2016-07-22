@@ -39,8 +39,17 @@ public class SDLimbs implements ILimbs {
     @Override
     public boolean send(byte code, char[] buf) {
         if (port1 != null) {
+//            char crc = port1.getCrc(code, buf, buf.length);
+//            char[] bytes = charToByte(crc);
             return port1.send(code, buf, buf.length) > 0;
         }
         return false;
+    }
+
+    private char[] charToByte(char c) {
+        char[] b = new char[2];
+        b[0] = (char) ((c & 0xFF00) >> 8);
+        b[1] = (char) (c & 0xFF);
+        return b;
     }
 }

@@ -24,12 +24,13 @@ public class LimbTask extends PriorityTask<String, Void, Boolean> {
     protected Boolean performTask(String... params) {
         String content = params[0];
 
-        if (TextUtils.isEmpty(content) || content.length() <= 2)
+        if (TextUtils.isEmpty(content))
             return false;
 
         char[] chars = content.toCharArray();
         byte funcationCode = (byte) chars[0];
         char[] contentChar = Arrays.copyOfRange(chars, 1, chars.length);
-        return limbs.send(funcationCode, contentChar);
+        boolean send = limbs.send(funcationCode, contentChar);
+        return send;
     }
 }
