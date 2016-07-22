@@ -18,12 +18,26 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!-- 喜马拉雅权限 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true">
+
+        <meta-data
+            android:name="app_key"
+            android:value="b617866c20482d133d5de66fceb37da3" />
+
+        <meta-data
+            android:name="pack_id"
+            android:value="com.geeknewbee.doraemon" />
+
         <activity
             android:name=".MainActivity"
             android:screenOrientation="landscape">

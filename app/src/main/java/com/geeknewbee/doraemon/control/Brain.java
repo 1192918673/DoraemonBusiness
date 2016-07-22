@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.control;
 
 import com.geeknewbee.doraemon.control.base.ILimbs;
-import com.geeknewbee.doraemon.control.base.IMouth;
+import com.geeknewbee.doraemon.control.base.ITTS;
 import com.geeknewbee.doraemon.task.LimbTaskQueue;
 import com.geeknewbee.doraemon.task.MouthTaskQueue;
 import com.geeknewbee.doraemon.task.base.Priority;
@@ -18,17 +18,14 @@ import java.util.List;
  */
 public class Brain implements SoundTranslator.OnTranslatorListener {
     private ILimbs limbs;
-    private IMouth mouth;
     private SoundTranslator soundTranslator;
 
-    public Brain(IMouth mouth, ILimbs limbs) {
+    public Brain(ILimbs limbs) {
         this.limbs = limbs;
-        this.mouth = mouth;
 
         soundTranslator = new SoundTranslator();
         soundTranslator.setTranslatorListener(this);
 
-        MouthTaskQueue.setMouth(this.mouth);
         LimbTaskQueue.setLimbs(this.limbs);
     }
 
@@ -41,13 +38,16 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
         switch (command.getType()) {
             case PLAY_SOUND:
                 //讲话
-                MouthTaskQueue.addTask(Priority.DEFAULT, command.getContent());
+                MouthTaskQueue.addTask(Priority.DEFAULT, command);
                 break;
             case MECHANICAL_MOVEMENT:
                 //肢体运动
                 LimbTaskQueue.addTask(Priority.DEFAULT, command.getContent());
                 break;
             case SHOW_EXPRESSION:
+                break;
+            case PLAY_MUSIC:
+                MouthTaskQueue.addTask(Priority.DEFAULT, command);
                 break;
         }
     }

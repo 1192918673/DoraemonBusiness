@@ -28,6 +28,11 @@ public class BluetoothCommand {
     private LimbCommand limbCommand;
 
     /**
+     * 歌曲名称
+     */
+    private String musicName;
+
+    /**
      * 根据蓝牙指令获取对应的Command
      *
      * @return
@@ -44,6 +49,10 @@ public class BluetoothCommand {
 
         if (limbCommand != null) {
             commands.addAll(limbCommand.getCommand());
+        }
+
+        if (!TextUtils.isEmpty(musicName)) {
+            commands.add(new Command(CommandType.PLAY_MUSIC, musicName));
         }
 
         return commands;

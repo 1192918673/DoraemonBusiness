@@ -1,20 +1,16 @@
 package com.geeknewbee.doraemon.task;
 
 
-import com.geeknewbee.doraemon.control.base.IMouth;
+import com.geeknewbee.doraemon.control.Command;
+import com.geeknewbee.doraemon.control.base.ITTS;
 import com.geeknewbee.doraemon.task.base.Priority;
 
 /**
- * 讲话task queue
+ * 声音 task queue
  */
 public class MouthTaskQueue {
-    private static IMouth mouth;
 
-    public static void setMouth(IMouth Imouth) {
-        mouth = Imouth;
-    }
-
-    public static synchronized void addTask(Priority priority, String string) {
-        new MouthTask(priority, mouth).execute(string);
+    public static synchronized void addTask(Priority priority, Command command) {
+        new MouthTask(priority).execute(command);
     }
 }

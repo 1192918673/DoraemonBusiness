@@ -5,6 +5,7 @@ public class Constant {
     public static final int HTTP_TIME_OUT = 30 * 1000;
     public static final String TAG_COMMAND = "ROBOT_COMMAND";
     public static final String TAG_SOUND = "ROBOT_SOUND";
+    public static final String TAG_MUSIC = "ROBOT_MUSIC";
     // Message types sent from the BluetoothChatService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;

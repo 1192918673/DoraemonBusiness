@@ -7,19 +7,19 @@ import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.AppKey;
-import com.geeknewbee.doraemon.control.base.IMouth;
+import com.geeknewbee.doraemon.control.base.ITTS;
 import com.geeknewbee.doraemon.utils.Loger;
 
 /**
  * 思必驰 实现 mouth
  */
-public class AISpeechMouth implements IMouth {
+public class AISpeechTTS implements ITTS {
 
     public boolean isSpeaking;// 是否正在说话；如果你的嘴正在说话，当然得先停止正在说的话再让他说新话喽
-    private String TAG = AISpeechMouth.class.getSimpleName();
+    private String TAG = AISpeechTTS.class.getSimpleName();
     private AILocalTTSEngine mTTSEngine;
 
-    public AISpeechMouth() {
+    public AISpeechTTS() {
         init();
     }
 
