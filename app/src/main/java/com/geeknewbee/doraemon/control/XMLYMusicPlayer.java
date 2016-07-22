@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class XMLYMusicPlayer implements IMusicPlayer {
 
-    private String mAppSecret = "0923300ac65e43c946a20c996ac0fe80";
+    private String mAppSecret = "03bf352a5a7d03ed3f8348d8c8281630";
     private XmPlayerManager mPlayerManager;
     private CommonRequest mXimalaya;
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
