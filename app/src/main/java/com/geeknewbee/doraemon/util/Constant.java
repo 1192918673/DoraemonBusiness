@@ -17,4 +17,5 @@ public class Constant {
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
 
+    public static final String DEFAULT_GIF = "default_face.gif";
 }

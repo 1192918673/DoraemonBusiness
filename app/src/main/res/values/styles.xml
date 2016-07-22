@@ -1,4 +1,7 @@
 <resources>
-
-
+    <!--去标题、去状态栏-->
+    <style name="NoActionBar">
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowNoTitle">true</item>-->
+    </style>
 </resources>

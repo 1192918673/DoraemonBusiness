@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.control;
 
 import com.geeknewbee.doraemon.control.base.ILimbs;
-import com.geeknewbee.doraemon.control.base.ITTS;
+import com.geeknewbee.doraemon.task.FaceManager;
 import com.geeknewbee.doraemon.task.LimbTaskQueue;
 import com.geeknewbee.doraemon.task.MouthTaskQueue;
 import com.geeknewbee.doraemon.task.base.Priority;
@@ -45,6 +45,8 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
                 LimbTaskQueue.addTask(Priority.DEFAULT, command.getContent());
                 break;
             case SHOW_EXPRESSION:
+                //面部表情
+                FaceManager.display(command.getContent());
                 break;
             case PLAY_MUSIC:
                 MouthTaskQueue.addTask(Priority.DEFAULT, command);

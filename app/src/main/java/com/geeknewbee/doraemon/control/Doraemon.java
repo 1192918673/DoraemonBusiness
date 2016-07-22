@@ -3,6 +3,8 @@ package com.geeknewbee.doraemon.control;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.facebook.drawee.view.DraweeHolder;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.geeknewbee.doraemon.control.base.IEar;
 import com.geeknewbee.doraemon.control.base.IEye;
 import com.geeknewbee.doraemon.control.base.ILimbs;
@@ -22,6 +24,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     private IEye eye;
     private ILimbs limbs;
     private Brain brain;
+    private SimpleDraweeView face;
 
     private Doraemon(Context context) {
         this.context = context;
@@ -119,5 +122,13 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
 
     public void addCommand(List<Command> commands) {
         brain.addCommand(commands);
+    }
+
+    public SimpleDraweeView getFaceView() {
+        return face;
+    }
+
+    public void setFace(SimpleDraweeView face) {
+        this.face = face;
     }
 }
