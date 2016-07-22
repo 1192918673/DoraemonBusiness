@@ -1,7 +1,6 @@
 package com.geeknewbee.doraemon.control;
 
 import com.geeknewbee.doraemon.control.base.ILimbs;
-import com.geeknewbee.doraemon.control.base.ITTS;
 import com.geeknewbee.doraemon.task.LimbTaskQueue;
 import com.geeknewbee.doraemon.task.MouthTaskQueue;
 import com.geeknewbee.doraemon.task.base.Priority;
@@ -48,6 +47,9 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
                 break;
             case PLAY_MUSIC:
                 MouthTaskQueue.addTask(Priority.DEFAULT, command);
+                break;
+            case STOP:
+                MouthTaskQueue.stop();
                 break;
         }
     }

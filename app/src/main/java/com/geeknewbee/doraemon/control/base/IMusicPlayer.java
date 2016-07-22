@@ -7,4 +7,6 @@ public interface IMusicPlayer {
     boolean play(String param);
 
     boolean stop();
+
+    void release();
 }
