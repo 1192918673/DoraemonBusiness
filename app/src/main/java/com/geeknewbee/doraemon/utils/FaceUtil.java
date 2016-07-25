@@ -8,6 +8,7 @@ public class FaceUtil {
      * @return
      */
     public static String getResourcesString(String faceName) {
-        return "drawable/" + faceName + ".gif";
+//        return "drawable/" + faceName + ".gif";
+        return faceName;
     }
 }

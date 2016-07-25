@@ -183,6 +183,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                 LogUtils.d("搜索声音数量", searchTrackList.getTracks().size() + "");
                 //LogUtils.d("搜索声音", searchTrackList.getTracks().get(0).toString());
                 if (searchTrackList.getTracks() != null && searchTrackList.getTracks().size() > 0) {
+                    tracks.clear();
                     tracks.add(searchTrackList.getTracks().get(0));
                     mPlayerManager.playList(tracks, 0);
                 }

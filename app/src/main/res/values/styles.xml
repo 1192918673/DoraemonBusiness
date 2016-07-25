@@ -4,4 +4,15 @@
         <!--<item name="windowActionBar">false</item>-->
         <!--<item name="windowNoTitle">true</item>-->
     </style>
+
+    <style name="Widget_GifView"></style>
+
+    <declare-styleable name="GifView">
+        <attr name="gif" format="reference" />
+        <attr name="paused" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="CustomTheme">
+        <attr name="gifViewStyle" format="reference" />
+    </declare-styleable>
+
 </resources>

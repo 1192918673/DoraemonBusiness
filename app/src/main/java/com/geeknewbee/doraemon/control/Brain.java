@@ -49,6 +49,7 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
                 FaceManager.display(command.getContent());
                 break;
             case PLAY_MUSIC:
+                // 音乐
                 MouthTaskQueue.addTask(Priority.DEFAULT, command);
                 break;
             case STOP:
