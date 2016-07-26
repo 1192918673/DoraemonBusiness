@@ -26,26 +26,6 @@ public class BluetoothServiceManager {
     private Doraemon doraemon;
     private Context context;
     private BluetoothChatService mChatService;
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
-                switch (state) {
-                    case BluetoothAdapter.STATE_ON:
-                        setupChat();
-                        break;
-                    case BluetoothAdapter.STATE_OFF:
-                        if (mChatService != null) {
-                            mChatService.stop();
-                        }
-                        break;
-                }
-            }
-        }
-    };
     private BlockingQueue<byte[]> audioData = new LinkedBlockingQueue<byte[]>();
     private BluetoothTalkTask talkTask;
     private final Handler mHandler = new Handler() {
@@ -86,7 +66,7 @@ public class BluetoothServiceManager {
                         //robot command
                         Gson gson = new Gson();
                         try {
-                            BluetoothCommand command = gson.fromJson(readMessage, BluetoothCommand.class);
+                            BluetoothCommand command = gson.fromJson(readMessage.substring(Constant.COMMAND_ROBOT_PREFIX.length()), BluetoothCommand.class);
                             doraemon.addCommand(command.getCommand());
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();
@@ -103,6 +83,26 @@ public class BluetoothServiceManager {
                     break;
                 case Constant.MESSAGE_TOAST:
                     break;
+            }
+        }
+    };
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
+                switch (state) {
+                    case BluetoothAdapter.STATE_ON:
+                        setupChat();
+                        break;
+                    case BluetoothAdapter.STATE_OFF:
+                        if (mChatService != null) {
+                            mChatService.stop();
+                        }
+                        break;
+                }
             }
         }
     };
