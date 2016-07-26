@@ -39,6 +39,7 @@ public abstract class PriorityTask<Params, Progress, Result> {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         public Thread newThread(Runnable r) {
+            LogUtils.d(TAG, "new Thread:" + TAG + this.toString() + " priority queue thread #");
             return new Thread(r, TAG + this.toString() + " priority queue thread #" + mCount.getAndIncrement());
         }
     };
