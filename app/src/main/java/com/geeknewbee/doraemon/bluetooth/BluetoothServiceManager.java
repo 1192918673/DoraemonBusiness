@@ -26,6 +26,26 @@ public class BluetoothServiceManager {
     private Doraemon doraemon;
     private Context context;
     private BluetoothChatService mChatService;
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
+                switch (state) {
+                    case BluetoothAdapter.STATE_ON:
+                        setupChat();
+                        break;
+                    case BluetoothAdapter.STATE_OFF:
+                        if (mChatService != null) {
+                            mChatService.stop();
+                        }
+                        break;
+                }
+            }
+        }
+    };
     private BlockingQueue<byte[]> audioData = new LinkedBlockingQueue<byte[]>();
     private BluetoothTalkTask talkTask;
     private final Handler mHandler = new Handler() {
@@ -62,7 +82,7 @@ public class BluetoothServiceManager {
                     if (readBuf.length < 256) //只有语音会大于256,其他COMMAND 长度不会大于256
                         readMessage = new String(readBuf, 0, msg.arg1);
 
-                    if (readMessage.startsWith("COMMAND_ROBOT")) {
+                    if (readMessage.startsWith(Constant.COMMAND_ROBOT_PREFIX)) {
                         //robot command
                         Gson gson = new Gson();
                         try {
@@ -83,26 +103,6 @@ public class BluetoothServiceManager {
                     break;
                 case Constant.MESSAGE_TOAST:
                     break;
-            }
-        }
-    };
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
-                switch (state) {
-                    case BluetoothAdapter.STATE_ON:
-                        setupChat();
-                        break;
-                    case BluetoothAdapter.STATE_OFF:
-                        if (mChatService != null) {
-                            mChatService.stop();
-                        }
-                        break;
-                }
             }
         }
     };
