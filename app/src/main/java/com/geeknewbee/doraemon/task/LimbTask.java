@@ -15,9 +15,9 @@ import java.util.Arrays;
 public class LimbTask extends PriorityTask<String, Void, Boolean> {
     private ILimbs limbs;
 
-    public LimbTask(Priority priority, ILimbs mouth) {
+    public LimbTask(Priority priority, ILimbs iLimbs) {
         super(priority);
-        this.limbs = mouth;
+        this.limbs = iLimbs;
     }
 
     @Override

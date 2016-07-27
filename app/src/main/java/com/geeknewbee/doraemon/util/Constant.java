@@ -17,7 +17,7 @@ public class Constant {
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
 
-    public static final String DEFAULT_GIF = "ke_lian_meng";
+    public static final String DEFAULT_GIF = "default_gif";
     public static final String STOP_FLAG = "停";
     public static final String COMMAND_ROBOT_PREFIX = "COMMAND_ROBOT";
 }

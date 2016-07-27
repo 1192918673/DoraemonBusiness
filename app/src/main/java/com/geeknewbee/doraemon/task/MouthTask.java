@@ -34,7 +34,7 @@ public class MouthTask extends PriorityTask<Command, Void, Boolean> {
                 break;
             case PLAY_MUSIC:
                 iMusicPlayer.stop();
-                itts.talk("正在为您搜索音乐，请稍等");
+                itts.talk("正在为您搜索音乐");
                 iMusicPlayer.play(command.getContent());
                 break;
         }

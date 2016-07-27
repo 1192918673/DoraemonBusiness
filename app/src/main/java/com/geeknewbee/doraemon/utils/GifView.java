@@ -54,8 +54,7 @@ public class GifView extends View {
         mPaused = array.getBoolean(R.styleable.GifView_paused, false);
         array.recycle();
         if (mMovieResourceId != -1) {
-            mMovie = Movie.decodeStream(getResources().openRawResource(
-                    mMovieResourceId));
+            mMovie = Movie.decodeStream(getResources().openRawResource(mMovieResourceId));
         }
     }
 
@@ -66,8 +65,7 @@ public class GifView extends View {
      */
     public void setMovieResource(int movieResId) {
         this.mMovieResourceId = movieResId;
-        mMovie = Movie.decodeStream(getResources().openRawResource(
-                mMovieResourceId));
+        mMovie = Movie.decodeStream(getResources().openRawResource(mMovieResourceId));
         requestLayout();
     }
 
@@ -102,8 +100,7 @@ public class GifView extends View {
     public void setPaused(boolean paused) {
         this.mPaused = paused;
         if (!paused) {
-            mMovieStart = android.os.SystemClock.uptimeMillis()
-                    - mCurrentAnimationTime;
+            mMovieStart = android.os.SystemClock.uptimeMillis() - mCurrentAnimationTime;
         }
         invalidate();
     }

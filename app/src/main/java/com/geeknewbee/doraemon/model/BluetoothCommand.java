@@ -45,10 +45,7 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(sound)) {
-            if (sound.equalsIgnoreCase(Constant.STOP_FLAG))
-                commands.add(new Command(CommandType.STOP, sound));
-            else
-                commands.add(new Command(CommandType.PLAY_SOUND, sound));
+            commands.add(new Command(CommandType.PLAY_SOUND, sound));
         }
 
         if (limbCommand != null) {
@@ -56,7 +53,10 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(musicName)) {
-            commands.add(new Command(CommandType.PLAY_MUSIC, musicName));
+            if (musicName.equalsIgnoreCase(Constant.STOP_FLAG))
+                commands.add(new Command(CommandType.PLAY_MUSIC.STOP, musicName));
+            else
+                commands.add(new Command(CommandType.PLAY_MUSIC, musicName));
         }
 
         return commands;

@@ -10,8 +10,8 @@ import com.geeknewbee.doraemon.task.base.Priority;
 public class LimbTaskQueue {
     private static ILimbs limbs;
 
-    public static void setLimbs(ILimbs Imouth) {
-        limbs = Imouth;
+    public static void setLimbs(ILimbs iLimbs) {
+        limbs = iLimbs;
     }
 
     public static synchronized void addTask(Priority priority, String string) {
