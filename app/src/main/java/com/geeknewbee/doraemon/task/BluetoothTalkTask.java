@@ -23,9 +23,9 @@ public class BluetoothTalkTask {
 
     public void start() {
         if (talkThread != null) {
-            talkThread.cancel();
-            talkThread = null;
+            return;
         }
+
         this.stop = false;
         talkThread = new TalkThread();
         talkThread.start();
@@ -33,6 +33,10 @@ public class BluetoothTalkTask {
 
     public void stop() {
         this.stop = true;
+        if (talkThread != null) {
+            talkThread.cancel();
+            talkThread = null;
+        }
     }
 
     private class TalkThread extends Thread {
@@ -51,7 +55,6 @@ public class BluetoothTalkTask {
                 byte[] poll;
                 while (!stop) {
                     poll = audioData.poll(100, TimeUnit.MILLISECONDS);
-                    Log.d("PlayTask", "play data:" + (poll == null ? "null" : "have data"));
                     if (poll != null)
                         //然后将数据写入到AudioTrack中
                         track.write(poll, 0, poll.length);
