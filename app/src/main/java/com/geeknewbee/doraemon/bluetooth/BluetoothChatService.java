@@ -108,14 +108,15 @@ public class BluetoothChatService {
         setDiscoverableTimeout(1000 * 60 * 60);
 
         // Cancel any thread currently running a connection
-        for (ConnectedThread mConnectedThread : connectedThreadList)
-            if (mConnectedThread != null) {
-                mConnectedThread.cancel();
-                mConnectedThread = null;
-            }
+//        for (ConnectedThread mConnectedThread : connectedThreadList)
+//            if (mConnectedThread != null) {
+//                mConnectedThread.cancel();
+//                mConnectedThread = null;
+//            }
 
         setState(STATE_LISTEN);
 
+        Log.d(TAG, "start mInsecureAcceptThread is null " + (mInsecureAcceptThread == null));
         if (mInsecureAcceptThread == null) {
             mInsecureAcceptThread = new AcceptThread(false);
             mInsecureAcceptThread.start();
@@ -132,6 +133,11 @@ public class BluetoothChatService {
             device, final String socketType) {
         LogUtils.d(TAG, "connected, Socket Type:" + socketType);
 
+        // Start the thread to manage the connection and perform transmissions
+        ConnectedThread mConnectedThread = new ConnectedThread(socket, socketType);
+        connectedThreadList.add(mConnectedThread);
+        mConnectedThread.start();
+
         if (connectedThreadList.size() >= MAX_CONNECT_CLIENT_COUNT) {
             //当有两个连接的时候断开监听
             if (mInsecureAcceptThread != null) {
@@ -139,11 +145,6 @@ public class BluetoothChatService {
                 mInsecureAcceptThread = null;
             }
         }
-
-        // Start the thread to manage the connection and perform transmissions
-        ConnectedThread mConnectedThread = new ConnectedThread(socket, socketType);
-        connectedThreadList.add(mConnectedThread);
-        mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
         Message msg = mHandler.obtainMessage(Constant.MESSAGE_DEVICE_NAME);
@@ -345,9 +346,9 @@ public class BluetoothChatService {
                             .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
+                    cancel();//断开连接
+                    connectedThreadList.remove(this);
                     connectionLost();
-                    // Start the service over to restart listening mode
-                    BluetoothChatService.this.start();
                     break;
                 }
             }
