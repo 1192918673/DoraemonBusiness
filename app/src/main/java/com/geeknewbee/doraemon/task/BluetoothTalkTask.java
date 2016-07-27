@@ -39,7 +39,7 @@ public class BluetoothTalkTask {
         @Override
         public void run() {
             super.run();
-            int bufferSize = AudioTrack.getMinBufferSize(16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            int bufferSize = AudioTrack.getMinBufferSize(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
             try {
                 //定义输入流，将音频写入到AudioTrack类中，实现播放
 //				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(audioFile)));
@@ -60,7 +60,8 @@ public class BluetoothTalkTask {
                 Log.d("PlayTask", "Exception=" + e.getMessage());
             } finally {
                 //播放结束
-                track.stop();
+                if (track != null)
+                    track.stop();
             }
         }
 
