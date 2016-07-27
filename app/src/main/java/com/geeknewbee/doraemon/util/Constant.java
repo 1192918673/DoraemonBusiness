@@ -19,4 +19,5 @@ public class Constant {
 
     public static final String DEFAULT_GIF = "ke_lian_meng";
     public static final String STOP_FLAG = "停";
+    public static final String COMMAND_ROBOT_PREFIX = "COMMAND_ROBOT";
 }

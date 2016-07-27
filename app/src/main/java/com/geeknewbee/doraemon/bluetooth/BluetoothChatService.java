@@ -493,13 +493,18 @@ public class BluetoothChatService {
             }
             Log.d(TAG, "connected thread state:" + currentState);
 
+            byte[] result;
             while (currentState == STATE_CONNECTED) {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+                    if (bytes < 1)
+                        continue;
 
+                    result = new byte[bytes];
+                    System.arraycopy(buffer, 0, result, 0, bytes);
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(Constant.MESSAGE_READ, bytes, -1, buffer)
+                    mHandler.obtainMessage(Constant.MESSAGE_READ, bytes, -1, result)
                             .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
