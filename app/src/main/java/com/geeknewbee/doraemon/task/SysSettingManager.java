@@ -13,18 +13,14 @@ import com.geeknewbee.doraemon.util.LogUtils;
  */
 public class SysSettingManager {
 
-    private static WifiManager wm;
-    private static WifiConfiguration wfc;
-    private static AudioManager am;
-
     /**
      * 设置系统连接wifi
      *
      * @param content
      */
     public static void connectWiFi(String content) {
-        wm = (WifiManager) App.mContext.getSystemService(Context.WIFI_SERVICE);
-        wfc = new WifiConfiguration();
+        WifiManager wm = (WifiManager) App.mContext.getSystemService(Context.WIFI_SERVICE);
+        WifiConfiguration wfc = new WifiConfiguration();
         String[] data = content.split("#");
         /*----------------------WPA连接方式------------------------*/
         wfc.SSID = "\"".concat(data[0]).concat("\"");
@@ -56,8 +52,8 @@ public class SysSettingManager {
      * @param content
      */
     public static void setVolume(String content) {
-        am = (AudioManager) App.mContext.getSystemService(Context.AUDIO_SERVICE);
-        am.setStreamVolume(AudioManager.STREAM_MUSIC, Integer.parseInt(content), AudioManager.FLAG_PLAY_SOUND);
+        AudioManager am = (AudioManager) App.mContext.getSystemService(Context.AUDIO_SERVICE);
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, Integer.parseInt(content), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         int streamMaxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         LogUtils.d("MAX", streamMaxVolume + "");
         LogUtils.d("VOLUME", content);
