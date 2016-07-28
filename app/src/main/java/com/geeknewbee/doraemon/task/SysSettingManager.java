@@ -28,7 +28,7 @@ public class SysSettingManager {
         String[] data = content.split("#");
         /*----------------------WPA连接方式------------------------*/
         wc.SSID = "\" " + data[0] + "\"";
-        LogUtils.d("SSID", wc.SSID);
+        LogUtils.d("SSID", wc.SSID);//" robot-AP"
         wc.hiddenSSID = false;
 
         wc.status = WifiConfiguration.Status.ENABLED;
@@ -45,7 +45,7 @@ public class SysSettingManager {
 
         boolean b = wm.enableNetwork(res, false);
         /*----------------------WPA连接方式END------------------------*/
-        LogUtils.d("WIFI:", +res + "\n" + b + "");
+        LogUtils.d("WIFI:", +res + "\n" + b + "");// res :2 b:true
     }
 
     /**
@@ -55,7 +55,9 @@ public class SysSettingManager {
      */
     public static void setVolume(String content) {
         am = (AudioManager) App.mContext.getSystemService(Context.AUDIO_SERVICE);
-        am.setStreamVolume(AudioManager.STREAM_SYSTEM, Integer.parseInt(content), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, Integer.parseInt(content), AudioManager.FLAG_PLAY_SOUND);
+        int streamMaxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        LogUtils.d("MAX", streamMaxVolume + "");
         LogUtils.d("VOLUME", content);
     }
 }
