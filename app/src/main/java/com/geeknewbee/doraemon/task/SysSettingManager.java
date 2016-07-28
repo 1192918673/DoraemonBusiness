@@ -14,7 +14,7 @@ import com.geeknewbee.doraemon.util.LogUtils;
 public class SysSettingManager {
 
     private static WifiManager wm;
-    private static WifiConfiguration wc;
+    private static WifiConfiguration wfc;
     private static AudioManager am;
 
     /**
@@ -24,28 +24,31 @@ public class SysSettingManager {
      */
     public static void connectWiFi(String content) {
         wm = (WifiManager) App.mContext.getSystemService(Context.WIFI_SERVICE);
-        wc = new WifiConfiguration();
+        wfc = new WifiConfiguration();
         String[] data = content.split("#");
         /*----------------------WPA连接方式------------------------*/
-        wc.SSID = "\" " + data[0] + "\"";
-        LogUtils.d("SSID", wc.SSID);
-        wc.hiddenSSID = false;
+        wfc.SSID = "\"".concat(data[0]).concat("\"");
+        wfc.status = WifiConfiguration.Status.DISABLED;
+        wfc.priority = 40;
 
-        wc.status = WifiConfiguration.Status.ENABLED;
+        wfc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        wfc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+        wfc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+        wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+        wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+        wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+        wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
 
+        wfc.preSharedKey = "\"".concat(data[1]).concat("\"");
 
-        wc.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-        wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-        wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        LogUtils.d("PWD", wfc.preSharedKey);
+        int res = wm.addNetwork(wfc);
 
-        wc.preSharedKey = "\" " + data[1] + "\"";
-        LogUtils.d("PWD", wc.preSharedKey);
-        int res = wm.addNetwork(wc);
-
-        boolean b = wm.enableNetwork(res, false);
-        /*----------------------WPA连接方式END------------------------*/
-        LogUtils.d("WIFI:", +res + "\n" + b + "");
+        if (res != -1) {
+            wm.enableNetwork(res, true);
+        }
     }
 
     /**
