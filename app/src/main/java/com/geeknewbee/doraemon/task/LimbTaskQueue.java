@@ -1,20 +1,54 @@
 package com.geeknewbee.doraemon.task;
 
+import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.control.SDLimbs;
 import com.geeknewbee.doraemon.control.base.ILimbs;
-import com.geeknewbee.doraemon.task.base.Priority;
+import com.geeknewbee.doraemon.util.Constant;
+import com.geeknewbee.doraemon.util.LogUtils;
+
+import java.util.Arrays;
 
 /**
  * 肢体运动队列
  */
-public class LimbTaskQueue {
+public class LimbTaskQueue extends AbstractTaskQueue<String, Boolean> {
     private static ILimbs limbs;
 
-    public static void setLimbs(ILimbs Imouth) {
-        limbs = Imouth;
+    private volatile static LimbTaskQueue instance;
+
+    public static LimbTaskQueue getInstance() {
+        if (instance == null) {
+            synchronized (LimbTaskQueue.class) {
+                if (instance == null) {
+                    instance = new LimbTaskQueue();
+                }
+            }
+        }
+        return instance;
     }
 
-    public static synchronized void addTask(Priority priority, String string) {
-        new LimbTask(priority, limbs).execute(string);
+    private LimbTaskQueue() {
+        super();
+        limbs = new SDLimbs();
+        boolean init = limbs.init();
+        LogUtils.d(Constant.TAG_COMMAND, "init limbs:" + init);
+    }
+
+    @Override
+    public Boolean performTask(String s) {
+        if (TextUtils.isEmpty(s))
+            return false;
+
+        char[] chars = s.toCharArray();
+        byte funcationCode = (byte) chars[0];
+        char[] contentChar = Arrays.copyOfRange(chars, 1, chars.length);
+        boolean send = limbs.send(funcationCode, contentChar);
+        return send;
+    }
+
+    @Override
+    public void onTaskComplete(Boolean output) {
+
     }
 }

@@ -2,12 +2,10 @@ package com.geeknewbee.doraemon.control;
 
 import android.content.Context;
 import android.text.TextUtils;
+
 import com.geeknewbee.doraemon.control.base.IEar;
 import com.geeknewbee.doraemon.control.base.IEye;
-import com.geeknewbee.doraemon.control.base.ILimbs;
-import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.util.LogUtils;
-import com.geeknewbee.doraemon.utils.GifView;
 
 import java.util.List;
 
@@ -20,19 +18,13 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     private final Context context;
     private IEar ear;
     private IEye eye;
-    private ILimbs limbs;
     private Brain brain;
-    private GifView face;
 
     private Doraemon(Context context) {
         this.context = context;
         ear = new AISpeechEar();
         eye = new ReadSenseEye();
-        limbs = new SDLimbs();
-        brain = new Brain(limbs);
-
-        boolean init = limbs.init();
-        LogUtils.d(Constant.TAG_COMMAND, "init limbs:" + init);
+        brain = new Brain();
     }
 
     public static Doraemon getInstance(Context context) {
@@ -122,21 +114,4 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
         brain.addCommand(commands);
     }
 
-    /**
-     * 获取显示gif的GifView
-     *
-     * @return
-     */
-    public GifView getFaceView() {
-        return face;
-    }
-
-    /**
-     * 设置显示gif的GifView
-     *
-     * @param face
-     */
-    public void setFace(GifView face) {
-        this.face = face;
-    }
 }

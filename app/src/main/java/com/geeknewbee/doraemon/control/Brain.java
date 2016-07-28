@@ -1,9 +1,9 @@
 package com.geeknewbee.doraemon.control;
 
-import com.geeknewbee.doraemon.control.base.ILimbs;
 import com.geeknewbee.doraemon.task.FaceManager;
 import com.geeknewbee.doraemon.task.LimbTaskQueue;
 import com.geeknewbee.doraemon.task.MouthTaskQueue;
+import com.geeknewbee.doraemon.task.SoundTranslateTaskQueue;
 import com.geeknewbee.doraemon.task.base.Priority;
 import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.util.LogUtils;
@@ -16,21 +16,14 @@ import java.util.List;
  * 输出行为有 语音| 四肢运动|显示表情|播放电影等
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
-public class Brain implements SoundTranslator.OnTranslatorListener {
-    private ILimbs limbs;
-    private SoundTranslator soundTranslator;
+public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
 
-    public Brain(ILimbs limbs) {
-        this.limbs = limbs;
-
-        soundTranslator = new SoundTranslator();
-        soundTranslator.setTranslatorListener(this);
-
-        LimbTaskQueue.setLimbs(this.limbs);
+    public Brain() {
+        SoundTranslateTaskQueue.getInstance().setTranslatorListener(this);
     }
 
     public void translateSound(String s) {
-        soundTranslator.addTask(s);
+        SoundTranslateTaskQueue.getInstance().addTask(Priority.DEFAULT, s);
     }
 
     public void addCommand(Command command) {
@@ -38,11 +31,11 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
         switch (command.getType()) {
             case PLAY_SOUND:
                 //讲话
-                MouthTaskQueue.addTask(Priority.DEFAULT, command);
+                MouthTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
                 break;
             case MECHANICAL_MOVEMENT:
                 //肢体运动
-                LimbTaskQueue.addTask(Priority.DEFAULT, command.getContent());
+                LimbTaskQueue.getInstance().addTask(Priority.DEFAULT, command.getContent());
                 break;
             case SHOW_EXPRESSION:
                 //面部表情
@@ -50,10 +43,10 @@ public class Brain implements SoundTranslator.OnTranslatorListener {
                 break;
             case PLAY_MUSIC:
                 // 音乐
-                MouthTaskQueue.addTask(Priority.DEFAULT, command);
+                MouthTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
                 break;
             case STOP:
-                MouthTaskQueue.stop();
+                MouthTaskQueue.getInstance().stop();
                 break;
         }
     }

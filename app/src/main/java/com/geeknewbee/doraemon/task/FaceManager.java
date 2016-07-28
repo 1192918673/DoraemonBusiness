@@ -3,14 +3,14 @@ package com.geeknewbee.doraemon.task;
 import android.os.CountDownTimer;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.util.Constant;
+import com.geeknewbee.doraemon.utils.GifView;
 
 /**
- * Created by ACER on 2016/7/22.
+ * 处理表情
  */
 public class FaceManager {
-
+    public static GifView faceView;
     private static CountDownTimer countDownTimer;
 
     public static void display(final String content) {
@@ -31,6 +31,7 @@ public class FaceManager {
     }
 
     private synchronized static void showGif(String name) {
+        if (faceView == null) return;
 
         int imageResId = App.mContext.getResources().getIdentifier(name, "drawable", App.mContext.getPackageName());
         /*Uri uri = Uri.parse("res://com.geeknewbee.doraemon/" + imageResId);
@@ -40,6 +41,6 @@ public class FaceManager {
                 .build();
         Doraemon.getInstance(App.mContext).getFaceView().setController(controller);*/
         if (imageResId > 0)
-            Doraemon.getInstance(App.mContext).getFaceView().setMovieResource(imageResId);
+            faceView.setMovieResource(imageResId);
     }
 }

@@ -1,19 +1,60 @@
 package com.geeknewbee.doraemon.task;
 
-
+import com.geeknewbee.doraemon.control.AISpeechTTS;
 import com.geeknewbee.doraemon.control.Command;
-import com.geeknewbee.doraemon.task.base.Priority;
+import com.geeknewbee.doraemon.control.XMLYMusicPlayer;
+import com.geeknewbee.doraemon.control.base.IMusicPlayer;
+import com.geeknewbee.doraemon.control.base.ITTS;
 
 /**
  * 声音 task queue
  */
-public class MouthTaskQueue {
+public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
+    private ITTS itts;
+    private IMusicPlayer iMusicPlayer;
 
-    public static synchronized void addTask(Priority priority, Command command) {
-        new MouthTask(priority).execute(command);
+    private volatile static MouthTaskQueue instance;
+
+    public static MouthTaskQueue getInstance() {
+        if (instance == null) {
+            synchronized (MouthTaskQueue.class) {
+                if (instance == null) {
+                    instance = new MouthTaskQueue();
+                }
+            }
+        }
+        return instance;
     }
 
-    public static void stop() {
-        MouthTask.stop();
+    private MouthTaskQueue() {
+        super();
+        itts = new AISpeechTTS();
+        iMusicPlayer = new XMLYMusicPlayer();
+    }
+
+    @Override
+    public Boolean performTask(Command input) {
+        switch (input.getType()) {
+            case PLAY_SOUND:
+                iMusicPlayer.stop();
+                itts.talk(input.getContent());
+                break;
+            case PLAY_MUSIC:
+                iMusicPlayer.stop();
+                itts.talk("正在为您搜索音乐");
+                iMusicPlayer.play(input.getContent());
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onTaskComplete(Boolean output) {
+
+    }
+
+    public void stop() {
+        iMusicPlayer.stop();
+        clearTasks();
     }
 }
