@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+
 import com.geeknewbee.doraemon.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
@@ -31,8 +32,6 @@ public class MainActivity extends Activity {
 
         bluetoothServiceManager = BluetoothServiceManager.getInstance(getApplicationContext());
         bluetoothServiceManager.onCreate();
-        //TODO 测试 以后删除
-//        WifiUtils.connect(getApplicationContext(), "robot-AP", "robot20161316");
     }
 
     @Override
