@@ -12,7 +12,6 @@ import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.model.BluetoothCommand;
 import com.geeknewbee.doraemon.task.BluetoothTalkTask;
 import com.geeknewbee.doraemon.util.Constant;
-import com.geeknewbee.doraemon.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -59,41 +58,34 @@ public class BluetoothServiceManager {
 //                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "已连接"));
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
-                            talkTask.stop();
 //                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "连接中"));
                             break;
                         case BluetoothChatService.STATE_LISTEN:
                         case BluetoothChatService.STATE_NONE:
-                            talkTask.stop();
 //                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "断开连接"));
                             break;
                     }
                     break;
                 case Constant.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
                     break;
                 case Constant.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    LogUtils.d("testData", "command length:" + readBuf.length);
-                    String readMessage = "";
-                    if (readBuf.length < 256) //只有语音会大于256,其他COMMAND 长度不会大于256
-                        readMessage = new String(readBuf, 0, msg.arg1);
-
-                    if (readMessage.startsWith(Constant.COMMAND_ROBOT_PREFIX)) {
-                        //robot command
-                        Gson gson = new Gson();
-                        try {
-                            BluetoothCommand command = gson.fromJson(readMessage, BluetoothCommand.class);
-                            doraemon.addCommand(command.getCommand());
-                        } catch (JsonSyntaxException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        //播放声音
-                        synchronized (this) {
+                    synchronized (this) {
+                        byte[] readBuf = (byte[]) msg.obj;
+                        // construct a string from the valid bytes in the buffer
+                        int commandPrefixLength = Constant.COMMAND_ROBOT_PREFIX.length();
+                        String readMessage = new String(readBuf, 0, commandPrefixLength);
+                        if (readMessage.equals(Constant.COMMAND_ROBOT_PREFIX)) {
+                            //robot command
+                            Gson gson = new Gson();
+                            try {
+                                readMessage = new String(readBuf, commandPrefixLength, readBuf.length - commandPrefixLength);
+                                BluetoothCommand command = gson.fromJson(readMessage, BluetoothCommand.class);
+                                doraemon.addCommand(command.getCommand());
+                            } catch (JsonSyntaxException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            //播放声音
                             audioData.add(readBuf);
                         }
                     }
@@ -153,6 +145,10 @@ public class BluetoothServiceManager {
         context.unregisterReceiver(mReceiver);
         if (mChatService != null) {
             mChatService.stop();
+        }
+
+        if (talkTask != null) {
+            talkTask.stop();
         }
     }
 

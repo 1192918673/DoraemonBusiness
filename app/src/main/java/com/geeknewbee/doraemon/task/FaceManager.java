@@ -1,6 +1,7 @@
 package com.geeknewbee.doraemon.task;
 
 import android.os.CountDownTimer;
+
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.util.Constant;
@@ -38,6 +39,7 @@ public class FaceManager {
                 .setAutoPlayAnimations(true)
                 .build();
         Doraemon.getInstance(App.mContext).getFaceView().setController(controller);*/
-        Doraemon.getInstance(App.mContext).getFaceView().setMovieResource(imageResId);
+        if (imageResId > 0)
+            Doraemon.getInstance(App.mContext).getFaceView().setMovieResource(imageResId);
     }
 }
