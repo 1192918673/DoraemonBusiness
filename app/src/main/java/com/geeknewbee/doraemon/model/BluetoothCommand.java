@@ -34,6 +34,16 @@ public class BluetoothCommand {
     private String musicName;
 
     /**
+     * WIFI信息
+     */
+    private String wiFiMessage;
+
+    /**
+     * Volume值
+     */
+    private String volume;
+
+    /**
      * 根据蓝牙指令获取对应的Command
      *
      * @return
@@ -45,10 +55,7 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(sound)) {
-            if (sound.equalsIgnoreCase(Constant.STOP_FLAG))
-                commands.add(new Command(CommandType.STOP, sound));
-            else
-                commands.add(new Command(CommandType.PLAY_SOUND, sound));
+            commands.add(new Command(CommandType.PLAY_SOUND, sound));
         }
 
         if (limbCommand != null) {
@@ -56,7 +63,18 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(musicName)) {
-            commands.add(new Command(CommandType.PLAY_MUSIC, musicName));
+            if (musicName.equalsIgnoreCase(Constant.STOP_FLAG))
+                commands.add(new Command(CommandType.PLAY_MUSIC.STOP, musicName));
+            else
+                commands.add(new Command(CommandType.PLAY_MUSIC, musicName));
+        }
+
+        if (!TextUtils.isEmpty(wiFiMessage)) {
+            commands.add(new Command(CommandType.WIFI_MESSAGE, wiFiMessage));
+        }
+
+        if (!TextUtils.isEmpty(volume)) {
+            commands.add(new Command(CommandType.SETTING_VOLUME, volume));
         }
 
         return commands;
@@ -64,24 +82,14 @@ public class BluetoothCommand {
 
     private static class LimbCommand {
         /**
-         * 舵机命令
+         * 肢体动作命令
          */
-        private List<String> duoJi;
-        /**
-         * 电机命令
-         */
-        private List<String> dianJi;
+        private List<String> limbData;
 
         public List<Command> getCommand() {
             List<Command> result = new ArrayList<>();
-            if (duoJi != null && !duoJi.isEmpty()) {
-                for (String s : duoJi) {
-                    result.add(new Command(CommandType.MECHANICAL_MOVEMENT, s));
-                }
-            }
-
-            if (dianJi != null && !dianJi.isEmpty()) {
-                for (String s : dianJi) {
+            if (limbData != null && !limbData.isEmpty()) {
+                for (String s : limbData) {
                     result.add(new Command(CommandType.MECHANICAL_MOVEMENT, s));
                 }
             }

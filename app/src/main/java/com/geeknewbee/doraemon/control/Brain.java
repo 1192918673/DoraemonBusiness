@@ -4,6 +4,7 @@ import com.geeknewbee.doraemon.task.FaceManager;
 import com.geeknewbee.doraemon.task.LimbTaskQueue;
 import com.geeknewbee.doraemon.task.MouthTaskQueue;
 import com.geeknewbee.doraemon.task.SoundTranslateTaskQueue;
+import com.geeknewbee.doraemon.task.SysSettingManager;
 import com.geeknewbee.doraemon.task.base.Priority;
 import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.util.LogUtils;
@@ -47,6 +48,12 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case STOP:
                 MouthTaskQueue.getInstance().stop();
+                break;
+            case WIFI_MESSAGE:// 设置连接WIFI
+                SysSettingManager.connectWiFi(command.getContent());
+                break;
+            case SETTING_VOLUME:// 设置系统音量
+                SysSettingManager.setVolume(command.getContent());
                 break;
         }
     }

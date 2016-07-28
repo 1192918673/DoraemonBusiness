@@ -1,10 +1,5 @@
 package com.geeknewbee.doraemon.control;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.telephony.TelephonyManager;
-
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.control.base.IMusicPlayer;
 import com.geeknewbee.doraemon.util.Constant;
@@ -78,6 +73,11 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         @Override
         public void onSoundSwitch(PlayableModel laModel, PlayableModel curModel) {
             LogUtils.d(Constant.TAG_MUSIC, "onSoundSwitch index:");
+            mPlayerManager.clearPlayCache();
+            if (laModel != null) {
+                laModel.setLastPlayedMills(0);
+            }
+            curModel.setLastPlayedMills(0);
         }
 
         @Override
@@ -185,6 +185,8 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                 if (searchTrackList.getTracks() != null && searchTrackList.getTracks().size() > 0) {
                     tracks.clear();
                     tracks.add(searchTrackList.getTracks().get(0));
+                    mPlayerManager.clearPlayCache();
+                    mPlayerManager.seekTo(0);
                     mPlayerManager.playList(tracks, 0);
                 }
             }
