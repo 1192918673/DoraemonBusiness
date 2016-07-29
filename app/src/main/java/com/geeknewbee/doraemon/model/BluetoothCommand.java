@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
-import com.geeknewbee.doraemon.utils.FaceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +50,7 @@ public class BluetoothCommand {
     public List<Command> getCommand() {
         List<Command> commands = new ArrayList<>();
         if (!TextUtils.isEmpty(faceName)) {
-            commands.add(new Command(CommandType.SHOW_EXPRESSION, FaceUtil.getResourcesString(faceName)));
+            commands.add(new Command(CommandType.SHOW_EXPRESSION, faceName));
         }
 
         if (!TextUtils.isEmpty(sound)) {
