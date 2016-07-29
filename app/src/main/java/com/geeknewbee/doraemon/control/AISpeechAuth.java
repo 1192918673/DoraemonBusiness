@@ -5,7 +5,7 @@ import com.aispeech.speech.AIAuthEngine;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.control.base.IAuth;
-import com.geeknewbee.doraemon.utils.Loger;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.io.FileNotFoundException;
 
@@ -30,12 +30,12 @@ public class AISpeechAuth implements IAuth {
 
             @Override
             public void onAuthSuccess() {
-                Loger.d(TAG, "注册成功");
+                LogUtils.d(TAG, "注册成功");
             }
 
             @Override
             public void onAuthFailed(String result) {
-                Loger.d(TAG, "注册失败：" + result);
+                LogUtils.d(TAG, "注册失败：" + result);
             }
         });
 

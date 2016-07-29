@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.utils;
+package com.geeknewbee.doraemon.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

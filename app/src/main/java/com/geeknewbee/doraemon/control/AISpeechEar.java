@@ -16,7 +16,7 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.control.base.IEar;
 import com.geeknewbee.doraemon.utils.GrammarHelper;
-import com.geeknewbee.doraemon.utils.Loger;
+import com.geeknewbee.doraemon.utils.LogUtils;
 import com.geeknewbee.doraemon.utils.NetworkUtil;
 
 import org.json.JSONException;
@@ -56,7 +56,7 @@ public class AISpeechEar implements IEar {
         if (mGrammarEngine != null) {
             mGrammarEngine.destroy();
         }
-        Loger.d(TAG, "grammar create");
+        LogUtils.d(TAG, "grammar create");
         mGrammarEngine = AILocalGrammarEngine.createInstance();// 获取实例
         mGrammarEngine.setResFileName(SpeechConstants.ebnfc_res);// 设置资源文件名
         mGrammarEngine.init(App.mContext, new AILocalGrammarListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);// 初始化
@@ -69,7 +69,7 @@ public class AISpeechEar implements IEar {
             contactString = "无联系人";
         }
         String ebnf = gh.importAssets(contactString, appString, "grammar.xbnf");// (3)将获取到的联系人、应用程序名称添加至grammar.xbnf
-        Loger.d(TAG, ebnf);
+        LogUtils.d(TAG, ebnf);
 
         mGrammarEngine.setEbnf(ebnf);// 设置ebnf语法
         mGrammarEngine.update();// 启动语法编译引擎，更新资源
@@ -84,7 +84,7 @@ public class AISpeechEar implements IEar {
         if (mASREngine != null) {
             return mASREngine;
         }
-        Loger.d(TAG, "ASR create");
+        LogUtils.d(TAG, "ASR create");
         mASREngine = AIMixASREngine.createInstance();// 获取实例
         mASREngine.setResBin(SpeechConstants.ebnfr_res);// 设置声学资源名
         mASREngine.setNetBin(AILocalGrammarEngine.OUTPUT_NAME, true);// 设置网络资源名
@@ -174,21 +174,21 @@ public class AISpeechEar implements IEar {
         @Override
         public void onInit(int status) {
             if (status == 0) {
-                Loger.d(TAG, "资源定制引擎初始化成功");
+                LogUtils.d(TAG, "资源定制引擎初始化成功");
             } else {
-                Loger.d(TAG, "资源定制引擎初始化失败");
+                LogUtils.d(TAG, "资源定制引擎初始化失败");
             }
         }
 
         @Override
         public void onUpdateCompleted(String recordId, String path) {
-            Loger.d(TAG, "资源生成/更新成功\n path=" + path + "\n 重新加载识别引擎...");
+            LogUtils.d(TAG, "资源生成/更新成功\n path=" + path + "\n 重新加载识别引擎...");
             mASREngine = initAsrEngine();
         }
 
         @Override
         public void onError(AIError error) {
-            Loger.d(TAG, "资源生成发生错误：" + error.getError());
+            LogUtils.d(TAG, "资源生成发生错误：" + error.getError());
         }
     }
 
@@ -200,31 +200,31 @@ public class AISpeechEar implements IEar {
         @Override
         public void onInit(int status) {
             if (status == 0) {
-                Loger.d(TAG, "本地识别引擎初始化成功");
+                LogUtils.d(TAG, "本地识别引擎初始化成功");
             } else {
-                Loger.d(TAG, "本地识别引擎初始化失败");
+                LogUtils.d(TAG, "本地识别引擎初始化失败");
             }
         }
 
         @Override
         public void onReadyForSpeech() {
-            Loger.d(TAG, "请说话...");
+            LogUtils.d(TAG, "请说话...");
         }
 
         @Override
         public void onBeginningOfSpeech() {
-            Loger.d(TAG, "检测到说话");
+            LogUtils.d(TAG, "检测到说话");
 
         }
 
         @Override
         public void onEndOfSpeech() {
-            Loger.d(TAG, "检测到语音停止，开始识别...");
+            LogUtils.d(TAG, "检测到语音停止，开始识别...");
         }
 
         @Override
         public void onResults(AIResult results) {
-            Loger.d(TAG, results.getResultObject().toString());
+            LogUtils.d(TAG, results.getResultObject().toString());
 
             if (results.isLast()) {
                 if (results.getResultType() == AIConstant.AIENGINE_MESSAGE_TYPE_JSON) {
@@ -245,17 +245,17 @@ public class AISpeechEar implements IEar {
 
         @Override
         public void onError(AIError error) {
-            Loger.d(TAG, "识别发生错误:" + error.getErrId());
+            LogUtils.d(TAG, "识别发生错误:" + error.getErrId());
         }
 
         @Override
         public void onRmsChanged(float rmsdB) {
-            Loger.d(TAG, "音频、音量发生改变，RmsDB = " + rmsdB);
+            LogUtils.d(TAG, "音频、音量发生改变，RmsDB = " + rmsdB);
         }
 
         @Override
         public void onRecorderReleased() {
-            Loger.d(TAG, "检测到录音机停止");
+            LogUtils.d(TAG, "检测到录音机停止");
         }
     }
 }

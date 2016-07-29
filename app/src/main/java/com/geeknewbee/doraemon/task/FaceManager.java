@@ -4,7 +4,7 @@ import android.os.CountDownTimer;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.utils.GifView;
+import com.geeknewbee.doraemon.view.GifView;
 
 /**
  * 处理表情

@@ -11,7 +11,7 @@ import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
 import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.task.FaceManager;
-import com.geeknewbee.doraemon.utils.GifView;
+import com.geeknewbee.doraemon.view.GifView;
 
 
 public class MainActivity extends Activity {

@@ -8,7 +8,7 @@ import com.aispeech.export.listeners.AITTSListener;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.control.base.ITTS;
-import com.geeknewbee.doraemon.utils.Loger;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 /**
  * 思必驰 实现 mouth
@@ -64,32 +64,32 @@ public class AISpeechTTS implements ITTS {
         @Override
         public void onInit(int status) {
             if (status == AIConstant.OPT_SUCCESS) {
-                Loger.d(TAG, "本地TTS引擎初始化成功");
+                LogUtils.d(TAG, "本地TTS引擎初始化成功");
             } else {
-                Loger.d(TAG, "本地TTS引擎初始化失败");
+                LogUtils.d(TAG, "本地TTS引擎初始化失败");
             }
         }
 
         @Override
         public void onReady(String utteranceId) {
-            Loger.d(TAG, utteranceId + "开始播放。。。");
+            LogUtils.d(TAG, utteranceId + "开始播放。。。");
             isSpeaking = true;
         }
 
         @Override
         public void onProgress(int currentTime, int totalTime, boolean isRefTextTTSFinished) {
-            Loger.d(TAG, "当前播放时间:" + currentTime + "ms, 已经送入内核的文本合成的总时长:" + totalTime + "ms, 是否所有文本合成完成:" + isRefTextTTSFinished);
+            LogUtils.d(TAG, "当前播放时间:" + currentTime + "ms, 已经送入内核的文本合成的总时长:" + totalTime + "ms, 是否所有文本合成完成:" + isRefTextTTSFinished);
         }
 
         @Override
         public void onCompletion(String utteranceId) {
-            Loger.d(TAG, utteranceId + "播放完毕！");
+            LogUtils.d(TAG, utteranceId + "播放完毕！");
             isSpeaking = false;
         }
 
         @Override
         public void onError(String utteranceId, AIError error) {
-            Loger.d(TAG, "检测到错误：" + error.toString());
+            LogUtils.d(TAG, "检测到错误：" + error.toString());
         }
     }
 }
