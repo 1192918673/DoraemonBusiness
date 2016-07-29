@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.control.base;
 
 /**
- * 嘴
+ * 文字转语音
  * 用于发音
  */
 public interface ITTS {

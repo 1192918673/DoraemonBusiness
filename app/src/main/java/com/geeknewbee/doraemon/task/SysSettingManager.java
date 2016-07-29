@@ -9,7 +9,7 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 /**
- * Created by ACER on 2016/7/28.
+ * 系统功能设置
  */
 public class SysSettingManager {
 

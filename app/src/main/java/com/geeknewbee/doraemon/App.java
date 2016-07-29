@@ -4,21 +4,23 @@ import android.app.Application;
 import android.content.Context;
 
 import com.geeknewbee.doraemon.control.AISpeechAuth;
-import com.geeknewbee.doraemon.control.base.IAuth;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 
-/**
- * Created by ACER on 2016/7/18.
- */
 public class App extends Application {
 
+    private static final String TAG = App.class.getSimpleName();
     public static Context mContext; // 上下文
-    public IAuth mAuth = new AISpeechAuth();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mContext = getApplicationContext();
-        mAuth.auth();
+        mContext = this;
+        init();
+    }
+
+    private void init() {
+        boolean result = new AISpeechAuth().auth();
+        LogUtils.d(TAG, "AISpeech auth result:" + result);
     }
 }
