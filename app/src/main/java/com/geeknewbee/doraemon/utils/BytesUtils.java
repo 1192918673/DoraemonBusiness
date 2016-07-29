@@ -5,7 +5,6 @@ public class BytesUtils {
      * 通过byte数组取到short
      *
      * @param b
-     * @param index 第几位开始取
      * @return
      */
     public static short[] getShort(byte[] b) {
