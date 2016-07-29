@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.http;
 
 
-import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.constants.Constants;
 
 public class BaseResponseBody<T> {
     protected int code = 0;
@@ -21,6 +21,6 @@ public class BaseResponseBody<T> {
     }
 
     public boolean isSuccess() {
-        return code == Constant.RESPONSE_STATUS_SUCCESS;
+        return code == Constants.RESPONSE_STATUS_SUCCESS;
     }
 }

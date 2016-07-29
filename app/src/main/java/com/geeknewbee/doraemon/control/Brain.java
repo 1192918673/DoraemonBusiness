@@ -1,6 +1,6 @@
 package com.geeknewbee.doraemon.control;
 
-import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.task.FaceManager;
 import com.geeknewbee.doraemon.task.LimbTaskQueue;
 import com.geeknewbee.doraemon.task.MouthTaskQueue;
@@ -28,7 +28,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     }
 
     public void addCommand(Command command) {
-        LogUtils.d(Constant.TAG_COMMAND, "add command:" + command.toString());
+        LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
         switch (command.getType()) {
             case PLAY_SOUND:
                 //讲话

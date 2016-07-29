@@ -2,7 +2,7 @@ package com.geeknewbee.doraemon.task;
 
 import android.text.TextUtils;
 
-import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.SDLimbs;
 import com.geeknewbee.doraemon.control.base.ILimbs;
 import com.geeknewbee.doraemon.utils.LogUtils;
@@ -32,7 +32,7 @@ public class LimbTaskQueue extends AbstractTaskQueue<String, Boolean> {
         super();
         limbs = new SDLimbs();
         boolean init = limbs.init();
-        LogUtils.d(Constant.TAG_COMMAND, "init limbs:" + init);
+        LogUtils.d(Constants.TAG_COMMAND, "init limbs:" + init);
     }
 
     @Override

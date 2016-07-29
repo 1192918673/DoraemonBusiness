@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 
-import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.model.BluetoothCommand;
 import com.geeknewbee.doraemon.task.BluetoothTalkTask;
@@ -51,7 +51,7 @@ public class BluetoothServiceManager {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case Constant.MESSAGE_STATE_CHANGE:
+                case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
                         case BluetoothChatService.STATE_CONNECTED:
                             talkTask.start();
@@ -66,15 +66,15 @@ public class BluetoothServiceManager {
                             break;
                     }
                     break;
-                case Constant.MESSAGE_WRITE:
+                case Constants.MESSAGE_WRITE:
                     break;
-                case Constant.MESSAGE_READ:
+                case Constants.MESSAGE_READ:
                     synchronized (this) {
                         byte[] readBuf = (byte[]) msg.obj;
                         // construct a string from the valid bytes in the buffer
-                        int commandPrefixLength = Constant.COMMAND_ROBOT_PREFIX.length();
+                        int commandPrefixLength = Constants.COMMAND_ROBOT_PREFIX.length();
                         String readMessage = new String(readBuf, 0, commandPrefixLength);
-                        if (readMessage.equals(Constant.COMMAND_ROBOT_PREFIX)) {
+                        if (readMessage.equals(Constants.COMMAND_ROBOT_PREFIX)) {
                             //robot command
                             Gson gson = new Gson();
                             try {
@@ -90,10 +90,10 @@ public class BluetoothServiceManager {
                         }
                     }
                     break;
-                case Constant.MESSAGE_DEVICE_NAME:
+                case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     break;
-                case Constant.MESSAGE_TOAST:
+                case Constants.MESSAGE_TOAST:
                     break;
             }
         }

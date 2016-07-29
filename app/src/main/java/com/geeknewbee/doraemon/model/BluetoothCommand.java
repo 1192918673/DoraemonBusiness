@@ -2,7 +2,7 @@ package com.geeknewbee.doraemon.model;
 
 import android.text.TextUtils;
 
-import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
 import com.geeknewbee.doraemon.utils.FaceUtil;
@@ -63,7 +63,7 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(musicName)) {
-            if (musicName.equalsIgnoreCase(Constant.STOP_FLAG))
+            if (musicName.equalsIgnoreCase(Constants.STOP_FLAG))
                 commands.add(new Command(CommandType.PLAY_MUSIC.STOP, musicName));
             else
                 commands.add(new Command(CommandType.PLAY_MUSIC, musicName));

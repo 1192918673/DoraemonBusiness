@@ -3,7 +3,7 @@ package com.geeknewbee.doraemon.task;
 import android.os.CountDownTimer;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.utils.GifView;
 
 /**
@@ -23,8 +23,8 @@ public class FaceManager {
 
             @Override
             public void onFinish() {
-                if (!content.equalsIgnoreCase(Constant.DEFAULT_GIF))
-                    showGif(Constant.DEFAULT_GIF);
+                if (!content.equalsIgnoreCase(Constants.DEFAULT_GIF))
+                    showGif(Constants.DEFAULT_GIF);
             }
         };
         countDownTimer.start();

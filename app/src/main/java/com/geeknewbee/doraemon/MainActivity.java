@@ -6,7 +6,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.geeknewbee.doraemon.bluetooth.BluetoothServiceManager;
-import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
 import com.geeknewbee.doraemon.control.Doraemon;
@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 
         mGifView = (GifView) findViewById(R.id.gifView);
         FaceManager.faceView = mGifView;
-        Doraemon.getInstance(getApplicationContext()).addCommand(new Command(CommandType.SHOW_EXPRESSION, Constant.DEFAULT_GIF));
+        Doraemon.getInstance(getApplicationContext()).addCommand(new Command(CommandType.SHOW_EXPRESSION, Constants.DEFAULT_GIF));
 
         bluetoothServiceManager = BluetoothServiceManager.getInstance(getApplicationContext());
         bluetoothServiceManager.onCreate();

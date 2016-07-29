@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.control;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.base.IMusicPlayer;
 import com.geeknewbee.doraemon.utils.LogUtils;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
@@ -37,12 +37,12 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
         @Override
         public void onSoundPrepared() {
-            LogUtils.d(Constant.TAG_MUSIC, "onSoundPrepared");
+            LogUtils.d(Constants.TAG_MUSIC, "onSoundPrepared");
         }
 
         @Override
         public void onPlayStart() {
-            LogUtils.d(Constant.TAG_MUSIC, "onPlayStart");
+            LogUtils.d(Constants.TAG_MUSIC, "onPlayStart");
         }
 
         @Override
@@ -62,17 +62,17 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
         @Override
         public void onPlayPause() {
-            LogUtils.d(Constant.TAG_MUSIC, "onPlayPause");
+            LogUtils.d(Constants.TAG_MUSIC, "onPlayPause");
         }
 
         @Override
         public void onSoundPlayComplete() {
-            LogUtils.d(Constant.TAG_MUSIC, "onSoundPlayComplete");
+            LogUtils.d(Constants.TAG_MUSIC, "onSoundPlayComplete");
         }
 
         @Override
         public void onSoundSwitch(PlayableModel laModel, PlayableModel curModel) {
-            LogUtils.d(Constant.TAG_MUSIC, "onSoundSwitch index:");
+            LogUtils.d(Constants.TAG_MUSIC, "onSoundSwitch index:");
             mPlayerManager.clearPlayCache();
             if (laModel != null) {
                 laModel.setLastPlayedMills(0);
@@ -82,18 +82,18 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
         @Override
         public void onPlayStop() {
-            LogUtils.d(Constant.TAG_MUSIC, "onPlayStop");
+            LogUtils.d(Constants.TAG_MUSIC, "onPlayStop");
         }
 
         @Override
         public boolean onError(XmPlayerException exception) {
-            LogUtils.d(Constant.TAG_MUSIC, "onError " + exception.getMessage());
+            LogUtils.d(Constants.TAG_MUSIC, "onError " + exception.getMessage());
             return false;
         }
 
         @Override
         public void onBufferingStart() {
-            LogUtils.d(Constant.TAG_MUSIC, "onBufferingStart");
+            LogUtils.d(Constants.TAG_MUSIC, "onBufferingStart");
         }
 
         @Override
@@ -103,45 +103,45 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
         @Override
         public void onBufferingStop() {
-            LogUtils.d(Constant.TAG_MUSIC, "onBufferingStop");
+            LogUtils.d(Constants.TAG_MUSIC, "onBufferingStop");
         }
     };
     private IXmAdsStatusListener mAdsListener = new IXmAdsStatusListener() {
 
         @Override
         public void onStartPlayAds(Advertis ad, int position) {
-            LogUtils.d(Constant.TAG_MUSIC, "onStartPlayAds, Ad:" + ad.getName() + ", pos:" + position);
+            LogUtils.d(Constants.TAG_MUSIC, "onStartPlayAds, Ad:" + ad.getName() + ", pos:" + position);
         }
 
         @Override
         public void onStartGetAdsInfo() {
-            LogUtils.d(Constant.TAG_MUSIC, "onStartGetAdsInfo");
+            LogUtils.d(Constants.TAG_MUSIC, "onStartGetAdsInfo");
         }
 
         @Override
         public void onGetAdsInfo(AdvertisList ads) {
-            LogUtils.d(Constant.TAG_MUSIC, "onGetAdsInfo " + (ads != null));
+            LogUtils.d(Constants.TAG_MUSIC, "onGetAdsInfo " + (ads != null));
         }
 
         @Override
         public void onError(int what, int extra) {
-            LogUtils.d(Constant.TAG_MUSIC, "onError what:" + what + ", extra:" + extra);
+            LogUtils.d(Constants.TAG_MUSIC, "onError what:" + what + ", extra:" + extra);
         }
 
         @Override
         public void onCompletePlayAds() {
-            LogUtils.d(Constant.TAG_MUSIC, "onCompletePlayAds");
+            LogUtils.d(Constants.TAG_MUSIC, "onCompletePlayAds");
             PlayableModel model = mPlayerManager.getCurrSound();
         }
 
         @Override
         public void onAdsStopBuffering() {
-            LogUtils.d(Constant.TAG_MUSIC, "onAdsStopBuffering");
+            LogUtils.d(Constants.TAG_MUSIC, "onAdsStopBuffering");
         }
 
         @Override
         public void onAdsStartBuffering() {
-            LogUtils.d(Constant.TAG_MUSIC, "onAdsStartBuffering");
+            LogUtils.d(Constants.TAG_MUSIC, "onAdsStartBuffering");
         }
     };
 
