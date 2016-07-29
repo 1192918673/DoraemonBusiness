@@ -8,10 +8,10 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 
+import com.geeknewbee.doraemon.constants.Constant;
 import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.model.BluetoothCommand;
 import com.geeknewbee.doraemon.task.BluetoothTalkTask;
-import com.geeknewbee.doraemon.util.Constant;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 

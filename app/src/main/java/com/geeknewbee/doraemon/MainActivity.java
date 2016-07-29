@@ -6,11 +6,11 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.geeknewbee.doraemon.bluetooth.BluetoothServiceManager;
+import com.geeknewbee.doraemon.constants.Constant;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
 import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.task.FaceManager;
-import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.utils.GifView;
 
 

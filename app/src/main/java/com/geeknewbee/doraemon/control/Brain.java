@@ -1,13 +1,13 @@
 package com.geeknewbee.doraemon.control;
 
+import com.geeknewbee.doraemon.constants.Constant;
 import com.geeknewbee.doraemon.task.FaceManager;
 import com.geeknewbee.doraemon.task.LimbTaskQueue;
 import com.geeknewbee.doraemon.task.MouthTaskQueue;
 import com.geeknewbee.doraemon.task.SoundTranslateTaskQueue;
 import com.geeknewbee.doraemon.task.SysSettingManager;
 import com.geeknewbee.doraemon.task.base.Priority;
-import com.geeknewbee.doraemon.util.Constant;
-import com.geeknewbee.doraemon.util.LogUtils;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.List;
 

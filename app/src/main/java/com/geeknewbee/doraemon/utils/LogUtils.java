@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.util;
+package com.geeknewbee.doraemon.utils;
 
 import android.text.TextUtils;
 import android.util.Log;

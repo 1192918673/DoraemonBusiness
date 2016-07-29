@@ -6,7 +6,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.util.LogUtils;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 /**
  * Created by ACER on 2016/7/28.

@@ -6,7 +6,7 @@ import com.aispeech.common.Util;
 import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.constants.AppKey;
+import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.control.base.ITTS;
 import com.geeknewbee.doraemon.utils.Loger;
 
@@ -32,7 +32,7 @@ public class AISpeechTTS implements ITTS {
         // mTTSEngine.setModelPath(Environment.getExternalStorageDirectory() + "/ttsRes/" + modelName);// 设置合成模型文件的路径
         mTTSEngine.setRealBack(true);// 设置是否开启实时反馈，默认开启
         mTTSEngine.setUseCahce(false, 20);// 开启本地合成缓存,缓存音频条数为20条,缓存文件在 外存->Android->data->包名->cache->ttsCache目录下
-        mTTSEngine.init(App.mContext, new AILocalTTSListenerImpl(), AppKey.APPKEY, AppKey.SECRETKEY);
+        mTTSEngine.init(App.mContext, new AILocalTTSListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
         mTTSEngine.setLeftMargin(125);
         mTTSEngine.setRightMargin(25);
         mTTSEngine.setSpeechRate(0.9f);// 设置语速 取值范围0-10，1为正常语速，10为最快，0为最慢

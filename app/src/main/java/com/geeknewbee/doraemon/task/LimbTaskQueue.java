@@ -2,10 +2,10 @@ package com.geeknewbee.doraemon.task;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.constants.Constant;
 import com.geeknewbee.doraemon.control.SDLimbs;
 import com.geeknewbee.doraemon.control.base.ILimbs;
-import com.geeknewbee.doraemon.util.Constant;
-import com.geeknewbee.doraemon.util.LogUtils;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.Arrays;
 

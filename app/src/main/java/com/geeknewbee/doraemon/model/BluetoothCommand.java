@@ -2,9 +2,9 @@ package com.geeknewbee.doraemon.model;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.constants.Constant;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
-import com.geeknewbee.doraemon.util.Constant;
 import com.geeknewbee.doraemon.utils.FaceUtil;
 
 import java.util.ArrayList;

@@ -8,7 +8,7 @@ import android.os.Process;
 import com.geeknewbee.doraemon.task.base.Priority;
 import com.geeknewbee.doraemon.task.base.PriorityExecutor;
 import com.geeknewbee.doraemon.task.base.PriorityRunnable;
-import com.geeknewbee.doraemon.util.LogUtils;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;

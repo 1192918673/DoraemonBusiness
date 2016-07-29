@@ -3,7 +3,7 @@ package com.geeknewbee.doraemon.control;
 import com.aispeech.export.listeners.AIAuthListener;
 import com.aispeech.speech.AIAuthEngine;
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.constants.AppKey;
+import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.control.base.IAuth;
 import com.geeknewbee.doraemon.utils.Loger;
 
@@ -21,7 +21,7 @@ public class AISpeechAuth implements IAuth {
     public boolean auth() {
         mAuthEngine = AIAuthEngine.getInstance(App.mContext);// 创建实例
         try {
-            mAuthEngine.init(AppKey.APPKEY, AppKey.SECRETKEY, "0c8c-d47c-049d-2856");// 初始化
+            mAuthEngine.init(SpeechConstants.APPKEY, SpeechConstants.SECRETKEY, SpeechConstants.APP_CONSTANT);// 初始化
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }// TODO 换成您的s/n码

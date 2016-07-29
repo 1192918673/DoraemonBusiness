@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.util;
+package com.geeknewbee.doraemon.constants;
 
 public class Constant {
     public static final int RESPONSE_STATUS_SUCCESS = 200;

@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.util;
+package com.geeknewbee.doraemon.utils;
 
 
 import com.geeknewbee.doraemon.control.CommandType;

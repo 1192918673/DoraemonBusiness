@@ -3,7 +3,7 @@ package com.geeknewbee.doraemon.task;
 import android.os.CountDownTimer;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.util.Constant;
+import com.geeknewbee.doraemon.constants.Constant;
 import com.geeknewbee.doraemon.utils.GifView;
 
 /**

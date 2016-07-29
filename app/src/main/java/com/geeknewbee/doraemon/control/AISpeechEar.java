@@ -13,8 +13,7 @@ import com.aispeech.export.engines.AIMixASREngine;
 import com.aispeech.export.listeners.AIASRListener;
 import com.aispeech.export.listeners.AILocalGrammarListener;
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.constants.AppKey;
-import com.geeknewbee.doraemon.constants.SampleConstants;
+import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.control.base.IEar;
 import com.geeknewbee.doraemon.utils.GrammarHelper;
 import com.geeknewbee.doraemon.utils.Loger;
@@ -59,8 +58,8 @@ public class AISpeechEar implements IEar {
         }
         Loger.d(TAG, "grammar create");
         mGrammarEngine = AILocalGrammarEngine.createInstance();// 获取实例
-        mGrammarEngine.setResFileName(SampleConstants.ebnfc_res);// 设置资源文件名
-        mGrammarEngine.init(App.mContext, new AILocalGrammarListenerImpl(), AppKey.APPKEY, AppKey.SECRETKEY);// 初始化
+        mGrammarEngine.setResFileName(SpeechConstants.ebnfc_res);// 设置资源文件名
+        mGrammarEngine.init(App.mContext, new AILocalGrammarListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);// 初始化
         mGrammarEngine.setDeviceId(Util.getIMEI(App.mContext));// 设置设备Id
 
         GrammarHelper gh = new GrammarHelper(App.mContext);
@@ -87,9 +86,9 @@ public class AISpeechEar implements IEar {
         }
         Loger.d(TAG, "ASR create");
         mASREngine = AIMixASREngine.createInstance();// 获取实例
-        mASREngine.setResBin(SampleConstants.ebnfr_res);// 设置声学资源名
+        mASREngine.setResBin(SpeechConstants.ebnfr_res);// 设置声学资源名
         mASREngine.setNetBin(AILocalGrammarEngine.OUTPUT_NAME, true);// 设置网络资源名
-        mASREngine.setVadResource(SampleConstants.vad_res);// 设置Vad资源名
+        mASREngine.setVadResource(SpeechConstants.vad_res);// 设置Vad资源名
         /*if (getExternalCacheDir() != null) {
             mASREngine.setTmpDir(getExternalCacheDir().getAbsolutePath());
             mASREngine.setUploadEnable(true);
@@ -138,7 +137,7 @@ public class AISpeechEar implements IEar {
 
             }
         });
-        mASREngine.init(App.mContext, new AIASRListenerImpl(), AppKey.APPKEY, AppKey.SECRETKEY);// 初始化
+        mASREngine.init(App.mContext, new AIASRListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);// 初始化
         mASREngine.setUseCloud(true);//该方法必须在init之后,是否使用云端识别
         if (NetworkUtil.isWifiConnected(App.mContext)) {
             if (mASREngine != null) {

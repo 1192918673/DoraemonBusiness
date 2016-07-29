@@ -1,9 +1,9 @@
 package com.geeknewbee.doraemon.control;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.constants.Constant;
 import com.geeknewbee.doraemon.control.base.IMusicPlayer;
-import com.geeknewbee.doraemon.util.Constant;
-import com.geeknewbee.doraemon.util.LogUtils;
+import com.geeknewbee.doraemon.utils.LogUtils;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
 import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by ACER on 2016/7/22.
+ * 喜马拉雅 音乐
  */
 public class XMLYMusicPlayer implements IMusicPlayer {
 

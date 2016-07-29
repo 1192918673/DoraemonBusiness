@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.http;
 
 
-import com.geeknewbee.doraemon.util.Constant;
+import com.geeknewbee.doraemon.constants.Constant;
 
 public class BaseResponseBody<T> {
     protected int code = 0;

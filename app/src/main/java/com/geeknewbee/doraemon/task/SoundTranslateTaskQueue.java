@@ -4,7 +4,7 @@ import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.http.BaseResponseBody;
 import com.geeknewbee.doraemon.http.SoundService;
-import com.geeknewbee.doraemon.util.RetrofitUtils;
+import com.geeknewbee.doraemon.utils.RetrofitUtils;
 
 import java.io.IOException;
 import java.util.List;

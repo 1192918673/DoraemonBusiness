@@ -6,6 +6,9 @@ import android.content.Intent;
 
 import com.geeknewbee.doraemon.MainActivity;
 
+/**
+ * 开启启动
+ */
 public final class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent arg1) {

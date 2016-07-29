@@ -5,7 +5,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 
-import com.geeknewbee.doraemon.util.LogUtils;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;

@@ -5,7 +5,7 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.control.base.IEar;
 import com.geeknewbee.doraemon.control.base.IEye;
-import com.geeknewbee.doraemon.util.LogUtils;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.List;
 

@@ -26,8 +26,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.geeknewbee.doraemon.util.Constant;
-import com.geeknewbee.doraemon.util.LogUtils;
+import com.geeknewbee.doraemon.constants.Constant;
+import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
