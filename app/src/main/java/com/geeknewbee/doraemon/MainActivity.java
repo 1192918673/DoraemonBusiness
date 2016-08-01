@@ -29,6 +29,7 @@ public class MainActivity extends Activity {
 
         mGifView = (GifView) findViewById(R.id.gifView);
         FaceManager.faceView = mGifView;
+        FaceManager.faceActivity = this;
         Doraemon.getInstance(getApplicationContext()).addCommand(new Command(CommandType.SHOW_EXPRESSION, Constants.DEFAULT_GIF));
 
         bluetoothServiceManager = BluetoothServiceManager.getInstance(getApplicationContext());
