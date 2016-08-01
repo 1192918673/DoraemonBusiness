@@ -13,10 +13,13 @@ import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.task.FaceManager;
 import com.geeknewbee.doraemon.view.GifView;
 
+import pl.droidsonroids.gif.GifImageView;
+
 
 public class MainActivity extends Activity {
-    public GifView mGifView;
+    /*public GifView mGifView;*/
     /*public SimpleDraweeView simpleDraweeView;*/
+    public GifImageView giview;
     private BluetoothServiceManager bluetoothServiceManager;
 
     @Override
@@ -27,8 +30,9 @@ public class MainActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
-        mGifView = (GifView) findViewById(R.id.gifView);
-        FaceManager.faceView = mGifView;
+//        mGifView = (GifView) findViewById(R.id.gifView);
+        giview = (GifImageView) findViewById(R.id.gifview);
+        FaceManager.faceView = giview;
         Doraemon.getInstance(getApplicationContext()).addCommand(new Command(CommandType.SHOW_EXPRESSION, Constants.DEFAULT_GIF));
 
         bluetoothServiceManager = BluetoothServiceManager.getInstance(getApplicationContext());

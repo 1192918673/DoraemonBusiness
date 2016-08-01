@@ -72,18 +72,18 @@ public class AISpeechTTS implements ITTS {
 
         @Override
         public void onReady(String utteranceId) {
-            LogUtils.d(TAG, utteranceId + "开始播放。。。");
+//            LogUtils.d(TAG, utteranceId + "开始播放。。。");
             isSpeaking = true;
         }
 
         @Override
         public void onProgress(int currentTime, int totalTime, boolean isRefTextTTSFinished) {
-            LogUtils.d(TAG, "当前播放时间:" + currentTime + "ms, 已经送入内核的文本合成的总时长:" + totalTime + "ms, 是否所有文本合成完成:" + isRefTextTTSFinished);
+//            LogUtils.d(TAG, "当前播放时间:" + currentTime + "ms, 已经送入内核的文本合成的总时长:" + totalTime + "ms, 是否所有文本合成完成:" + isRefTextTTSFinished);
         }
 
         @Override
         public void onCompletion(String utteranceId) {
-            LogUtils.d(TAG, utteranceId + "播放完毕！");
+//            LogUtils.d(TAG, utteranceId + "播放完毕！");
             isSpeaking = false;
         }
 
