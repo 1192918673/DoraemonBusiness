@@ -36,7 +36,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case MECHANICAL_MOVEMENT:
                 //肢体运动
-                LimbTaskQueue.getInstance().addTask(Priority.DEFAULT, command.getContent());
+                LimbTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
                 break;
             case SHOW_EXPRESSION:
                 //面部表情
@@ -54,6 +54,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case SETTING_VOLUME:// 设置系统音量
                 SysSettingManager.setVolume(command.getContent());
+                break;
+            case DANCE:
+                LimbTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
                 break;
         }
     }

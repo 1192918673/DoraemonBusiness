@@ -14,9 +14,9 @@ public class DanceAction {
     public String footCommand;
 
     /**
-     * 表情ID
+     * 表情name
      */
-    public int expressionId;
+    public String expressionName;
 
     /**
      * 等待多久（ms）

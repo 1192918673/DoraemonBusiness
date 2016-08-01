@@ -2,9 +2,15 @@ package com.geeknewbee.doraemon.task;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.control.Command;
+import com.geeknewbee.doraemon.control.CommandType;
+import com.geeknewbee.doraemon.control.DanceCommand;
+import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.control.SDLimbs;
 import com.geeknewbee.doraemon.control.base.ILimbs;
+import com.geeknewbee.doraemon.model.DanceAction;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.Arrays;
@@ -12,8 +18,9 @@ import java.util.Arrays;
 /**
  * 肢体运动队列
  */
-public class LimbTaskQueue extends AbstractTaskQueue<String, Boolean> {
+public class LimbTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private static ILimbs limbs;
+    private boolean isStopDance = false;//跳舞中断标识
 
     private volatile static LimbTaskQueue instance;
 
@@ -36,7 +43,42 @@ public class LimbTaskQueue extends AbstractTaskQueue<String, Boolean> {
     }
 
     @Override
-    public Boolean performTask(String s) {
+    public Boolean performTask(Command command) {
+        switch (command.getType()) {
+            case DANCE:
+                isStopDance = false;
+                dance((DanceCommand) command);
+                break;
+            case MECHANICAL_MOVEMENT:
+                return sendCommandContent(command.getContent());
+        }
+
+        return true;
+    }
+
+    private void dance(DanceCommand command) {
+        if (command.danceActions == null || command.danceActions.isEmpty())
+            return;
+
+        for (DanceAction danceAction : command.danceActions) {
+            if (isStopDance)
+                break;
+
+            if (!TextUtils.isEmpty(danceAction.expressionName))
+                Doraemon.getInstance(App.mContext).addCommand(new Command(CommandType.SHOW_EXPRESSION, danceAction.expressionName));
+
+            sendCommandContent(danceAction.topCommand);
+            sendCommandContent(danceAction.footCommand);
+
+            try {
+                Thread.sleep(danceAction.delayTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Boolean sendCommandContent(String s) {
         if (TextUtils.isEmpty(s))
             return false;
 
@@ -50,5 +92,12 @@ public class LimbTaskQueue extends AbstractTaskQueue<String, Boolean> {
     @Override
     public void onTaskComplete(Boolean output) {
 
+    }
+
+    /**
+     * 停止跳舞
+     */
+    public void stopDance() {
+        isStopDance = true;
     }
 }

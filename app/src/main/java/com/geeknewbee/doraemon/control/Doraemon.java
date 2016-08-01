@@ -106,11 +106,11 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
      *
      * @param command
      */
-    public void addCommand(Command command) {
+    public synchronized void addCommand(Command command) {
         brain.addCommand(command);
     }
 
-    public void addCommand(List<Command> commands) {
+    public synchronized void addCommand(List<Command> commands) {
         brain.addCommand(commands);
     }
 

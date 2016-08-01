@@ -3,10 +3,14 @@ package com.geeknewbee.doraemon.task;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.control.DanceCommand;
+import com.geeknewbee.doraemon.control.Doraemon;
 import com.geeknewbee.doraemon.model.DanceAction;
 import com.geeknewbee.doraemon.utils.BytesUtils;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +31,7 @@ import java.util.List;
  * 8.行走速度一直是正数(0-1500)
  * 9.有对于表情则填写对应表情的名字，没有则不用填写
  */
-public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, List<DanceAction>> {
+public class ParseDanceCommandTask {
 
     public static final int FOOT_DIRECTION_UP = 1;
     public static final int FOOT_DIRECTION_DOWN = 2;
@@ -57,24 +61,63 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
     private static char current_head_horizontal;
     private static char current_head_vertical;
 
+    private ParseThread parseThread;
 
-    @Override
-    public List<DanceAction> performTask(InputStreamReader inputStreamReader) {
-        resetData();
+    public void start(int rawId) {
+        InputStream in = App.mContext.getResources().openRawResource(rawId);
+        InputStreamReader reader = new InputStreamReader(in);
+        if (parseThread == null)
+            parseThread = new ParseThread(reader);
 
-        List<DanceAction> commands = new ArrayList<>();
-        try {
-            BufferedReader bufReader = new BufferedReader(inputStreamReader);
-            String line;
-            DanceAction danceAction;
-            while ((line = bufReader.readLine()) != null) {
-                danceAction = parseCommand(line);
-                commands.add(danceAction);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        parseThread.start();
+    }
+
+    public void stop() {
+        if (parseThread != null)
+            parseThread.cancel();
+    }
+
+
+    private class ParseThread extends Thread {
+        InputStreamReader inputStreamReader;
+        boolean isStop = false;
+
+        public ParseThread(InputStreamReader inputStreamReader) {
+            this.inputStreamReader = inputStreamReader;
         }
-        return commands;
+
+        @Override
+        public void run() {
+            super.run();
+            isStop = false;
+            resetData();
+
+            List<DanceAction> commands = new ArrayList<>();
+            try {
+                BufferedReader bufReader = new BufferedReader(inputStreamReader);
+                String line;
+                DanceAction danceAction;
+                while ((line = bufReader.readLine()) != null && !isStop) {
+                    danceAction = parseCommand(line);
+                    commands.add(danceAction);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    inputStreamReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (!isStop)
+                Doraemon.getInstance(App.mContext).addCommand(new DanceCommand(commands));
+        }
+
+        public void cancel() {
+            isStop = true;
+        }
     }
 
     private void resetData() {
@@ -125,7 +168,7 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
 
         //9 运动的表情
         if (strings.length == 10 && !TextUtils.isEmpty(strings[9])) {
-            danceAction.expressionId = App.mContext.getResources().getIdentifier(strings[9], "drawable", App.mContext.getPackageName());
+            danceAction.expressionName = strings[9];
         }
 
         return danceAction;
@@ -231,6 +274,9 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
     }
 
     private String getFootCommand(int footDirection, int footSpeed, int roundCount) {
+        if (footDirection == 0 || footSpeed == 0)
+            return "";
+
         char hSpeedChar_1 = 0x00;
         char lSpeedChar_1 = 0x00;
         char hSpeedChar_2 = 0x00;
@@ -272,10 +318,5 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
         }
         char[] buf = new char[]{0x03, 0x02, 0x01, hSpeedChar_1, lSpeedChar_1, 0x00, round_count, 0x02, hSpeedChar_2, lSpeedChar_2, 0x00, round_count};
         return String.valueOf(buf);
-    }
-
-    @Override
-    public void onTaskComplete(List<DanceAction> output) {
-
     }
 }
