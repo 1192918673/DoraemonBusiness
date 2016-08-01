@@ -17,4 +17,33 @@ public class BytesUtils {
         }
         return s;
     }
+
+    /**
+     * 根据int 获取高，低 两个char
+     *
+     * @param value
+     * @return
+     */
+    public static char[] getHighAndLowChar(int value) {
+        char[] result = new char[2];
+
+        //高8位
+        result[0] = (char) ((value >> 8) & 0xff);
+        //低8位
+        result[1] = (char) (value & 0xff);
+        return result;
+    }
+
+    /**
+     * 根据 高，低 char 获取int value
+     *
+     * @param highChar
+     * @param lowChar
+     * @return
+     */
+    public static int getIntValueByHighAndLowChar(char highChar, char lowChar) {
+        int high = highChar;
+        int low = lowChar;
+        return (high << 8) + low;
+    }
 }
