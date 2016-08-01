@@ -64,6 +64,9 @@ public class ParseDanceCommandTask {
     private ParseThread parseThread;
 
     public void start(int rawId) {
+        if (rawId < 1)
+            return;
+        
         InputStream in = App.mContext.getResources().openRawResource(rawId);
         InputStreamReader reader = new InputStreamReader(in);
         if (parseThread == null)

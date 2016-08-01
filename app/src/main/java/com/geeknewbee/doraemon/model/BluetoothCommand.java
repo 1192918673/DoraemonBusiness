@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.CommandType;
+import com.geeknewbee.doraemon.control.DanceCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,11 @@ public class BluetoothCommand {
     private String volume;
 
     /**
+     * 跳舞动作
+     */
+    private List<DanceAction> danceActions;
+
+    /**
      * 根据蓝牙指令获取对应的Command
      *
      * @return
@@ -74,6 +80,10 @@ public class BluetoothCommand {
 
         if (!TextUtils.isEmpty(volume)) {
             commands.add(new Command(CommandType.SETTING_VOLUME, volume));
+        }
+
+        if (danceActions != null && !danceActions.isEmpty()) {
+            commands.add(new DanceCommand(danceActions));
         }
 
         return commands;
