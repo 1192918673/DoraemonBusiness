@@ -66,7 +66,7 @@ public class ParseDanceCommandTask {
     public void start(int rawId) {
         if (rawId < 1)
             return;
-        
+
         InputStream in = App.mContext.getResources().openRawResource(rawId);
         InputStreamReader reader = new InputStreamReader(in);
         if (parseThread == null)
@@ -144,34 +144,34 @@ public class ParseDanceCommandTask {
 
         DanceAction danceAction = new DanceAction();
         //0 左手舵机
-        int leftDuojiAngle = Integer.parseInt(strings[0]);
+        int leftDuojiAngle = Integer.parseInt(strings[0].trim());
         //1 右手舵机
-        int rightDuojiAngle = Integer.parseInt(strings[1]);
+        int rightDuojiAngle = Integer.parseInt(strings[1].trim());
         //2 右手电机
-        int rightDianjiAngle = Integer.parseInt(strings[2]);
+        int rightDianjiAngle = Integer.parseInt(strings[2].trim());
         //3 左手电机
-        int leftDianjiAngle = Integer.parseInt(strings[3]);
+        int leftDianjiAngle = Integer.parseInt(strings[3].trim());
 
         //4 头部水平旋转
-        int headHorizontal = Integer.parseInt(strings[4]);
+        int headHorizontal = Integer.parseInt(strings[4].trim());
         //5 头部上下运动
-        int headVertical = Integer.parseInt(strings[5]);
+        int headVertical = Integer.parseInt(strings[5].trim());
 
         //6 脚步运动方向
-        int footDirection = Integer.parseInt(strings[6]);
+        int footDirection = Integer.parseInt(strings[6].trim());
         //8 脚步运动速度
-        int footSpeed = Integer.parseInt(strings[8]);
+        int footSpeed = Integer.parseInt(strings[8].trim());
 
         //7 整个运动持续时间
-        int time = Integer.parseInt(strings[7]);
+        int time = Integer.parseInt(strings[7].trim());
         danceAction.delayTime = time;
 
         danceAction.topCommand = getTopCommand(leftDuojiAngle, rightDuojiAngle, rightDianjiAngle, leftDianjiAngle, headHorizontal, headVertical, time);
         danceAction.footCommand = getFootCommand(footDirection, footSpeed, ROUND_COUNT);
 
         //9 运动的表情
-        if (strings.length == 10 && !TextUtils.isEmpty(strings[9])) {
-            danceAction.expressionName = strings[9];
+        if (strings.length == 10 && !TextUtils.isEmpty(strings[9].trim())) {
+            danceAction.expressionName = strings[9].trim();
         }
 
         return danceAction;
