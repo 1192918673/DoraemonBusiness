@@ -3,7 +3,7 @@ package com.geeknewbee.doraemon.task;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.model.DanceCommand;
+import com.geeknewbee.doraemon.model.DanceAction;
 import com.geeknewbee.doraemon.utils.BytesUtils;
 
 import java.io.BufferedReader;
@@ -27,7 +27,7 @@ import java.util.List;
  * 8.行走速度一直是正数(0-1500)
  * 9.有对于表情则填写对应表情的名字，没有则不用填写
  */
-public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, List<DanceCommand>> {
+public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, List<DanceAction>> {
 
     public static final int FOOT_DIRECTION_UP = 1;
     public static final int FOOT_DIRECTION_DOWN = 2;
@@ -59,17 +59,17 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
 
 
     @Override
-    public List<DanceCommand> performTask(InputStreamReader inputStreamReader) {
+    public List<DanceAction> performTask(InputStreamReader inputStreamReader) {
         resetData();
 
-        List<DanceCommand> commands = new ArrayList<>();
+        List<DanceAction> commands = new ArrayList<>();
         try {
             BufferedReader bufReader = new BufferedReader(inputStreamReader);
             String line;
-            DanceCommand danceCommand;
+            DanceAction danceAction;
             while ((line = bufReader.readLine()) != null) {
-                danceCommand = parseCommand(line);
-                commands.add(danceCommand);
+                danceAction = parseCommand(line);
+                commands.add(danceAction);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,7 +87,7 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
         current_head_vertical = DEFALUT_HEAD_VERTICAL;
     }
 
-    private DanceCommand parseCommand(String line) {
+    private DanceAction parseCommand(String line) {
         //必须是以"{" 开头 "}"结尾
         if (TextUtils.isEmpty(line) || !line.startsWith("{") || !line.endsWith("}"))
             return null;
@@ -96,7 +96,7 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
         if (strings.length < 9)
             return null;
 
-        DanceCommand danceCommand = new DanceCommand();
+        DanceAction danceAction = new DanceAction();
         //0 左手舵机
         int leftDuojiAngle = Integer.parseInt(strings[0]);
         //1 右手舵机
@@ -118,17 +118,17 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
 
         //7 整个运动持续时间
         int time = Integer.parseInt(strings[7]);
-        danceCommand.delayTime = time;
+        danceAction.delayTime = time;
 
-        danceCommand.topCommand = getTopCommand(leftDuojiAngle, rightDuojiAngle, rightDianjiAngle, leftDianjiAngle, headHorizontal, headVertical, time);
-        danceCommand.footCommand = getFootCommand(footDirection, footSpeed, ROUND_COUNT);
+        danceAction.topCommand = getTopCommand(leftDuojiAngle, rightDuojiAngle, rightDianjiAngle, leftDianjiAngle, headHorizontal, headVertical, time);
+        danceAction.footCommand = getFootCommand(footDirection, footSpeed, ROUND_COUNT);
 
         //9 运动的表情
         if (strings.length == 10 && !TextUtils.isEmpty(strings[9])) {
-            danceCommand.expressionId = App.mContext.getResources().getIdentifier(strings[9], "drawable", App.mContext.getPackageName());
+            danceAction.expressionId = App.mContext.getResources().getIdentifier(strings[9], "drawable", App.mContext.getPackageName());
         }
 
-        return danceCommand;
+        return danceAction;
     }
 
     private String getTopCommand(int leftDuojiAngle, int rightDuojiAngle, int rightDianjiAngle, int leftDianjiAngle, int headHorizontal, int headVertical, int time) {
@@ -275,7 +275,7 @@ public class ParseDanceCommandTask extends AbstractTaskQueue<InputStreamReader, 
     }
 
     @Override
-    public void onTaskComplete(List<DanceCommand> output) {
+    public void onTaskComplete(List<DanceAction> output) {
 
     }
 }

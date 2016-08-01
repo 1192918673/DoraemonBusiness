@@ -1,6 +1,9 @@
 package com.geeknewbee.doraemon.model;
 
-public class DanceCommand {
+/**
+ * 舞蹈动作
+ */
+public class DanceAction {
     /**
      * 头,手的命令
      */
