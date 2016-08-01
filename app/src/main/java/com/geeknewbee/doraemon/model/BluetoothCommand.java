@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 通过蓝牙传递的指令
+ * 通过蓝牙传递的指令格式
  */
 public class BluetoothCommand {
     /**
