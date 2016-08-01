@@ -12,8 +12,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />-->
 
-    <com.geeknewbee.doraemon.view.GifView
+    <!--<com.geeknewbee.doraemon.view.GifView
         android:id="@+id/gifView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />-->
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gifview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>

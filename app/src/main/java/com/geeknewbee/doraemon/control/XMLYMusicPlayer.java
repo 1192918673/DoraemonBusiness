@@ -17,6 +17,7 @@ import com.ximalaya.ting.android.opensdk.model.track.Track;
 import com.ximalaya.ting.android.opensdk.player.XmPlayerManager;
 import com.ximalaya.ting.android.opensdk.player.advertis.IXmAdsStatusListener;
 import com.ximalaya.ting.android.opensdk.player.service.IXmPlayerStatusListener;
+import com.ximalaya.ting.android.opensdk.player.service.XmPlayerConfig;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerException;
 
 import java.util.ArrayList;
@@ -73,11 +74,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         @Override
         public void onSoundSwitch(PlayableModel laModel, PlayableModel curModel) {
             LogUtils.d(Constants.TAG_MUSIC, "onSoundSwitch index:");
-            mPlayerManager.clearPlayCache();
-            if (laModel != null) {
-                laModel.setLastPlayedMills(0);
-            }
-            curModel.setLastPlayedMills(0);
         }
 
         @Override
@@ -156,6 +152,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
         mPlayerManager = XmPlayerManager.getInstance(App.mContext);
         mPlayerManager.init();
+        XmPlayerConfig.getInstance(App.mContext).setBreakpointResume(false);
         mPlayerManager.addPlayerStatusListener(mPlayerStatusListener);
         mPlayerManager.addAdsStatusListener(mAdsListener);
         mPlayerManager.getPlayerStatus();
@@ -186,7 +183,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                     tracks.clear();
                     tracks.add(searchTrackList.getTracks().get(0));
                     mPlayerManager.clearPlayCache();
-                    mPlayerManager.seekTo(0);
                     mPlayerManager.playList(tracks, 0);
                 }
             }
