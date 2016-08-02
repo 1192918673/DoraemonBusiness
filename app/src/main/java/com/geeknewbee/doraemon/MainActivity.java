@@ -16,9 +16,7 @@ import pl.droidsonroids.gif.GifImageView;
 
 
 public class MainActivity extends Activity {
-    /*public GifView mGifView;*/
-    /*public SimpleDraweeView simpleDraweeView;*/
-    public GifImageView giview;
+    public GifImageView gifView;
     private BluetoothServiceManager bluetoothServiceManager;
 
     @Override
@@ -29,8 +27,8 @@ public class MainActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
-        giview = (GifImageView) findViewById(R.id.gifview);
-        FaceManager.faceView = giview;
+        gifView = (GifImageView) findViewById(R.id.gifview);
+        FaceManager.faceView = gifView;
         FaceManager.faceActivity = this;
         Doraemon.getInstance(getApplicationContext()).addCommand(new Command(CommandType.SHOW_EXPRESSION, Constants.DEFAULT_GIF));
 

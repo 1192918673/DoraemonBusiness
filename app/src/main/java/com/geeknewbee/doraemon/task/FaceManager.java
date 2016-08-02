@@ -15,7 +15,6 @@ import pl.droidsonroids.gif.GifImageView;
  * 处理表情
  */
 public class FaceManager {
-    //    public static GifView faceView;
     public static GifImageView faceView;
     public static Activity faceActivity;
     private static int duration;
