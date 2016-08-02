@@ -5,6 +5,7 @@ import com.geeknewbee.doraemon.control.Command;
 import com.geeknewbee.doraemon.control.XMLYMusicPlayer;
 import com.geeknewbee.doraemon.control.base.IMusicPlayer;
 import com.geeknewbee.doraemon.control.base.ITTS;
+import com.geeknewbee.doraemon.task.base.AbstractTaskQueue;
 
 /**
  * 声音 task queue

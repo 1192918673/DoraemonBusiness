@@ -1,13 +1,10 @@
-package com.geeknewbee.doraemon.task;
+package com.geeknewbee.doraemon.task.base;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 
-import com.geeknewbee.doraemon.task.base.Priority;
-import com.geeknewbee.doraemon.task.base.PriorityExecutor;
-import com.geeknewbee.doraemon.task.base.PriorityRunnable;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.concurrent.Callable;
