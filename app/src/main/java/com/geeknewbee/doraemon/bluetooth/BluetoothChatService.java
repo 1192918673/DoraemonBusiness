@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -331,7 +332,10 @@ public class BluetoothChatService {
             }
             Log.d(TAG, "connected thread state:" + currentState);
 
-            byte[] result;
+            byte[] result = null;
+            int prefixLength = Constants.COMMAND_ROBOT_PREFIX.length();
+            int suffixLength = Constants.COMMAND_ROBOT_SUFFIX.length();
+            boolean isCommand = false;//是否正在接收定义的命令
             while (currentState == STATE_CONNECTED) {
                 try {
                     // Read from the InputStream
@@ -339,11 +343,32 @@ public class BluetoothChatService {
                     if (bytes < 1)
                         continue;
 
-                    result = new byte[bytes];
-                    System.arraycopy(buffer, 0, result, 0, bytes);
-                    // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, result)
-                            .sendToTarget();
+                    if (isCommand) {
+                        //还在接收Command 的后续包
+                        byte[] temp = new byte[bytes];
+                        System.arraycopy(buffer, 0, temp, 0, bytes);
+                        result = concat(result, temp);
+
+                        isCommand = !checkIsEndOfCommand(result, suffixLength);
+                    } else {
+                        if (bytes > prefixLength) {
+                            String prefix = new String(buffer, 0, prefixLength);
+                            if (prefix.equals(Constants.COMMAND_ROBOT_PREFIX)) {
+                                //是命令的第一个包
+                                result = new byte[bytes];
+                                System.arraycopy(buffer, 0, result, 0, bytes);
+
+                                isCommand = !checkIsEndOfCommand(result, suffixLength);
+                                continue;
+                            }
+                        }
+
+                        //是声音的数据直接发送
+                        result = new byte[bytes];
+                        System.arraycopy(buffer, 0, result, 0, bytes);
+                        mHandler.obtainMessage(Constants.MESSAGE_READ_SOUND, bytes, -1, result)
+                                .sendToTarget();
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     cancel();//断开连接
@@ -352,6 +377,27 @@ public class BluetoothChatService {
                     break;
                 }
             }
+        }
+
+        /**
+         * 是否完成一个command
+         *
+         * @param result
+         * @param suffixLength
+         * @return
+         */
+        private boolean checkIsEndOfCommand(byte[] result, int suffixLength) {
+            String suffix = new String(result, result.length - suffixLength, suffixLength);
+            if (suffix.equals(Constants.COMMAND_ROBOT_SUFFIX)) {
+                //如果一条命令就有一个包就直接发送
+                int length = result.length - Constants.COMMAND_ROBOT_SUFFIX.length() - Constants.COMMAND_ROBOT_PREFIX.length();
+                byte[] command = new byte[length];
+                System.arraycopy(result, Constants.COMMAND_ROBOT_PREFIX.length(), command, 0, length);
+                mHandler.obtainMessage(Constants.MESSAGE_READ_COMMAND, command.length, -1, command)
+                        .sendToTarget();
+                return true;
+            }
+            return false;
         }
 
         /**
@@ -377,6 +423,16 @@ public class BluetoothChatService {
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
+        }
+    }
+
+    public static byte[] concat(byte[] first, byte[] second) {
+        if (first == null) return second;
+        else if (second == null) return first;
+        else {
+            byte[] result = Arrays.copyOf(first, first.length + second.length);
+            System.arraycopy(second, 0, result, first.length, second.length);
+            return result;
         }
     }
 }

@@ -12,6 +12,9 @@ public class Constants {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
+    public static final int MESSAGE_READ_SOUND = 6;
+    public static final int MESSAGE_READ_COMMAND = 7;
+
 
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
@@ -20,4 +23,5 @@ public class Constants {
     public static final String DEFAULT_GIF = "default_gif";
     public static final String STOP_FLAG = "停";
     public static final String COMMAND_ROBOT_PREFIX = "COMMAND_ROBOT";
+    public static final String COMMAND_ROBOT_SUFFIX = "COMMAND_ROBOT_SUFFIX";
 }

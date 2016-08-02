@@ -68,32 +68,21 @@ public class BluetoothServiceManager {
                     break;
                 case Constants.MESSAGE_WRITE:
                     break;
-                case Constants.MESSAGE_READ:
-                    synchronized (this) {
-                        byte[] readBuf = (byte[]) msg.obj;
-                        // construct a string from the valid bytes in the buffer
-                        int commandPrefixLength = Constants.COMMAND_ROBOT_PREFIX.length();
-                        String readMessage = new String(readBuf, 0, commandPrefixLength);
-                        if (readMessage.equals(Constants.COMMAND_ROBOT_PREFIX)) {
-                            //robot command
-                            Gson gson = new Gson();
-                            try {
-                                readMessage = new String(readBuf, commandPrefixLength, readBuf.length - commandPrefixLength);
-                                BluetoothCommand command = gson.fromJson(readMessage, BluetoothCommand.class);
-                                doraemon.addCommand(command.getCommand());
-                            } catch (JsonSyntaxException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            //播放声音
-                            audioData.add(readBuf);
-                        }
+                case Constants.MESSAGE_READ_SOUND:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    //播放声音
+                    audioData.add(readBuf);
+                    break;
+                case Constants.MESSAGE_READ_COMMAND:
+                    byte[] buf = (byte[]) msg.obj;
+                    Gson gson = new Gson();
+                    try {
+                        String readMessage = new String(buf, 0, buf.length);
+                        BluetoothCommand command = gson.fromJson(readMessage, BluetoothCommand.class);
+                        doraemon.addCommand(command.getCommand());
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
                     }
-                    break;
-                case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    break;
-                case Constants.MESSAGE_TOAST:
                     break;
             }
         }
