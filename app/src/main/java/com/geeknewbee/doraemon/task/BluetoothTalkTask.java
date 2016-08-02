@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 public class BluetoothTalkTask {
     private BlockingQueue<byte[]> audioData;
     private TalkThread talkThread;
-    private AudioTrack track;
     private boolean stop = false;
 
     public BluetoothTalkTask(BlockingQueue<byte[]> blockingQueue) {
@@ -44,6 +43,7 @@ public class BluetoothTalkTask {
         public void run() {
             super.run();
             int bufferSize = AudioTrack.getMinBufferSize(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            AudioTrack track = null;
             try {
                 //定义输入流，将音频写入到AudioTrack类中，实现播放
 //				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(audioFile)));
