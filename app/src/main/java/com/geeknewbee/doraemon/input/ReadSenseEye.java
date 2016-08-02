@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.control;
+package com.geeknewbee.doraemon.input;
 
 
 import com.geeknewbee.doraemon.control.base.IEye;

@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.control;
+package com.geeknewbee.doraemon.output;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;

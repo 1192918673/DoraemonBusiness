@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.control;
+package com.geeknewbee.doraemon.input;
 
 import com.aispeech.export.listeners.AIAuthListener;
 import com.aispeech.speech.AIAuthEngine;

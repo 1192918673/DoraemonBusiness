@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.utils;
 
 
-import com.geeknewbee.doraemon.control.CommandType;
+import com.geeknewbee.doraemon.center.command.CommandType;
 import com.geeknewbee.doraemon.json.EnumSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

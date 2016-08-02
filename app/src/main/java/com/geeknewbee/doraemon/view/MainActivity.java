@@ -1,16 +1,17 @@
-package com.geeknewbee.doraemon;
+package com.geeknewbee.doraemon.view;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.geeknewbee.doraemon.bluetooth.BluetoothServiceManager;
+import com.geeknewbee.doraemon.R;
+import com.geeknewbee.doraemon.center.Doraemon;
+import com.geeknewbee.doraemon.center.command.Command;
+import com.geeknewbee.doraemon.center.command.CommandType;
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.control.Command;
-import com.geeknewbee.doraemon.control.CommandType;
-import com.geeknewbee.doraemon.control.Doraemon;
-import com.geeknewbee.doraemon.task.FaceManager;
+import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
+import com.geeknewbee.doraemon.output.FaceManager;
 
 import pl.droidsonroids.gif.GifImageView;
 

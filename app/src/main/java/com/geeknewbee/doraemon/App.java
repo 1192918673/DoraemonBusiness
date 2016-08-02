@@ -3,7 +3,7 @@ package com.geeknewbee.doraemon;
 import android.app.Application;
 import android.content.Context;
 
-import com.geeknewbee.doraemon.control.AISpeechAuth;
+import com.geeknewbee.doraemon.input.AISpeechAuth;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 

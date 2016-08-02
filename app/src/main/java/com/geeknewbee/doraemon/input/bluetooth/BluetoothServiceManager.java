@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.bluetooth;
+package com.geeknewbee.doraemon.input.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -8,9 +8,9 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 
+import com.geeknewbee.doraemon.center.Doraemon;
+import com.geeknewbee.doraemon.center.command.BluetoothCommand;
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.control.Doraemon;
-import com.geeknewbee.doraemon.model.BluetoothCommand;
 import com.geeknewbee.doraemon.task.BluetoothTalkTask;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

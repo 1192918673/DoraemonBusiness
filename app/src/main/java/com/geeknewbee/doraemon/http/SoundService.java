@@ -1,6 +1,6 @@
 package com.geeknewbee.doraemon.http;
 
-import com.geeknewbee.doraemon.control.Command;
+import com.geeknewbee.doraemon.center.command.Command;
 
 import java.util.List;
 

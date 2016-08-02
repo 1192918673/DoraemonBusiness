@@ -1,6 +1,6 @@
 package com.geeknewbee.doraemon.control.base;
 
-import com.geeknewbee.doraemon.control.LimbFunction;
+import com.geeknewbee.doraemon.center.command.LimbCommandType;
 
 /**
  * 四肢
@@ -9,7 +9,7 @@ import com.geeknewbee.doraemon.control.LimbFunction;
 public interface ILimbs {
     boolean init();
 
-    boolean send(LimbFunction limbFunctions, char[] buf);
+    boolean send(LimbCommandType limbFunctions, char[] buf);
 
     boolean send(byte limbFunctions, char[] buf);
 }

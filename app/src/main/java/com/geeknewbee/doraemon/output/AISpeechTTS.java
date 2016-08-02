@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.control;
+package com.geeknewbee.doraemon.output;
 
 import com.aispeech.AIError;
 import com.aispeech.common.AIConstant;

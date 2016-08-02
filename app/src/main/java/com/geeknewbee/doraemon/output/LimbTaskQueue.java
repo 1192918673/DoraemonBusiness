@@ -1,16 +1,15 @@
-package com.geeknewbee.doraemon.task;
+package com.geeknewbee.doraemon.output;
 
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.center.Doraemon;
+import com.geeknewbee.doraemon.center.command.Command;
+import com.geeknewbee.doraemon.center.command.CommandType;
+import com.geeknewbee.doraemon.center.command.DanceAction;
+import com.geeknewbee.doraemon.center.command.DanceCommand;
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.control.Command;
-import com.geeknewbee.doraemon.control.CommandType;
-import com.geeknewbee.doraemon.control.DanceCommand;
-import com.geeknewbee.doraemon.control.Doraemon;
-import com.geeknewbee.doraemon.control.SDLimbs;
 import com.geeknewbee.doraemon.control.base.ILimbs;
-import com.geeknewbee.doraemon.model.DanceAction;
 import com.geeknewbee.doraemon.task.base.AbstractTaskQueue;
 import com.geeknewbee.doraemon.utils.LogUtils;
 

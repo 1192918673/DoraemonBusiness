@@ -39,7 +39,7 @@
             android:value="com.geeknewbee.doraemon" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:screenOrientation="landscape"
             android:theme="@style/NoActionBar">
             <intent-filter>

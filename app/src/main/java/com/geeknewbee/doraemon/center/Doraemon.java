@@ -1,10 +1,14 @@
-package com.geeknewbee.doraemon.control;
+package com.geeknewbee.doraemon.center;
 
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.center.command.Command;
+import com.geeknewbee.doraemon.center.command.CommandType;
 import com.geeknewbee.doraemon.control.base.IEar;
 import com.geeknewbee.doraemon.control.base.IEye;
+import com.geeknewbee.doraemon.input.AISpeechEar;
+import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.List;

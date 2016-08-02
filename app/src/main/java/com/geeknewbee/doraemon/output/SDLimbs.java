@@ -1,5 +1,6 @@
-package com.geeknewbee.doraemon.control;
+package com.geeknewbee.doraemon.output;
 
+import com.geeknewbee.doraemon.center.command.LimbCommandType;
 import com.geeknewbee.doraemon.control.base.ILimbs;
 import com.geeknewbee.doraemon.jni.SerialPort;
 
@@ -29,7 +30,7 @@ public class SDLimbs implements ILimbs {
     }
 
     @Override
-    public boolean send(LimbFunction limbFunctions, char[] buf) {
+    public boolean send(LimbCommandType limbFunctions, char[] buf) {
         if (port1 != null) {
             return port1.send(limbFunctions.getFunctionCode(), buf, buf.length) > 0;
         }

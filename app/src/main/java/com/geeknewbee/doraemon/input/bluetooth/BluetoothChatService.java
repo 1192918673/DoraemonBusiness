@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.geeknewbee.doraemon.bluetooth;
+package com.geeknewbee.doraemon.input.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
