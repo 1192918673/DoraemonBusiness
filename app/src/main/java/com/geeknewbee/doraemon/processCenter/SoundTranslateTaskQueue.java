@@ -1,9 +1,9 @@
-package com.geeknewbee.doraemon.center;
+package com.geeknewbee.doraemon.processCenter;
 
 import com.geeknewbee.doraemon.BuildConfig;
-import com.geeknewbee.doraemon.center.command.Command;
 import com.geeknewbee.doraemon.http.BaseResponseBody;
 import com.geeknewbee.doraemon.http.SoundService;
+import com.geeknewbee.doraemon.processCenter.command.Command;
 import com.geeknewbee.doraemon.task.base.AbstractTaskQueue;
 import com.geeknewbee.doraemon.utils.RetrofitUtils;
 

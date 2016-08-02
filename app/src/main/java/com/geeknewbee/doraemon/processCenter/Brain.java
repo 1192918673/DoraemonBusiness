@@ -1,11 +1,11 @@
-package com.geeknewbee.doraemon.center;
+package com.geeknewbee.doraemon.processCenter;
 
-import com.geeknewbee.doraemon.center.command.Command;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.LimbTaskQueue;
 import com.geeknewbee.doraemon.output.MouthTaskQueue;
 import com.geeknewbee.doraemon.output.SysSettingManager;
+import com.geeknewbee.doraemon.processCenter.command.Command;
 import com.geeknewbee.doraemon.task.base.Priority;
 import com.geeknewbee.doraemon.utils.LogUtils;
 

@@ -1,11 +1,8 @@
-package com.geeknewbee.doraemon.model;
+package com.geeknewbee.doraemon.processCenter.command;
 
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.control.Command;
-import com.geeknewbee.doraemon.control.CommandType;
-import com.geeknewbee.doraemon.control.DanceCommand;
 
 import java.util.ArrayList;
 import java.util.List;

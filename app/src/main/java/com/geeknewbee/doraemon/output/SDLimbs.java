@@ -1,8 +1,8 @@
 package com.geeknewbee.doraemon.output;
 
-import com.geeknewbee.doraemon.center.command.LimbCommandType;
 import com.geeknewbee.doraemon.control.base.ILimbs;
 import com.geeknewbee.doraemon.jni.SerialPort;
+import com.geeknewbee.doraemon.processCenter.command.LimbCommandType;
 
 import java.io.File;
 import java.io.FileDescriptor;

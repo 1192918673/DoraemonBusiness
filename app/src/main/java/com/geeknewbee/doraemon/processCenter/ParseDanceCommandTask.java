@@ -1,10 +1,10 @@
-package com.geeknewbee.doraemon.center;
+package com.geeknewbee.doraemon.processCenter;
 
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.center.command.DanceAction;
-import com.geeknewbee.doraemon.center.command.DanceCommand;
+import com.geeknewbee.doraemon.processCenter.command.DanceAction;
+import com.geeknewbee.doraemon.processCenter.command.DanceCommand;
 import com.geeknewbee.doraemon.utils.BytesUtils;
 
 import java.io.BufferedReader;

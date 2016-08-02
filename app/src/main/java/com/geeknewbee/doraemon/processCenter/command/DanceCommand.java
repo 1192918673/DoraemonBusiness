@@ -1,6 +1,4 @@
-package com.geeknewbee.doraemon.control;
-
-import com.geeknewbee.doraemon.model.DanceAction;
+package com.geeknewbee.doraemon.processCenter.command;
 
 import java.util.List;
 

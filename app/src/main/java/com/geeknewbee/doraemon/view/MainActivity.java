@@ -6,12 +6,12 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.geeknewbee.doraemon.R;
-import com.geeknewbee.doraemon.center.Doraemon;
-import com.geeknewbee.doraemon.center.command.Command;
-import com.geeknewbee.doraemon.center.command.CommandType;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
+import com.geeknewbee.doraemon.processCenter.Doraemon;
+import com.geeknewbee.doraemon.processCenter.command.Command;
+import com.geeknewbee.doraemon.processCenter.command.CommandType;
 
 import pl.droidsonroids.gif.GifImageView;
 

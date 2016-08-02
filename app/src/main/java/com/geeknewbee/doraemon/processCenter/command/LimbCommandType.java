@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.center.command;
+package com.geeknewbee.doraemon.processCenter.command;
 
 /**
  * 运动控制的功能

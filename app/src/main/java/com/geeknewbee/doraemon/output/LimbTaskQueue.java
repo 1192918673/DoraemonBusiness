@@ -3,13 +3,13 @@ package com.geeknewbee.doraemon.output;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.center.Doraemon;
-import com.geeknewbee.doraemon.center.command.Command;
-import com.geeknewbee.doraemon.center.command.CommandType;
-import com.geeknewbee.doraemon.center.command.DanceAction;
-import com.geeknewbee.doraemon.center.command.DanceCommand;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.base.ILimbs;
+import com.geeknewbee.doraemon.processCenter.Doraemon;
+import com.geeknewbee.doraemon.processCenter.command.Command;
+import com.geeknewbee.doraemon.processCenter.command.CommandType;
+import com.geeknewbee.doraemon.processCenter.command.DanceAction;
+import com.geeknewbee.doraemon.processCenter.command.DanceCommand;
 import com.geeknewbee.doraemon.task.base.AbstractTaskQueue;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
