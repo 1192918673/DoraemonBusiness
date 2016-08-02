@@ -68,6 +68,11 @@ public class LimbTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 Doraemon.getInstance(App.mContext).addCommand(new Command(CommandType.SHOW_EXPRESSION, danceAction.expressionName));
 
             sendCommandContent(danceAction.topCommand);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             sendCommandContent(danceAction.footCommand);
 
             try {
