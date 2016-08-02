@@ -4,7 +4,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package com.geeknewbee.doraemon.task.base;
+package com.geeknewbee.doraemon.task;
 
 import java.util.AbstractQueue;
 import java.util.Collection;

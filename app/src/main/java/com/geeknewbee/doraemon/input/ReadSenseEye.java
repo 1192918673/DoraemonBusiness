@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.input;
 
 
-import com.geeknewbee.doraemon.control.base.IEye;
+import com.geeknewbee.doraemon.control.IEye;
 
 /**
  * ReadSense 实现 Eye

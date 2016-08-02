@@ -1,6 +1,6 @@
 package com.geeknewbee.doraemon.output;
 
-import com.geeknewbee.doraemon.control.base.ILimbs;
+import com.geeknewbee.doraemon.control.ILimbs;
 import com.geeknewbee.doraemon.jni.SerialPort;
 import com.geeknewbee.doraemon.processCenter.command.LimbCommandType;
 

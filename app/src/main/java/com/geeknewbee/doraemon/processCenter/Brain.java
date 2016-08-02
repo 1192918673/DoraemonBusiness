@@ -6,7 +6,7 @@ import com.geeknewbee.doraemon.output.LimbTaskQueue;
 import com.geeknewbee.doraemon.output.MouthTaskQueue;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.processCenter.command.Command;
-import com.geeknewbee.doraemon.task.base.Priority;
+import com.geeknewbee.doraemon.task.Priority;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.task.base;
+package com.geeknewbee.doraemon.task;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;

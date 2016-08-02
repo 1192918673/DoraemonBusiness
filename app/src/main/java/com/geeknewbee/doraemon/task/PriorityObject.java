@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.task.base;
+package com.geeknewbee.doraemon.task;
 
 public class PriorityObject<E> {
 

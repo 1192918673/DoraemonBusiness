@@ -14,7 +14,7 @@ import com.aispeech.export.listeners.AIASRListener;
 import com.aispeech.export.listeners.AILocalGrammarListener;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
-import com.geeknewbee.doraemon.control.base.IEar;
+import com.geeknewbee.doraemon.control.IEar;
 import com.geeknewbee.doraemon.utils.GrammarHelper;
 import com.geeknewbee.doraemon.utils.LogUtils;
 import com.geeknewbee.doraemon.utils.NetworkUtil;

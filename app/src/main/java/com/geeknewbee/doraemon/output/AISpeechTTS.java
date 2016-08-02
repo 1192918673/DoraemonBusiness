@@ -7,7 +7,7 @@ import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
-import com.geeknewbee.doraemon.control.base.ITTS;
+import com.geeknewbee.doraemon.control.ITTS;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 /**
