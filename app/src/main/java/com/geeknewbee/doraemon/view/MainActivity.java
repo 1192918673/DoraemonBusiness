@@ -9,9 +9,9 @@ import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
-import com.geeknewbee.doraemon.processCenter.Doraemon;
-import com.geeknewbee.doraemon.processCenter.command.Command;
-import com.geeknewbee.doraemon.processCenter.command.CommandType;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
+import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.CommandType;
 
 import pl.droidsonroids.gif.GifImageView;
 

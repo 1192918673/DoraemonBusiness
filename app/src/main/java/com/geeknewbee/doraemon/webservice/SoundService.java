@@ -1,6 +1,6 @@
-package com.geeknewbee.doraemon.http;
+package com.geeknewbee.doraemon.webservice;
 
-import com.geeknewbee.doraemon.processCenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.Command;
 
 import java.util.List;
 

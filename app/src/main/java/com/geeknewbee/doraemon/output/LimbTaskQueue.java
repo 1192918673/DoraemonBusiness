@@ -5,11 +5,11 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.control.ILimbs;
-import com.geeknewbee.doraemon.processCenter.Doraemon;
-import com.geeknewbee.doraemon.processCenter.command.Command;
-import com.geeknewbee.doraemon.processCenter.command.CommandType;
-import com.geeknewbee.doraemon.processCenter.command.DanceAction;
-import com.geeknewbee.doraemon.processCenter.command.DanceCommand;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
+import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.CommandType;
+import com.geeknewbee.doraemon.processcenter.command.DanceAction;
+import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
 import com.geeknewbee.doraemon.task.AbstractTaskQueue;
 import com.geeknewbee.doraemon.utils.LogUtils;
 

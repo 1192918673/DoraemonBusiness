@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.http;
+package com.geeknewbee.doraemon.webservice;
 
 
 import com.geeknewbee.doraemon.constants.Constants;

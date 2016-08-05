@@ -1,6 +1,6 @@
 package com.geeknewbee.doraemon.json;
 
-import com.geeknewbee.doraemon.processCenter.command.CommandType;
+import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

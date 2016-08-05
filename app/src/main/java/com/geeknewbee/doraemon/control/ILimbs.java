@@ -1,6 +1,6 @@
 package com.geeknewbee.doraemon.control;
 
-import com.geeknewbee.doraemon.processCenter.command.LimbCommandType;
+import com.geeknewbee.doraemon.processcenter.command.LimbCommandType;
 
 /**
  * 四肢

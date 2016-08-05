@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.processCenter.command;
+package com.geeknewbee.doraemon.processcenter.command;
 
 /**
  * Brain执行的命令

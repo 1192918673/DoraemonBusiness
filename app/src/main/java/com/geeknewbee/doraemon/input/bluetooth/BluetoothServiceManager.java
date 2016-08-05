@@ -10,8 +10,8 @@ import android.os.Message;
 
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.output.BluetoothTalkTask;
-import com.geeknewbee.doraemon.processCenter.Doraemon;
-import com.geeknewbee.doraemon.processCenter.command.BluetoothCommand;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
+import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 

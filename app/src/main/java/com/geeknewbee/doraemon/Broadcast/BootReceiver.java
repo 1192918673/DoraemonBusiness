@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.Broadcast;
+package com.geeknewbee.doraemon.broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
