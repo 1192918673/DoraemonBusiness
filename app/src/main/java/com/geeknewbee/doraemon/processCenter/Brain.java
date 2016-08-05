@@ -3,9 +3,11 @@ package com.geeknewbee.doraemon.processcenter;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
+import com.geeknewbee.doraemon.output.queue.FootMoveTaskQueue;
 import com.geeknewbee.doraemon.output.queue.LimbTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemon.task.Priority;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
@@ -57,6 +59,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case DANCE:
                 LimbTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
+                break;
+            case LE_XING_FOOT:
+                FootMoveTaskQueue.getInstance().addTask(Priority.DEFAULT, (LeXingCommand) command);
                 break;
         }
     }

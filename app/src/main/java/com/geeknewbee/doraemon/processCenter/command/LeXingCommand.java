@@ -5,6 +5,12 @@ public class LeXingCommand extends Command {
         super(CommandType.LE_XING_FOOT, "");
     }
 
+    public LeXingCommand(int v, int w) {
+        this();
+        this.v = v;
+        this.w = w;
+    }
+
     /**
      * 线速度
      */

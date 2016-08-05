@@ -92,6 +92,12 @@ public class BluetoothCommand {
          */
         private List<String> limbData;
 
+
+        /**
+         * 脚步动作
+         */
+        private FootCommand footCommand;
+
         public List<Command> getCommand() {
             List<Command> result = new ArrayList<>();
             if (limbData != null && !limbData.isEmpty()) {
@@ -100,7 +106,20 @@ public class BluetoothCommand {
                 }
             }
 
+            if (footCommand != null)
+                result.add(new LeXingCommand(footCommand.v, footCommand.w));
             return result;
         }
+    }
+
+    private static class FootCommand {
+        /**
+         * 线速度
+         */
+        public int v;
+        /**
+         * 角速度
+         */
+        public int w;
     }
 }
