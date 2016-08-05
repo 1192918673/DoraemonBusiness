@@ -15,7 +15,7 @@ import java.util.List;
 
 
 /**
- * 哆啦A梦
+ * 哆啦A梦 单利模式
  */
 public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     private volatile static Doraemon instance;

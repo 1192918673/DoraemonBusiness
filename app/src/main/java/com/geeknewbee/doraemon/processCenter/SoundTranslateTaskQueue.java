@@ -14,7 +14,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 /**
- * 去服务器解析command
+ * 把声音string去服务器解析command ，这个是串行的任务队列。
+ * 按照先来后到的顺序去执行。
  */
 public class SoundTranslateTaskQueue extends AbstractTaskQueue<String, List<Command>> {
     private volatile static SoundTranslateTaskQueue instance;

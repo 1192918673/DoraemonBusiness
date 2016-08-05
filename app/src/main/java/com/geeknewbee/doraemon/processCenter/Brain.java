@@ -1,19 +1,19 @@
-package com.geeknewbee.doraemon.processCenter;
+package com.geeknewbee.doraemon.processcenter;
 
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.LimbTaskQueue;
 import com.geeknewbee.doraemon.output.MouthTaskQueue;
 import com.geeknewbee.doraemon.output.SysSettingManager;
-import com.geeknewbee.doraemon.processCenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.task.Priority;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.List;
 
 /**
- * 大脑中枢
- * 对声音、人脸输入 进行各种响应
+ * 任务处理中枢
+ * 对声音、人脸输入等 进行各种响应
  * 输出行为有 语音| 四肢运动|显示表情|播放电影等
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
