@@ -1,7 +1,5 @@
 package com.geeknewbee.doraemon.output;
 
-import com.geeknewbee.doraemon.control.IMusicPlayer;
-import com.geeknewbee.doraemon.control.ITTS;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.task.AbstractTaskQueue;
 

@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.control;
+package com.geeknewbee.doraemon.output;
 
 /**
  * 用于播放音乐

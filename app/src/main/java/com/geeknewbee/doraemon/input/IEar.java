@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.control;
+package com.geeknewbee.doraemon.input;
 
 /**
  * 耳朵

@@ -3,9 +3,9 @@ package com.geeknewbee.doraemon.processcenter;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.geeknewbee.doraemon.control.IEar;
-import com.geeknewbee.doraemon.control.IEye;
 import com.geeknewbee.doraemon.input.AISpeechEar;
+import com.geeknewbee.doraemon.input.IEar;
+import com.geeknewbee.doraemon.input.IEye;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;

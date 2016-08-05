@@ -2,7 +2,6 @@ package com.geeknewbee.doraemon.output;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.control.IMusicPlayer;
 import com.geeknewbee.doraemon.utils.LogUtils;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
