@@ -23,6 +23,7 @@ android {
         versionName "1.0"
 
         ndk { abiFilters 'armeabi' }
+        resConfigs "zh"
     }
 
     signingConfigs {
@@ -80,6 +81,7 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.17'
+    compile project(path: ':navipacksdk')
     /*compile ('com.facebook.fresco:fresco:0.9.0') {
         exclude group: 'com.android.support'
         exclude group: 'com.nineoldandroids'
