@@ -1,5 +1,9 @@
-package com.geeknewbee.doraemon.output;
+package com.geeknewbee.doraemon.output.queue;
 
+import com.geeknewbee.doraemon.output.action.AISpeechTTS;
+import com.geeknewbee.doraemon.output.action.IMusicPlayer;
+import com.geeknewbee.doraemon.output.action.ITTS;
+import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.task.AbstractTaskQueue;
 

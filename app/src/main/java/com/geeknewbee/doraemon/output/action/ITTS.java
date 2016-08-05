@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.output;
+package com.geeknewbee.doraemon.output.action;
 
 /**
  * 文字转语音

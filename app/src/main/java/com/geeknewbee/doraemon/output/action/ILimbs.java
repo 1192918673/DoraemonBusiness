@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.output;
+package com.geeknewbee.doraemon.output.action;
 
 import com.geeknewbee.doraemon.processcenter.command.LimbCommandType;
 
