@@ -23,7 +23,7 @@ import java.util.Arrays;
  * 四肢和头运动队列
  */
 public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
-    private IArmsAndHead limbs;
+    private IArmsAndHead armsAndHead;
     private IFoot foot;
     private boolean isStopDance = false;//跳舞中断标识
 
@@ -42,9 +42,9 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     private LimbsTaskQueue() {
         super();
-        limbs = new SDArmsAndHead();
-        boolean init = limbs.init();
-        LogUtils.d(Constants.TAG_COMMAND, "init limbs:" + init);
+        armsAndHead = new SDArmsAndHead();
+        boolean init = armsAndHead.init();
+        LogUtils.d(Constants.TAG_COMMAND, "init armsAndHead:" + init);
 
         foot = new LeXingFoot();
         boolean initFoot = foot.init();
@@ -102,7 +102,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         char[] chars = s.toCharArray();
         byte funcationCode = (byte) chars[0];
         char[] contentChar = Arrays.copyOfRange(chars, 1, chars.length);
-        boolean send = limbs.send(funcationCode, contentChar);
+        boolean send = armsAndHead.send(funcationCode, contentChar);
         return send;
     }
 
