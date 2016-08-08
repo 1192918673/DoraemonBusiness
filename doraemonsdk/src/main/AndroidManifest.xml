@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.geeknewbee.doraemon.doraemonsdk">
+    package="com.geeknewbee.doreamonsdk">
 
     <application
         android:allowBackup="true"
