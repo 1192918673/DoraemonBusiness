@@ -9,7 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 用于直播 的时候接受蓝牙Audio流 并播放
+ * 接收蓝牙Audio流 并播放
  */
 public class BluetoothTalkTask {
     private BlockingQueue<byte[]> audioData;

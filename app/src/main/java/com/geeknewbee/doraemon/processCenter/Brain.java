@@ -3,11 +3,9 @@ package com.geeknewbee.doraemon.processcenter;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
-import com.geeknewbee.doraemon.output.queue.FootMoveTaskQueue;
-import com.geeknewbee.doraemon.output.queue.LimbTaskQueue;
+import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemon.task.Priority;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
@@ -34,11 +32,11 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
         switch (command.getType()) {
             case PLAY_SOUND:
                 //讲话
-                MouthTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
+                MouthTaskQueue.getInstance().addTask(command);
                 break;
             case MECHANICAL_MOVEMENT:
                 //肢体运动
-                LimbTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
+                LimbsTaskQueue.getInstance().addTask(command);
                 break;
             case SHOW_EXPRESSION:
                 //面部表情
@@ -46,7 +44,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case PLAY_MUSIC:
                 // 音乐
-                MouthTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
+                MouthTaskQueue.getInstance().addTask(command);
                 break;
             case STOP:
                 MouthTaskQueue.getInstance().stop();
@@ -58,10 +56,10 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 SysSettingManager.setVolume(command.getContent());
                 break;
             case DANCE:
-                LimbTaskQueue.getInstance().addTask(Priority.DEFAULT, command);
+                LimbsTaskQueue.getInstance().addTask(command);
                 break;
-            case LE_XING_FOOT:
-                FootMoveTaskQueue.getInstance().addTask(Priority.DEFAULT, (LeXingCommand) command);
+            case LE_XING_FOOT://乐行Foot
+                LimbsTaskQueue.getInstance().addTask(command);
                 break;
         }
     }
