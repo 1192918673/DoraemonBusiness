@@ -20,7 +20,7 @@ public interface IFoot {
      */
     boolean setSpeed(int v, int w);
 
-    boolean walkStraight(int time, int distance, int direction, int priority);
+    int setWalkStraight(int direction, int speed, int duration);
 
-    boolean setTurn(int time, int angle, int radius, int direction, int clockDirection, int priority);
+    int setTurn(int direction, int clockDirection, int angle, int radius, int duration);
 }
