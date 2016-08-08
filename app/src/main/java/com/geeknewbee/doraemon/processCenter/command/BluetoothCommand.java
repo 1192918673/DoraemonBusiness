@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 通过蓝牙和控制App传递的指令格式
+ * 通过蓝牙和控制App传递的指令格式(对外的接口)
  */
 public class BluetoothCommand {
     /**

@@ -1,7 +1,6 @@
 package com.geeknewbee.doraemon.output.action;
 
 import com.geeknewbee.doraemon.jni.SerialPort;
-import com.geeknewbee.doraemon.processcenter.command.LimbCommandType;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -26,14 +25,6 @@ public class SDArmsAndHead implements IArmsAndHead {
             }
         }
         return result;
-    }
-
-    @Override
-    public boolean send(LimbCommandType limbFunctions, char[] buf) {
-        if (port1 != null) {
-            return port1.send(limbFunctions.getFunctionCode(), buf, buf.length) > 0;
-        }
-        return false;
     }
 
     @Override
