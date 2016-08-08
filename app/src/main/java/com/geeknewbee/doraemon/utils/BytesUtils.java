@@ -1,5 +1,7 @@
 package com.geeknewbee.doraemon.utils;
 
+import java.util.Arrays;
+
 public class BytesUtils {
     /**
      * 通过byte数组取到short
@@ -45,5 +47,15 @@ public class BytesUtils {
         int high = highChar;
         int low = lowChar;
         return (high << 8) + low;
+    }
+
+    public static byte[] concat(byte[] first, byte[] second) {
+        if (first == null) return second;
+        else if (second == null) return first;
+        else {
+            byte[] result = Arrays.copyOf(first, first.length + second.length);
+            System.arraycopy(second, 0, result, first.length, second.length);
+            return result;
+        }
     }
 }

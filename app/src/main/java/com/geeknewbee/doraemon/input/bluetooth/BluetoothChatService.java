@@ -27,6 +27,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.utils.BytesUtils;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.io.IOException;
@@ -34,7 +35,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -347,7 +347,7 @@ public class BluetoothChatService {
                         //还在接收Command 的后续包
                         byte[] temp = new byte[bytes];
                         System.arraycopy(buffer, 0, temp, 0, bytes);
-                        result = concat(result, temp);
+                        result = BytesUtils.concat(result, temp);
 
                         isCommand = !checkIsEndOfCommand(result, suffixLength);
                     } else {
@@ -426,13 +426,4 @@ public class BluetoothChatService {
         }
     }
 
-    public static byte[] concat(byte[] first, byte[] second) {
-        if (first == null) return second;
-        else if (second == null) return first;
-        else {
-            byte[] result = Arrays.copyOf(first, first.length + second.length);
-            System.arraycopy(second, 0, result, first.length, second.length);
-            return result;
-        }
-    }
 }
