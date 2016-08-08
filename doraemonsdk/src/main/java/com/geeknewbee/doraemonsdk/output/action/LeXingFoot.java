@@ -1,18 +1,25 @@
 package com.geeknewbee.doraemonsdk.output.action;
 
+import android.text.TextUtils;
+
+import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.imscv.NaviPackSdk.NaviPackSdk;
 
 /**
  * 乐行sdk 实现的脚
  */
 public class LeXingFoot implements IFoot {
-    private final static String deviceName = "/dev/ttyACM0";
     private final static int deviceParam = 115200;
+    public static final String LE_XING_DEVICE_NAME_PREFIX = "ttyACM";
     private NaviPackSdk naviPackSdk;
     private int handlerId;
 
     @Override
     public boolean init() {
+        String deviceName = DeviceUtil.getDeviceName(LE_XING_DEVICE_NAME_PREFIX);
+        if (TextUtils.isEmpty(deviceName))
+            return false;
+
         naviPackSdk = NaviPackSdk.getInstance();
         handlerId = naviPackSdk.createHandler(NaviPackSdk.ConnectTypeEnum.SERIAL_CON);
         int openRet = naviPackSdk.open(handlerId, deviceName, deviceParam);
