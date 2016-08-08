@@ -1,6 +1,10 @@
 package com.geeknewbee.doraemonsdk.output.action;
 
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import android.text.TextUtils;
+
+import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.imscv.NaviPackSdk.NaviPackSdk;
 
 /**
@@ -14,13 +18,17 @@ public class LeXingFoot implements IFoot {
     public static final int DIRECTION_RIGHT = 3;
     public static final int DIRECTION_CLOCKWISE = 4;
     public static final int DIRECTION_EASTERN = 5;
-    private final static String deviceName = "/dev/ttyACM0";
+    public static final String LE_XING_DEVICE_NAME_PREFIX = "ttyACM";
     private final static int deviceParam = 115200;
     private NaviPackSdk mNaviPack;
     private int handlerId;
 
     @Override
     public boolean init() {
+        String deviceName = DeviceUtil.getDeviceName(LE_XING_DEVICE_NAME_PREFIX);
+        if (TextUtils.isEmpty(deviceName))
+            return false;
+
         mNaviPack = NaviPackSdk.getInstance();
         handlerId = mNaviPack.createHandler(NaviPackSdk.ConnectTypeEnum.SERIAL_CON);
         int openRet = mNaviPack.open(handlerId, deviceName, deviceParam);
