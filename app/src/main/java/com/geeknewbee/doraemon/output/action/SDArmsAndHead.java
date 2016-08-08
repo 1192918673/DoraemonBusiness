@@ -9,7 +9,7 @@ import java.io.FileDescriptor;
 /**
  * 山东公司实现中控板
  */
-public class SDLimbs implements ILimbs {
+public class SDArmsAndHead implements IArmsAndHead {
     private SerialPort port1;
 
     @Override

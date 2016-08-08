@@ -4,43 +4,51 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.output.action.ILimbs;
-import com.geeknewbee.doraemon.output.action.SDLimbs;
+import com.geeknewbee.doraemon.output.action.IArmsAndHead;
+import com.geeknewbee.doraemon.output.action.IFoot;
+import com.geeknewbee.doraemon.output.action.LeXingFoot;
+import com.geeknewbee.doraemon.output.action.SDArmsAndHead;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.DanceAction;
 import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
+import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemon.task.AbstractTaskQueue;
 import com.geeknewbee.doraemon.utils.LogUtils;
 
 import java.util.Arrays;
 
 /**
- * 手臂和头运动队列
+ * 四肢和头运动队列
  */
-public class ArmsAndHeadTaskQueue extends AbstractTaskQueue<Command, Boolean> {
-    private static ILimbs limbs;
+public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
+    private IArmsAndHead limbs;
+    private IFoot foot;
     private boolean isStopDance = false;//跳舞中断标识
 
-    private volatile static ArmsAndHeadTaskQueue instance;
+    private volatile static LimbsTaskQueue instance;
 
-    public static ArmsAndHeadTaskQueue getInstance() {
+    public static LimbsTaskQueue getInstance() {
         if (instance == null) {
-            synchronized (ArmsAndHeadTaskQueue.class) {
+            synchronized (LimbsTaskQueue.class) {
                 if (instance == null) {
-                    instance = new ArmsAndHeadTaskQueue();
+                    instance = new LimbsTaskQueue();
                 }
             }
         }
         return instance;
     }
 
-    private ArmsAndHeadTaskQueue() {
+    private LimbsTaskQueue() {
         super();
-        limbs = new SDLimbs();
+        limbs = new SDArmsAndHead();
         boolean init = limbs.init();
         LogUtils.d(Constants.TAG_COMMAND, "init limbs:" + init);
+
+        foot = new LeXingFoot();
+        boolean initFoot = foot.init();
+        LogUtils.d(Constants.TAG_COMMAND, "init foot:" + initFoot);
     }
 
     @Override
@@ -52,6 +60,9 @@ public class ArmsAndHeadTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 break;
             case MECHANICAL_MOVEMENT:
                 return sendCommandContent(command.getContent());
+            case LE_XING_FOOT:
+                LeXingCommand leXingCommand = (LeXingCommand) command;
+                return foot.setSpeed(leXingCommand.v, leXingCommand.w);
         }
 
         return true;
