@@ -3,8 +3,8 @@ package com.geeknewbee.doraemon.processcenter;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.task.AbstractTaskQueue;
-import com.geeknewbee.doraemon.utils.RetrofitUtils;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
+import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemon.webservice.SoundService;
 
 import java.io.IOException;
