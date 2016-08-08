@@ -389,7 +389,7 @@ public class BluetoothChatService {
         private boolean checkIsEndOfCommand(byte[] result, int suffixLength) {
             String suffix = new String(result, result.length - suffixLength, suffixLength);
             if (suffix.equals(Constants.COMMAND_ROBOT_SUFFIX)) {
-                //如果一条命令就有一个包就直接发送
+                //如果检测到命令完成标志 则sendMessage
                 int length = result.length - Constants.COMMAND_ROBOT_SUFFIX.length() - Constants.COMMAND_ROBOT_PREFIX.length();
                 byte[] command = new byte[length];
                 System.arraycopy(result, Constants.COMMAND_ROBOT_PREFIX.length(), command, 0, length);
