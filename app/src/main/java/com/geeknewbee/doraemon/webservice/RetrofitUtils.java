@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.utils;
+package com.geeknewbee.doraemon.webservice;
 
 
 import com.geeknewbee.doraemon.json.EnumSerializer;
