@@ -1,1 +1,1 @@
-include ':app', ':navipacksdk'
+include ':app', ':navipacksdk', ':doraemonsdk'
