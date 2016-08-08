@@ -1,25 +1,22 @@
 package com.geeknewbee.doraemon;
 
-import android.app.Application;
-import android.content.Context;
-
-import com.geeknewbee.doraemon.input.AISpeechAuth;
-import com.geeknewbee.doraemon.utils.LogUtils;
+import com.geeknewbee.doraemonsdk.BaseApplication;
+import com.geeknewbee.doraemonsdk.input.AISpeechAuth;
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 
-public class App extends Application {
+public class App extends BaseApplication {
 
     private static final String TAG = App.class.getSimpleName();
-    public static Context mContext; // 上下文
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mContext = this;
         init();
     }
 
-    private void init() {
+    @Override
+    protected void init() {
         boolean result = new AISpeechAuth().auth();
         LogUtils.d(TAG, "AISpeech auth result:" + result);
     }

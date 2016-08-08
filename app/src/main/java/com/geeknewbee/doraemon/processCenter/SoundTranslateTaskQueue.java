@@ -1,11 +1,12 @@
 package com.geeknewbee.doraemon.processcenter;
 
 import com.geeknewbee.doraemon.BuildConfig;
-import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.task.AbstractTaskQueue;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemon.webservice.SoundService;
+import com.geeknewbee.doraemonsdk.processcenter.ISoundTranslate;
+import com.geeknewbee.doraemonsdk.processcenter.command.Command;
+import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,10 +18,11 @@ import retrofit2.Retrofit;
  * 把声音string去服务器解析command ，这个是串行的任务队列。
  * 按照先来后到的顺序去执行。
  */
-public class SoundTranslateTaskQueue extends AbstractTaskQueue<String, List<Command>> {
+public class SoundTranslateTaskQueue extends AbstractTaskQueue<String, List<Command>> implements ISoundTranslate {
     private volatile static SoundTranslateTaskQueue instance;
     private OnTranslatorListener translatorListener;
 
+    @Override
     public void setTranslatorListener(OnTranslatorListener translatorListener) {
         this.translatorListener = translatorListener;
     }
@@ -57,12 +59,8 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<String, List<Comm
             translatorListener.onTranslateComplete(output);
     }
 
-    public interface OnTranslatorListener {
-        /**
-         * 声音翻译完成
-         *
-         * @param commands
-         */
-        void onTranslateComplete(List<Command> commands);
+    @Override
+    public void translateSound(String s) {
+        addTask(s);
     }
 }
