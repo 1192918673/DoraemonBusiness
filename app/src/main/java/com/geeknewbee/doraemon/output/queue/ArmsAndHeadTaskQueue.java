@@ -17,26 +17,26 @@ import com.geeknewbee.doraemon.utils.LogUtils;
 import java.util.Arrays;
 
 /**
- * 肢体运动队列
+ * 手臂和头运动队列
  */
-public class LimbTaskQueue extends AbstractTaskQueue<Command, Boolean> {
+public class ArmsAndHeadTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private static ILimbs limbs;
     private boolean isStopDance = false;//跳舞中断标识
 
-    private volatile static LimbTaskQueue instance;
+    private volatile static ArmsAndHeadTaskQueue instance;
 
-    public static LimbTaskQueue getInstance() {
+    public static ArmsAndHeadTaskQueue getInstance() {
         if (instance == null) {
-            synchronized (LimbTaskQueue.class) {
+            synchronized (ArmsAndHeadTaskQueue.class) {
                 if (instance == null) {
-                    instance = new LimbTaskQueue();
+                    instance = new ArmsAndHeadTaskQueue();
                 }
             }
         }
         return instance;
     }
 
-    private LimbTaskQueue() {
+    private ArmsAndHeadTaskQueue() {
         super();
         limbs = new SDLimbs();
         boolean init = limbs.init();

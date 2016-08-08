@@ -10,23 +10,23 @@ import com.geeknewbee.doraemon.utils.LogUtils;
 /**
  * 脚步运动队列
  */
-public class FootMoveTaskQueue extends AbstractTaskQueue<LeXingCommand, Boolean> {
+public class FootTaskQueue extends AbstractTaskQueue<LeXingCommand, Boolean> {
     private static IFoot foot;
 
-    private volatile static FootMoveTaskQueue instance;
+    private volatile static FootTaskQueue instance;
 
-    public static FootMoveTaskQueue getInstance() {
+    public static FootTaskQueue getInstance() {
         if (instance == null) {
-            synchronized (FootMoveTaskQueue.class) {
+            synchronized (FootTaskQueue.class) {
                 if (instance == null) {
-                    instance = new FootMoveTaskQueue();
+                    instance = new FootTaskQueue();
                 }
             }
         }
         return instance;
     }
 
-    private FootMoveTaskQueue() {
+    private FootTaskQueue() {
         super();
         foot = new LeXingFoot();
         boolean init = foot.init();
