@@ -61,6 +61,16 @@
             android:process=":player" />
         <!--  喜马拉雅 配置-->
 
+        `
+        <!--  友盟 配置-->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="${UMENG_APPKEY}" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL}" />
+        <!--  友盟 配置-->
+
     </application>
 
 </manifest>

@@ -13,6 +13,7 @@ import com.geeknewbee.doraemonsdk.output.FaceManager;
 import com.geeknewbee.doraemonsdk.processcenter.Doraemon;
 import com.geeknewbee.doraemonsdk.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.processcenter.command.CommandType;
+import com.umeng.analytics.MobclickAgent;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -48,7 +49,14 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         bluetoothServiceManager.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

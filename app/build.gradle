@@ -9,6 +9,9 @@ ext {
     DevURLDOMAIN = '"http://112.126.73.73:12306"'
     BetaURLDOMAIN = '"https://ol.api.xhkhealth.com"'
     OnlineURLDOMAIN = '"https://ol.api.xhkhealth.com"'
+
+    DevUMengAppKey = "57a9406be0f55a4be60038ba"
+    OnlineUMengAppKey = "57a9405267e58e073100057e"
 }
 
 android {
@@ -53,17 +56,24 @@ android {
             versionName TestVersion
             versionCode TestVersionCode
             buildConfigField "String", "URLDOMAIN", DevURLDOMAIN
+            manifestPlaceholders = ["UMENG_APPKEY" : DevUMengAppKey,
+                                    "UMENG_CHANNEL": "Fir"]
         }
         //测试版
         Beta {
             versionName TestVersion
             versionCode TestVersionCode
             buildConfigField "String", "URLDOMAIN", BetaURLDOMAIN
+            manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
+                                    "UMENG_CHANNEL": "Fir"]
+
         }
 
         //发布版
         Online {
             buildConfigField "String", "URLDOMAIN", OnlineURLDOMAIN
+            manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
+                                    "UMENG_CHANNEL": "Fir"]
         }
     }
 
@@ -81,4 +91,5 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0'
     compile project(path: ':doraemonsdk')
+    compile 'com.umeng.analytics:analytics:latest.integration'
 }
