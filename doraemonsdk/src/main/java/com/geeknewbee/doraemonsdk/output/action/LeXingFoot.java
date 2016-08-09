@@ -1,9 +1,7 @@
 package com.geeknewbee.doraemonsdk.output.action;
 
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-
 import android.text.TextUtils;
-
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.imscv.NaviPackSdk.NaviPackSdk;
 
@@ -42,14 +40,13 @@ public class LeXingFoot implements IFoot {
 
     /**
      * 直线行走
-     *
      * @param direction 方向：0 向前，1 向后
-     * @param speed     速度
+     * @param distance 距离
      * @param duration  时间
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
     @Override
-    public int setWalkStraight(int direction, int speed, int duration) {
+    public int setWalkStraight(int direction, int distance, int duration) {
         if (mNaviPack == null) {
             LogUtils.d("setWalkStraight", "The instance of NaviPack is null");
             return -1;
@@ -57,9 +54,9 @@ public class LeXingFoot implements IFoot {
         mNaviPack.setSpeed(0, 0, 0);
         int vSpeed = 0;
         if (DIRECTION_FORE == direction) {
-            vSpeed = Math.abs(speed);
+            vSpeed = (int) Math.abs((float) distance / duration);
         } else if (DIRECTION_BACK == direction) {
-            vSpeed = -Math.abs(speed);
+            vSpeed = (int) -Math.abs((float) distance / duration);
         } else {
             LogUtils.d("setWalkStraight", "Walking direction error...");
             return -2;
