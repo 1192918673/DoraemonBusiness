@@ -1,9 +1,11 @@
 package com.geeknewbee.doraemonsdk.output.action;
 
-import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import android.text.TextUtils;
-import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
+
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.imscv.NaviPackSdk.NaviPackSdk;
+
+import java.io.IOException;
 
 /**
  * 乐行sdk 实现的脚
@@ -23,7 +25,13 @@ public class LeXingFoot implements IFoot {
 
     @Override
     public boolean init() {
-        String deviceName = DeviceUtil.getDeviceName(LE_XING_DEVICE_NAME_PREFIX);
+        try {
+            Process p = Runtime.getRuntime().exec("su chmod 777 /dev/ttyACM0");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String deviceName = "ttyACM0";
+//        String deviceName = DeviceUtil.getDeviceName(LE_XING_DEVICE_NAME_PREFIX);
         if (TextUtils.isEmpty(deviceName))
             return false;
 
@@ -40,8 +48,9 @@ public class LeXingFoot implements IFoot {
 
     /**
      * 直线行走
+     *
      * @param direction 方向：0 向前，1 向后
-     * @param distance 距离
+     * @param distance  距离
      * @param duration  时间
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
@@ -67,11 +76,12 @@ public class LeXingFoot implements IFoot {
 
     /**
      * 转弯行走
-     * @param direction 方向：0 左，1 右
+     *
+     * @param direction      方向：0 左，1 右
      * @param clockDirection 方式：0 顺时针，1 逆时针
-     * @param angle 角度
-     * @param radius 半径
-     * @param duration 时间
+     * @param angle          角度
+     * @param radius         半径
+     * @param duration       时间
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
     @Override
