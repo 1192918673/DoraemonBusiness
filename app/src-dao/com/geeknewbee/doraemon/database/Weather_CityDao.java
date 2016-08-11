@@ -49,9 +49,9 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
      * Creates the underlying database table.
      */
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
-        String constraint = ifNotExists ? "IF NOT EXISTS " : "";
+        String constraint = ifNotExists ? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"WEATHER__CITY\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"CITY_ID\" TEXT," + // 1: cityId
                 "\"NAME\" TEXT," + // 2: name
                 "\"NAME_EN\" TEXT," + // 3: nameEn
@@ -60,51 +60,47 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
                 "\"WEATHER_CN_ID\" TEXT);"); // 6: weatherCnId
     }
 
-    /**
-     * Drops the underlying database table.
-     */
+    /** Drops the underlying database table. */
     public static void dropTable(SQLiteDatabase db, boolean ifExists) {
         String sql = "DROP TABLE " + (ifExists ? "IF EXISTS " : "") + "\"WEATHER__CITY\"";
         db.execSQL(sql);
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     @Override
     protected void bindValues(SQLiteStatement stmt, Weather_City entity) {
         stmt.clearBindings();
-
+ 
         Long id = entity.getId();
         if (id != null) {
             stmt.bindLong(1, id);
         }
-
+ 
         String cityId = entity.getCityId();
         if (cityId != null) {
             stmt.bindString(2, cityId);
         }
-
+ 
         String name = entity.getName();
         if (name != null) {
             stmt.bindString(3, name);
         }
-
+ 
         String nameEn = entity.getNameEn();
         if (nameEn != null) {
             stmt.bindString(4, nameEn);
         }
-
+ 
         String namePy = entity.getNamePy();
         if (namePy != null) {
             stmt.bindString(5, namePy);
         }
-
+ 
         String province = entity.getProvince();
         if (province != null) {
             stmt.bindString(6, province);
         }
-
+ 
         String weatherCnId = entity.getWeatherCnId();
         if (weatherCnId != null) {
             stmt.bindString(7, weatherCnId);
@@ -117,17 +113,13 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
         entity.__setDaoSession(daoSession);
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     @Override
     public Long readKey(Cursor cursor, int offset) {
         return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     @Override
     public Weather_City readEntity(Cursor cursor, int offset) {
         Weather_City entity = new Weather_City( //
@@ -142,9 +134,7 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
         return entity;
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     @Override
     public void readEntity(Cursor cursor, Weather_City entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
@@ -156,18 +146,14 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
         entity.setWeatherCnId(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     @Override
     protected Long updateKeyAfterInsert(Weather_City entity, long rowId) {
         entity.setId(rowId);
         return rowId;
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     @Override
     public Long getKey(Weather_City entity) {
         if (entity != null) {
@@ -180,9 +166,9 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
     /**
      * @inheritdoc
      */
-    @Override
+    @Override    
     protected boolean isEntityUpdateable() {
         return true;
     }
-
+    
 }

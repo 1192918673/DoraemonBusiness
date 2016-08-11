@@ -22,7 +22,7 @@ public class MyClass {
 
 //        <city id="2" name="北京市" name_en="Beijing" name_py="beijingshi" province="北京市" weathercnid="101010100"/>
         Entity city = schema.addEntity("Weather_City");
-        city.addIdProperty();
+        city.addIdProperty().autoincrement();
         city.addStringProperty("cityId");
         city.addStringProperty("name");
         city.addStringProperty("nameEn");
