@@ -6,6 +6,8 @@ import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.imscv.NaviPackSdk.NaviPackSdk;
 
+import java.io.File;
+
 /**
  * 乐行sdk 实现的脚
  */
@@ -23,6 +25,7 @@ public class LeXingFoot implements IFoot {
     private int handlerId;
     private boolean initSuccess = false;
     public static String TAG = LeXingFoot.class.getSimpleName();
+    private String lastDeviceName;//上次连接的设备名字
 
     @Override
     public boolean init() {
@@ -31,20 +34,34 @@ public class LeXingFoot implements IFoot {
             LogUtils.d(TAG, "can not find device");
             return false;
         }
+        LogUtils.d(TAG, "foot devices name:" + deviceName);
         deviceName = "/dev/" + deviceName;
         mNaviPack = NaviPackSdk.getInstance();
         handlerId = mNaviPack.createHandler(NaviPackSdk.ConnectTypeEnum.SERIAL_CON);
         int openRet = mNaviPack.open(handlerId, deviceName, deviceParam);
         boolean result = openRet == 0;
         initSuccess = result;
+        if (initSuccess)
+            lastDeviceName = deviceName;
         return result;
     }
 
     @Override
     public synchronized boolean setSpeed(int v, int w) {
+        checkDeviceChange();
+        return mNaviPack.setSpeed(handlerId, v, w) == 0;
+    }
+
+    private void checkDeviceChange() {
         if (!initSuccess)
             init();
-        return mNaviPack.setSpeed(handlerId, v, w) == 0;
+        else if (TextUtils.isEmpty(lastDeviceName) || !new File(lastDeviceName).exists()) {
+            //如果设备名字发生了变化需要重新init
+            mNaviPack.destroy(handlerId);
+            handlerId = -1;
+            lastDeviceName = null;
+            init();
+        }
     }
 
     /**
@@ -57,6 +74,8 @@ public class LeXingFoot implements IFoot {
      */
     @Override
     public int setWalkStraight(int direction, int distance, int duration) {
+        checkDeviceChange();
+
         if (mNaviPack == null) {
             LogUtils.d("setWalkStraight", "The instance of NaviPack is null");
             return -1;
@@ -87,6 +106,8 @@ public class LeXingFoot implements IFoot {
      */
     @Override
     public int setTurn(int direction, int clockDirection, int angle, int radius, int duration) {
+        checkDeviceChange();
+        
         if (mNaviPack == null) {
             LogUtils.d("setWalkStraight", "The instance of NaviPack is null");
             return -1;
