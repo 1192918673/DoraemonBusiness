@@ -29,6 +29,12 @@ android {
         resConfigs "zh"
     }
 
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java', "src-dao"]
+        }
+    }
+
     signingConfigs {
         myConfig {
             storeFile file("keystore.jks")      //签名文件
@@ -93,4 +99,5 @@ dependencies {
     compile project(path: ':doraemonsdk')
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.android.support:multidex:1.0.1'
+    compile 'de.greenrobot:greendao:2.0.0'
 }

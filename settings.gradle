@@ -1,1 +1,1 @@
-include ':app', ':navipacksdk', ':doraemonsdk'
+include ':app', ':navipacksdk', ':doraemonsdk', ':daogenerate'
