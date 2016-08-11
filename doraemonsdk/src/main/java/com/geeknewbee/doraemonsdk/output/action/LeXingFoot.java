@@ -2,10 +2,9 @@ package com.geeknewbee.doraemonsdk.output.action;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.imscv.NaviPackSdk.NaviPackSdk;
-
-import java.io.IOException;
 
 /**
  * 乐行sdk 实现的脚
@@ -22,27 +21,29 @@ public class LeXingFoot implements IFoot {
     private final static int deviceParam = 115200;
     private NaviPackSdk mNaviPack;
     private int handlerId;
+    private boolean initSuccess = false;
+    public static String TAG = LeXingFoot.class.getSimpleName();
 
     @Override
     public boolean init() {
-        try {
-            Process p = Runtime.getRuntime().exec("su chmod 777 /dev/ttyACM0");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String deviceName = "ttyACM0";
-//        String deviceName = DeviceUtil.getDeviceName(LE_XING_DEVICE_NAME_PREFIX);
-        if (TextUtils.isEmpty(deviceName))
+        String deviceName = DeviceUtil.getDeviceName(LE_XING_DEVICE_NAME_PREFIX);
+        if (TextUtils.isEmpty(deviceName)) {
+            LogUtils.d(TAG, "can not find device");
             return false;
-
+        }
+        deviceName = "/dev/" + deviceName;
         mNaviPack = NaviPackSdk.getInstance();
         handlerId = mNaviPack.createHandler(NaviPackSdk.ConnectTypeEnum.SERIAL_CON);
         int openRet = mNaviPack.open(handlerId, deviceName, deviceParam);
-        return openRet == 0;
+        boolean result = openRet == 0;
+        initSuccess = result;
+        return result;
     }
 
     @Override
     public boolean setSpeed(int v, int w) {
+        if (!initSuccess)
+            init();
         return mNaviPack.setSpeed(handlerId, v, w) == 0;
     }
 
