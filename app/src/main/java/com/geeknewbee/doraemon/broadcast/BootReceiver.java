@@ -1,10 +1,10 @@
-package com.geeknewbee.doraemonsdk.broadcast;
+package com.geeknewbee.doraemon.broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.geeknewbee.doraemonsdk.BaseApplication;
+import com.geeknewbee.doraemon.view.MainActivity;
 
 /**
  * 开启启动
@@ -12,8 +12,7 @@ import com.geeknewbee.doraemonsdk.BaseApplication;
 public final class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent arg1) {
-        String packageName = BaseApplication.mContext.getPackageName();
-        Intent launchIntent = BaseApplication.mContext.getPackageManager().getLaunchIntentForPackage(packageName);
+        Intent launchIntent = new Intent(context, MainActivity.class);
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(launchIntent);
     }

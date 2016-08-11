@@ -41,7 +41,7 @@ public class LeXingFoot implements IFoot {
     }
 
     @Override
-    public boolean setSpeed(int v, int w) {
+    public synchronized boolean setSpeed(int v, int w) {
         if (!initSuccess)
             init();
         return mNaviPack.setSpeed(handlerId, v, w) == 0;

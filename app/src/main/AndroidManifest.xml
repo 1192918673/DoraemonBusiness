@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.geeknewbee.doraemonsdk.broadcast.BootReceiver">
+        <receiver android:name=".broadcast.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.HOME" />
