@@ -27,6 +27,7 @@ android {
         multiDexEnabled = true
         ndk { abiFilters 'armeabi-v7a' }
         resConfigs "zh"
+        buildConfigField "boolean", "NEED_DEBUG", "false"
     }
 
     sourceSets {
@@ -64,6 +65,7 @@ android {
             buildConfigField "String", "URLDOMAIN", DevURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : DevUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]
+            buildConfigField "boolean", "NEED_DEBUG", "true"
         }
         //测试版
         Beta {
@@ -72,7 +74,7 @@ android {
             buildConfigField "String", "URLDOMAIN", BetaURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]
-
+            buildConfigField "boolean", "NEED_DEBUG", "false"
         }
 
         //发布版
@@ -80,6 +82,7 @@ android {
             buildConfigField "String", "URLDOMAIN", OnlineURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]
+            buildConfigField "boolean", "NEED_DEBUG", "false"
         }
     }
 
@@ -100,4 +103,5 @@ dependencies {
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.android.support:multidex:1.0.1'
     compile 'de.greenrobot:greendao:2.0.0'
+    compile 'com.facebook.stetho:stetho:1.1.0'
 }

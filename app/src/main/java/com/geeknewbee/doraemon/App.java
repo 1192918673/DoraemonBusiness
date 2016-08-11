@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.multidex.MultiDex;
 
+import com.facebook.stetho.Stetho;
 import com.geeknewbee.doraemon.database.DaoMaster;
 import com.geeknewbee.doraemon.database.DaoSession;
 import com.geeknewbee.doraemon.database.upgrade.MyOpenHelper;
@@ -24,6 +25,13 @@ public class App extends BaseApplication {
         init();
         instance = this;
         setupDatabase();
+        LogUtils.LOG_DEBUG = BuildConfig.NEED_DEBUG;
+
+        //方便调试
+        if (BuildConfig.NEED_DEBUG)
+            Stetho.initialize(Stetho.newInitializerBuilder(this).
+                    enableDumpapp(Stetho.defaultDumperPluginsProvider(this)).
+                    enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
     }
 
     @Override
