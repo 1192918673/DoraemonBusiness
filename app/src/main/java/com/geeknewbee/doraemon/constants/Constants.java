@@ -24,4 +24,7 @@ public class Constants {
     public static final String STOP_FLAG = "停";
     public static final String COMMAND_ROBOT_PREFIX = "COMMAND_ROBOT";
     public static final String COMMAND_ROBOT_SUFFIX = "COMMAND_ROBOT_SUFFIX";
+    public static final String MOJI_WEATHER_API_TOKEN = "c4adee396b1260222696";
+    //墨迹天气
+    public static final String MOJI_WEATHER_API_PWD = "mojisgbb20151207";
 }
