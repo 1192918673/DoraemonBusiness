@@ -4,8 +4,8 @@ import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemon.webservice.SoundService;
-import com.geeknewbee.doraemonsdk.processcenter.ISoundTranslate;
-import com.geeknewbee.doraemonsdk.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.ISoundTranslate;
+import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 
 import java.io.IOException;
@@ -22,11 +22,6 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<String, List<Comm
     private volatile static SoundTranslateTaskQueue instance;
     private OnTranslatorListener translatorListener;
 
-    @Override
-    public void setTranslatorListener(OnTranslatorListener translatorListener) {
-        this.translatorListener = translatorListener;
-    }
-
     public static SoundTranslateTaskQueue getInstance() {
         if (instance == null) {
             synchronized (SoundTranslateTaskQueue.class) {
@@ -36,6 +31,11 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<String, List<Comm
             }
         }
         return instance;
+    }
+
+    @Override
+    public void setTranslatorListener(OnTranslatorListener translatorListener) {
+        this.translatorListener = translatorListener;
     }
 
     @Override

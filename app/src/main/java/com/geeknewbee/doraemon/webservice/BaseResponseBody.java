@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.webservice;
 
 
-import com.geeknewbee.doraemonsdk.constants.Constants;
+import com.geeknewbee.doraemon.constants.Constants;
 
 public class BaseResponseBody<T> {
     protected int code = 0;

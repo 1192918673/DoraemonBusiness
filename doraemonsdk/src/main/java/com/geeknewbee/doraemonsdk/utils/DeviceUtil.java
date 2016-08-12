@@ -1,6 +1,5 @@
 package com.geeknewbee.doraemonsdk.utils;
 
-import com.geeknewbee.doraemonsdk.output.action.LeXingFoot;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -17,7 +16,7 @@ public class DeviceUtil {
         try {
             File is = new File("/dev");
             if (!is.canRead())
-                LogUtils.d(LeXingFoot.TAG, "can not read dev folder");
+                LogUtils.d("LeXingFoot", "can not read dev folder");
 
             String[] strings = is.list(new FilenameFilter() {
                 @Override
