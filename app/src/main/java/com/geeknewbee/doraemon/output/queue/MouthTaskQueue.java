@@ -54,9 +54,14 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 break;
             case PLAY_MUSIC:
                 iMusicPlayer.stop();
-                itts.talk("正在为您搜索音乐");
-                iMusicPlayer.play(input.getContent());
-                break;
+                if (input.getContent().equalsIgnoreCase("笑话")) {
+                    iMusicPlayer.joke();
+                    break;
+                } else {
+                    itts.talk("正在为您搜索音乐");
+                    iMusicPlayer.play(input.getContent());
+                    break;
+                }
             case WEATHER:
                 //TODO 查询天气
                 Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
