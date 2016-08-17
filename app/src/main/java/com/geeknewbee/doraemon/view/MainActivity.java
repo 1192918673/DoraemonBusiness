@@ -11,7 +11,6 @@ import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
-import com.geeknewbee.doraemon.processcenter.SoundTranslateTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.umeng.analytics.MobclickAgent;
@@ -45,7 +44,6 @@ public class MainActivity extends Activity {
         gifView = (GifImageView) findViewById(R.id.gifview);
         FaceManager.faceView = gifView;
         FaceManager.faceActivity = this;
-        Doraemon.getInstance(getApplicationContext()).setSoundTranslate(SoundTranslateTaskQueue.getInstance());
         Doraemon.getInstance(getApplicationContext()).addCommand(new Command(CommandType.SHOW_EXPRESSION, Constants.DEFAULT_GIF));
     }
 

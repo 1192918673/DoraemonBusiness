@@ -12,6 +12,7 @@ import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
 import java.util.List;
 
 
@@ -41,10 +42,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
             }
         }
         return instance;
-    }
-
-    public void setSoundTranslate(ISoundTranslate soundTranslate) {
-        brain.setSoundTranslate(soundTranslate);
     }
 
     /**

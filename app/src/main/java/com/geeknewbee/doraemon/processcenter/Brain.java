@@ -18,11 +18,11 @@ import java.util.List;
  * 输出行为有 语音| 四肢运动|显示表情|播放电影等
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
-public class Brain implements ISoundTranslate.OnTranslatorListener {
-    private ISoundTranslate soundTranslate;
+public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
 
     public void translateSound(SoundTranslateInput input) {
-        soundTranslate.translateSound(input);
+        SoundTranslateTaskQueue.getInstance().setTranslatorListener(this);
+        SoundTranslateTaskQueue.getInstance().addTask(input);
     }
 
     public void addCommand(Command command) {
@@ -87,8 +87,4 @@ public class Brain implements ISoundTranslate.OnTranslatorListener {
         addCommand(commands);
     }
 
-    public void setSoundTranslate(ISoundTranslate soundTranslate) {
-        this.soundTranslate = soundTranslate;
-        this.soundTranslate.setTranslatorListener(this);
-    }
 }

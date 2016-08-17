@@ -21,7 +21,7 @@ import retrofit2.Retrofit;
  * 把声音string去服务器解析command ，这个是串行的任务队列。
  * 按照先来后到的顺序去执行。
  */
-public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInput, List<Command>> implements ISoundTranslate {
+public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInput, List<Command>> {
     private volatile static SoundTranslateTaskQueue instance;
     private OnTranslatorListener translatorListener;
 
@@ -36,7 +36,6 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         return instance;
     }
 
-    @Override
     public void setTranslatorListener(OnTranslatorListener translatorListener) {
         this.translatorListener = translatorListener;
     }
@@ -113,8 +112,12 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         // 也就是：此处调的是brain.onTranslateComplete(output);再addCommands命令集合
     }
 
-    @Override
-    public void translateSound(SoundTranslateInput input) {
-        addTask(input);
+    public static interface OnTranslatorListener {
+        /**
+         * 声音翻译完成
+         *
+         * @param commands
+         */
+        void onTranslateComplete(List<Command> commands);
     }
 }
