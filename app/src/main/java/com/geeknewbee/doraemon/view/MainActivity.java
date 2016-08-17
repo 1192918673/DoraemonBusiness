@@ -27,22 +27,32 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initView();
+        startBluetoothService();
+        initData();
+//        test();
+    }
+
+    private void initView() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
+        initFaceView();
+    }
+
+    private void initFaceView() {
         gifView = (GifImageView) findViewById(R.id.gifview);
         FaceManager.faceView = gifView;
         FaceManager.faceActivity = this;
         Doraemon.getInstance(getApplicationContext()).setSoundTranslate(SoundTranslateTaskQueue.getInstance());
         Doraemon.getInstance(getApplicationContext()).addCommand(new Command(CommandType.SHOW_EXPRESSION, Constants.DEFAULT_GIF));
+    }
 
+    private void startBluetoothService() {
         bluetoothServiceManager = BluetoothServiceManager.getInstance(getApplicationContext());
         bluetoothServiceManager.onCreate();
-
-        initData();
-//        test();
     }
 
     private void test() {
