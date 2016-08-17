@@ -11,7 +11,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 
-public interface SoundService {
+public interface ApiService {
     @FormUrlEncoded
     @POST("command/translate_sound")
     Call<BaseResponseBody<List<Command>>> translateSound(@Field("sound") String user);
