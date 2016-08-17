@@ -1,20 +1,17 @@
-$NUM =(一|二|三|四|五|六|七|八|九|十|十一|十二|十三|十四|十五|十六|十七|十八|十九|二十
-		|二十一|二十二|二十三|二十四|二十五|二十六|二十七|二十八|二十九|三十|三十一|三十二);
+$NUM =();
 
-$HELLO_JD = 你好思必驰 | 我要睡觉了;
-$OPEN_CLOSE = (开|关|打开|关闭|启动|关上)  /k="OPEN_CLOSE"/ ;
-$UP_LOW = (调大|调小|调到) /k="UP_LOW"/ ;
-$NEXT_UP= (上一首|下一首) /k="NEXT_UP"/ ;
-$PLAYER_STOP = (播放|暂停|停止) /k="PLAYER_STOP"/ ;
-$ONEWORDS = (我|把|的) /k="ONEWORDS"/ ;
-$SPACES= (阳台|客厅|书房|厨房|楼上|地下室|走道|主卧|厕所)  /k="SPACES"/ ;
-$GOODS = (空调|暖气|音箱|净化器|排风扇|抽油烟机|热水器|打印机|加湿器|除湿器|洗衣机
-			|微波炉|投影仪|灯|大门|门|前门|后门|台灯
-			|大灯|射灯|电视)/k="GOODS"/ ;
+$HELLO_JD = ;
+$OPEN_CLOSE = ()  /k="OPEN_CLOSE"/ ;
+$UP_LOW = () /k="UP_LOW"/ ;
+$NEXT_UP= () /k="NEXT_UP"/ ;
+$PLAYER_STOP = () /k="PLAYER_STOP"/ ;
+$ONEWORDS = () /k="ONEWORDS"/ ;
+$SPACES= ()  /k="SPACES"/ ;
+$GOODS = ()/k="GOODS"/ ;
 $CMD_OPEN_CLOSE =(($OPEN_CLOSE $GOODS) |($OPEN_CLOSE ([$SPACES] [$ONEWORDS]) $GOODS))/domain="aihomeopen"/;
 $CMD_SPECIAL = ($ONEWORDS $GOODS $OPEN_CLOSE)/domain="aihomegoods"/;
-$CMD_PLAYER_STOP = ($PLAYER_STOP [播放])/domain="aihomeplay"/;
-$CMD_UP_LOW =($UP_LOW (声音 | $NUM 度))/domain="aihomenum"/;
+$CMD_PLAYER_STOP = ($PLAYER_STOP)/domain="aihomeplay"/;
+$CMD_UP_LOW =($UP_LOW ())/domain="aihomenum"/;
 $CMD_NEXT_UP = ($NEXT_UP)/domian="aihomenextup"/;
 $CMD_HELLO_JD = ($HELLO_JD)/domian="aihomehello"/ ;
 $CMD_MESSAGE = $CMD_OPEN_CLOSE | $CMD_SPECIAL | $CMD_PLAYER_STOP | $CMD_UP_LOW | $CMD_NEXT_UP | $CMD_HELLO_JD;

@@ -1,0 +1,26 @@
+package com.geeknewbee.doraemon.webservice;
+
+import com.geeknewbee.doraemon.entity.AuthRobotResponse;
+import com.geeknewbee.doraemon.entity.GetAnswerResponse;
+
+import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Query;
+
+public interface ApiService {
+
+    @GET("talking/answer")
+    Call<BaseResponseBody<GetAnswerResponse>> getAnswer(@Query("token") String token, @Query("question") String question);
+
+    @FormUrlEncoded
+    @POST("auth/robot")
+    Call<BaseResponseBody<AuthRobotResponse>> authRobot(@Field("serial_no") String serialNo, @Field("version") String version, @Field("sign") String sign);
+
+    @FormUrlEncoded
+    @PUT("robot/battery")
+    Call<BaseResponseBody<Object>> robotBattery(@Field("token") String token, @Field("percent") int percent);
+}

@@ -2,17 +2,22 @@ package com.geeknewbee.doraemon.processcenter;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
+import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.utils.SensorUtil;
+import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
-import com.geeknewbee.doraemon.webservice.SoundService;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +28,7 @@ import retrofit2.Retrofit;
  * 把声音string去服务器解析command ，这个是串行的任务队列。
  * 按照先来后到的顺序去执行。
  */
-public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInput, List<Command>> implements ISoundTranslate {
+public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInput, List<Command>> {
     private volatile static SoundTranslateTaskQueue instance;
     private OnTranslatorListener translatorListener;
 
@@ -38,31 +43,51 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         return instance;
     }
 
-    @Override
     public void setTranslatorListener(OnTranslatorListener translatorListener) {
         this.translatorListener = translatorListener;
     }
 
     @Override
     public List<Command> performTask(SoundTranslateInput input) {
+        // 0.当没有解析到声音的时候不做任何输出
+        if (TextUtils.isEmpty(input.input))
+            return null;
+
         // 1.先过滤本地命令
         List<Command> localResponse = localPerform(input);
         if (localResponse != null) return localResponse;
 
         // 2.再请求后台，走我们的13万库
         Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
-        SoundService service = retrofit.create(SoundService.class);
+        ApiService service = retrofit.create(ApiService.class);
         try {
-            Response<BaseResponseBody<List<Command>>> response = service.translateSound(input.input).execute();
-            if (response.isSuccessful() && response.body().isSuccess()) {
-                //TODO 根据现在的getAnswer 接口 形式来 转化成 Command
-                return response.body().getData();
-            } else
-                // 3.如果以上结果都为空，就使用三方(如思必驰)的响应结果
-                return Arrays.asList(new Command(CommandType.PLAY_SOUND, input.asrOutput));
+            Response<BaseResponseBody<GetAnswerResponse>> response = service.getAnswer(
+                    DoraemonInfoManager.getInstance(App.mContext).getToken(), input.input).execute();
+            if (response.isSuccessful() && response.body().isSuccess() && !TextUtils.isEmpty(response.body().getData().getAnswer())) {
+                return getCommands(response.body().getData());
+            }
+
         } catch (IOException e) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, input.asrOutput));
+            LogUtils.d("SoundTranslateTaskQueue", e.getMessage());
         }
+
+        // 3.如果以上结果都为空，就使用三方(如思必驰)的响应结果
+        return Arrays.asList(new Command(CommandType.PLAY_SOUND, TextUtils.isEmpty(input.asrOutput) ? SpeechConstants.EMPTY_SOUND : input.asrOutput));
+    }
+
+    private List<Command> getCommands(GetAnswerResponse data) {
+        //语音回复
+        List<Command> commandList = new ArrayList<>();
+        if (!TextUtils.isEmpty(data.getAnswer()))
+            commandList.add(new Command(CommandType.PLAY_SOUND, data.getAnswer()));
+
+        //本地的GIF 图像
+        String localGifResource = data.getLocal_resource();
+        if (!TextUtils.isEmpty(localGifResource))
+            commandList.add(new Command(CommandType.SHOW_EXPRESSION, localGifResource));
+
+        //现在的动作是固定的几个动作，以后改成服务器生成动作脚步，直接执行
+        return commandList;
     }
 
     /**
@@ -73,7 +98,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
      */
     private List<Command> localPerform(SoundTranslateInput soundTranslateInput) {
         String input = soundTranslateInput.input;
-        if (!TextUtils.isEmpty(soundTranslateInput.starName) || !TextUtils.isEmpty(soundTranslateInput.musicName)) {
+        if (TextUtils.equals(soundTranslateInput.action, "播放音乐")) {
             return Arrays.asList(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
         }
         if (input.indexOf("你好") != -1) {
@@ -119,11 +144,14 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     public void onTaskComplete(List<Command> output) {
         if (translatorListener != null)
             translatorListener.onTranslateComplete(output);
-        // 也就是：此处调的是brain.onTranslateComplete(output);再addCommands命令集合
     }
 
-    @Override
-    public void translateSound(SoundTranslateInput input) {
-        addTask(input);
+    public static interface OnTranslatorListener {
+        /**
+         * 声音翻译完成
+         *
+         * @param commands
+         */
+        void onTranslateComplete(List<Command> commands);
     }
 }

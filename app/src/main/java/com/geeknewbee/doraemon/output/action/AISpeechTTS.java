@@ -1,13 +1,12 @@
 package com.geeknewbee.doraemon.output.action;
 
-import android.text.TextUtils;
-
 import com.aispeech.AIError;
 import com.aispeech.common.AIConstant;
 import com.aispeech.common.Util;
 import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
@@ -44,8 +43,6 @@ public class AISpeechTTS implements ITTS {
     @Override
     public boolean talk(String text) {
         if (mTTSEngine != null) {
-            if (TextUtils.isEmpty(text))
-                text = SpeechConstants.EMPTY_SOUND;
             /**
              * refText：合成文本；utteranceId：本次合成的ID
              */
@@ -77,6 +74,7 @@ public class AISpeechTTS implements ITTS {
         public void onReady(String utteranceId) {
 //            LogUtils.d(TAG, utteranceId + "开始播放。。。");
             isSpeaking = true;
+            LogUtils.d(AISpeechEar.TAG, "tts onReady");
         }
 
         @Override
@@ -88,6 +86,7 @@ public class AISpeechTTS implements ITTS {
         public void onCompletion(String utteranceId) {
 //            LogUtils.d(TAG, utteranceId + "播放完毕！");
             isSpeaking = false;
+            LogUtils.d(AISpeechEar.TAG, "tts onCompletion");
         }
 
         @Override

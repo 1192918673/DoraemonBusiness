@@ -1,17 +1,15 @@
 package com.geeknewbee.doraemon.processcenter;
 
 import android.content.Context;
-import android.text.TextUtils;
 
-import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.IEar;
 import com.geeknewbee.doraemon.input.IEye;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
 import java.util.List;
 
 
@@ -41,10 +39,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
             }
         }
         return instance;
-    }
-
-    public void setSoundTranslate(ISoundTranslate soundTranslate) {
-        brain.setSoundTranslate(soundTranslate);
     }
 
     /**
@@ -83,22 +77,17 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     /**
      * 语音识别结果
      *
-     * @param input 语音识别到的输入文本
+     * @param input     语音识别到的输入文本
      * @param asrOutput 三方的响应结果(如思必驰的库给出的响应信息)
      */
     @Override
-    public void onASRResult(String input, String asrOutput, String starName, String musicName) {
+    public void onASRResult(String input, String asrOutput, String action, String starName, String musicName) {
         /**
-         * 如果返回有对应的响应直接声音播放(比如思必驰后台直接返回对应的答复)，
+         *
          * 否则需要通过后台服务器进行解析
          */
         LogUtils.d(AISpeechEar.TAG, input + ":" + asrOutput);
-
-        if (!TextUtils.isEmpty(input)) {
-            brain.translateSound(new SoundTranslateInput(input, asrOutput, starName, musicName));
-        } else {
-            brain.addCommand(new Command(CommandType.PLAY_SOUND, SpeechConstants.EMPTY_SOUND));
-        }
+        brain.translateSound(new SoundTranslateInput(input, asrOutput, action, starName, musicName));
     }
 
     /**

@@ -3,6 +3,7 @@ package com.geeknewbee.doraemon.processcenter;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
@@ -18,23 +19,20 @@ import java.util.List;
  * 输出行为有 语音| 四肢运动|显示表情|播放电影等
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
-public class Brain implements ISoundTranslate.OnTranslatorListener {
-    private ISoundTranslate soundTranslate;
+public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
 
     public void translateSound(SoundTranslateInput input) {
-        soundTranslate.translateSound(input);
+        LogUtils.d(AISpeechEar.TAG, "translateSound");
+        SoundTranslateTaskQueue.getInstance().setTranslatorListener(this);
+        SoundTranslateTaskQueue.getInstance().addTask(input);
     }
 
     public void addCommand(Command command) {
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
-        Doraemon.getInstance(App.mContext).stopASR();
+//        Doraemon.getInstance(App.mContext).stopASR();
         switch (command.getType()) {
             case PLAY_SOUND:
                 //讲话
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case WEATHER:
-                // 天气预报
                 MouthTaskQueue.getInstance().addTask(command);
                 break;
             case MECHANICAL_MOVEMENT:
@@ -65,6 +63,19 @@ public class Brain implements ISoundTranslate.OnTranslatorListener {
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
         }
+    }
+
+    public void addCommand(List<Command> commands) {
+        if (commands == null || commands.isEmpty()) return;
+        for (Command command : commands) {
+            addCommand(command);
+        }
+    }
+
+    @Override
+    public void onTranslateComplete(List<Command> commands) {
+        LogUtils.d(AISpeechEar.TAG, "onTranslateComplete");
+        addCommand(commands);
         new Thread() {
             @Override
             public void run() {
@@ -79,20 +90,4 @@ public class Brain implements ISoundTranslate.OnTranslatorListener {
         }.start();
     }
 
-    public void addCommand(List<Command> commands) {
-        if (commands == null || commands.isEmpty()) return;
-        for (Command command : commands) {
-            addCommand(command);
-        }
-    }
-
-    @Override
-    public void onTranslateComplete(List<Command> commands) {
-        addCommand(commands);
-    }
-
-    public void setSoundTranslate(ISoundTranslate soundTranslate) {
-        this.soundTranslate = soundTranslate;
-        this.soundTranslate.setTranslatorListener(this);
-    }
 }

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Business</string>
+    <string name="connect_server_fail">连接服务器失败</string>
+    <string name="not_connect_to_network">未连接网络</string>
 </resources>
