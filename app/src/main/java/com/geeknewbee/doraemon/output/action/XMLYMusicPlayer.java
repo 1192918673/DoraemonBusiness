@@ -9,6 +9,8 @@ import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
 import com.ximalaya.ting.android.opensdk.model.PlayableModel;
 import com.ximalaya.ting.android.opensdk.model.advertis.Advertis;
 import com.ximalaya.ting.android.opensdk.model.advertis.AdvertisList;
+import com.ximalaya.ting.android.opensdk.model.album.Album;
+import com.ximalaya.ting.android.opensdk.model.album.AlbumList;
 import com.ximalaya.ting.android.opensdk.model.live.radio.Radio;
 import com.ximalaya.ting.android.opensdk.model.live.schedule.Schedule;
 import com.ximalaya.ting.android.opensdk.model.track.SearchTrackList;
@@ -35,6 +37,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     private XmPlayerManager mPlayerManager;// 播放器
     private CommonRequest mXimalaya; // 命令请求对象
     private List<Track> tracks = new ArrayList<>();
+    private List<Long> albumId = new ArrayList<>();
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
 
         @Override
@@ -157,6 +160,29 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         mPlayerManager.addPlayerStatusListener(mPlayerStatusListener);
         mPlayerManager.addAdsStatusListener(mAdsListener);
         mPlayerManager.getPlayerStatus();
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(DTransferConstants.CATEGORY_ID, "4");
+        map.put(DTransferConstants.CALC_DIMENSION, "1");
+        map.put(DTransferConstants.TAG_NAME, "内涵段子");
+        CommonRequest.getAlbumList(map, new IDataCallBack<AlbumList>() {
+            @Override
+            public void onSuccess(AlbumList albumList) {
+                StringBuffer sb = new StringBuffer();
+                List<Album> list = albumList.getAlbums();
+                albumId.clear();
+                for (Album album : list) {
+                    albumId.add(album.getId());
+                    sb.append(album.getId() + "$$" + album.getAlbumTitle() + ",");
+                }
+                LogUtils.d("分类、标签名下的专辑列表", list.size() + "$$" + sb.toString());
+            }
+
+            @Override
+            public void onError(int i, String s) {
+
+            }
+        });
     }
 
     @Override
@@ -208,7 +234,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         // tag##糗事百科,tag##内涵段子,tag##节操精选,tag##80脱口秀,tag##星座不求人,tag##不吐槽会死,
         // tag##电视剧原声,tag##关爱八卦成长,tag##这里全是方言,tag##冷笑话,tag##经典电影原声,
         // tag##综艺玩很大,tag##超级访问,tag##明星粉丝电台,tag##万万没想到,
-        Map<String, String> map = new HashMap<String, String>();
 
         // 专辑ID：听周星驰讲笑话
         // 455991$$黑历史,4728754$$听周星驰讲笑话,4022290$$笑不笑由你,4256322$$笑不笑由你 羞羞版,
@@ -217,7 +242,8 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         // 4839492$$【花絮集】无干货，非骨灰级粉丝慎入~~我笑点比较低。。,4566428$$笑话,3524159$$【每日一笑】,
         // 4078745$$段子搬运工,4218901$$哈哈逗你,4342792$$波波讲段子,3849250$$Alpha冷,4388970$$不止是幽默,
         // 4422113$$竹子讲笑话，羞羞哒,4322121$$生活小趣,4694948$$乐在其中,4660402$$晨彩飞扬,
-        map.put(DTransferConstants.ALBUM_ID, "4728754");
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(DTransferConstants.ALBUM_ID, albumId.get(new Random().nextInt(albumId.size())) + "");
         map.put(DTransferConstants.SORT, "asc");
         map.put(DTransferConstants.PAGE, "1");//当前第几页，不填默认为1；以后可以改成随机
         CommonRequest.getTracks(map, new IDataCallBack<TrackList>() {
@@ -226,11 +252,11 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                 StringBuffer sb = new StringBuffer();
                 List<Track> list = trackList.getTracks();
                 for (Track track : list) {
-                    sb.append(track.getUid() + "**" + track.getDataId() + "**" + track.getProgramId() + "**" + track.getTrackTitle() + ",");
+                    sb.append(track.getDataId() + "**" + track.getTrackTitle() + ",");
                 }
-                LogUtils.d("专辑ID下的专辑列表", list.size() + "##" + sb.toString());
+                LogUtils.d("专辑ID下的专辑列表", list.size() + "**" + sb.toString());
 
-                Random random = new Random();
+                Random random = new Random(0);
                 int i = random.nextInt(list.size());
                 tracks.clear();
                 tracks.add(trackList.getTracks().get(i));
