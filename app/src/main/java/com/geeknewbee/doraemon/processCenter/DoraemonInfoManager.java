@@ -46,7 +46,7 @@ public class DoraemonInfoManager {
     /**
      * 从服务器获取token
      */
-    public void requestTokenFromServer() {
+    public synchronized void requestTokenFromServer() {
         if (!TextUtils.isEmpty(PrefUtils.getString(context, Constants.KEY_TOKEN, Constants.EMPTY_STRING)))
             return;
 

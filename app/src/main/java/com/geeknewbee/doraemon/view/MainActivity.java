@@ -2,7 +2,6 @@ package com.geeknewbee.doraemon.view;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -56,13 +55,13 @@ public class MainActivity extends Activity {
     }
 
     private void test() {
-        findViewById(R.id.bt_test).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
-                DoraemonInfoManager.getInstance(getApplicationContext()).uploadBattery(20);
-            }
-        });
+//        findViewById(R.id.bt_test).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
+//                DoraemonInfoManager.getInstance(getApplicationContext()).uploadBattery(20);
+//            }
+//        });
     }
 
     private void initData() {

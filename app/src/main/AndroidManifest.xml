@@ -81,12 +81,12 @@
             </intent-filter>
         </receiver>
 
-        <!-- 高德地图 配置 -->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="9f1631bc9a7b78b1eccef72df61944cd" />
-        <service android:name="com.amap.api.location.APSService" />
-        <!-- 高德地图 配置 -->
+        <receiver android:name=".broadcast.NetworkChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
 
 
         <!--  喜马拉雅 配置-->
