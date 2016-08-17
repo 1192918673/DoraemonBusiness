@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
+import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -13,6 +14,7 @@ import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +49,10 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
     @Override
     public List<Command> performTask(SoundTranslateInput input) {
+        // 0.当没有解析到声音的时候不做任何输出
+        if (TextUtils.isEmpty(input.input))
+            return null;
+
         // 1.先过滤本地命令
         List<Command> localResponse = localPerform(input.input);
         if (localResponse != null) return localResponse;
@@ -57,14 +63,16 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         try {
             Response<BaseResponseBody<GetAnswerResponse>> response = service.getAnswer(
                     DoraemonInfoManager.getInstance(App.mContext).getToken(), input.input).execute();
-            if (response.isSuccessful() && response.body().isSuccess()) {
+            if (response.isSuccessful() && response.body().isSuccess() && !TextUtils.isEmpty(response.body().getData().getAnswer())) {
                 return getCommands(response.body().getData());
-            } else
-                // 3.如果以上结果都为空，就使用三方(如思必驰)的响应结果
-                return Arrays.asList(new Command(CommandType.PLAY_SOUND, input.asrOutput));
+            }
+
         } catch (IOException e) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, input.asrOutput));
+            LogUtils.d("SoundTranslateTaskQueue", e.getMessage());
         }
+
+        // 3.如果以上结果都为空，就使用三方(如思必驰)的响应结果
+        return Arrays.asList(new Command(CommandType.PLAY_SOUND, TextUtils.isEmpty(input.asrOutput) ? SpeechConstants.EMPTY_SOUND : input.asrOutput));
     }
 
     private List<Command> getCommands(GetAnswerResponse data) {

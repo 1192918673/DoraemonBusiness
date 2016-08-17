@@ -29,6 +29,7 @@ public class MainActivity extends Activity {
         startBluetoothService();
         initData();
 //        test();
+        Doraemon.getInstance(getApplicationContext()).startASR();
     }
 
     private void initView() {
@@ -70,7 +71,6 @@ public class MainActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        Doraemon.getInstance(getApplicationContext()).startASR();
         bluetoothServiceManager.onStart();
     }
 

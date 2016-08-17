@@ -1,7 +1,5 @@
 package com.geeknewbee.doraemon.input;
 
-import android.text.TextUtils;
-
 import com.aispeech.AIError;
 import com.aispeech.AIResult;
 import com.aispeech.IMergeRule;
@@ -32,6 +30,7 @@ public class AISpeechEar implements IEar {
     private AIMixASREngine mASREngine;
     private AILocalGrammarEngine mGrammarEngine;
     private IEar.ASRListener asrListener;
+    private boolean needStartRecognitionFlag;//是否需要在初始引擎成功后启动监听,存在调用startRecognition 时候mASREngine==null的情况
 
     public AISpeechEar() {
         init();
@@ -42,6 +41,7 @@ public class AISpeechEar implements IEar {
         if (new File(Util.getResourceDir(BaseApplication.mContext) + File.separator + AILocalGrammarEngine.OUTPUT_NAME)
                 .exists()) {
             mASREngine = initAsrEngine();// 2.初始化混合识别引擎
+            LogUtils.d(TAG, "mASREngine=:" + mASREngine);
         } else {
             initGrammarEngine(); // 1.初始化编译引擎
         }
@@ -62,12 +62,12 @@ public class AISpeechEar implements IEar {
         mGrammarEngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));// 设置设备Id
 
         GrammarHelper gh = new GrammarHelper(BaseApplication.mContext);
-        String contactString = gh.getConatcts();// (1)获取ebnf语法格式的联系人序列字符串
-        String appString = gh.getApps();// (2)获取ebnf语法格式的应用程序名称序列字符串
-        if (TextUtils.isEmpty(contactString)) {
-            contactString = "无联系人";
-        }
-        String ebnf = gh.importAssets(contactString, appString, "grammar.xbnf");// (3)将获取到的联系人、应用程序名称添加至grammar.xbnf
+//        String contactString = gh.getConatcts();// (1)获取ebnf语法格式的联系人序列字符串
+//        String appString = gh.getApps();// (2)获取ebnf语法格式的应用程序名称序列字符串
+//        if (TextUtils.isEmpty(contactString)) {
+//            contactString = "无联系人";
+//        }
+        String ebnf = gh.importAssets("", "", "grammar.xbnf");// (3)将获取到的联系人、应用程序名称添加至grammar.xbnf
         LogUtils.d(TAG, ebnf);
 
         mGrammarEngine.setEbnf(ebnf);// 设置ebnf语法
@@ -85,6 +85,7 @@ public class AISpeechEar implements IEar {
         }
         LogUtils.d(TAG, "ASR create");
         mASREngine = AIMixASREngine.createInstance();// 获取实例
+        LogUtils.d(TAG, "mASREngine=:" + mASREngine);
         mASREngine.setResBin(SpeechConstants.ebnfr_res);// 设置声学资源名
         mASREngine.setNetBin(AILocalGrammarEngine.OUTPUT_NAME, true);// 设置网络资源名
         mASREngine.setVadResource(SpeechConstants.vad_res);// 设置Vad资源名
@@ -96,13 +97,14 @@ public class AISpeechEar implements IEar {
         mASREngine.setServer("ws://s.api.aispeech.com");// 设置服务器地址，默认不用设置
         mASREngine.setRes("robot");// 设置请求的资源名
         mASREngine.setUseXbnfRec(true);// 设置是否启用基于语法的语义识别
-        mASREngine.setUsePinyin(true);
+        mASREngine.setUsePinyin(false);
         mASREngine.setUseForceout(false);
-        mASREngine.setAthThreshold(0.6f);//设置本地置信度阀值
-        mASREngine.setIsRelyOnLocalConf(true);//是否开启依据本地置信度优先输出,如需添加例外
-        mASREngine.setLocalBetterDomains(new String[]{"aihomeopen", "aihomegoods", "aihomeplay", "aihomenum", "aihomenextup", "aihomehello"});//设置本地擅长的领域范围
+        mASREngine.setAthThreshold(0.9f);//设置本地置信度阀值
+        mASREngine.setIsRelyOnLocalConf(false);//是否开启依据本地置信度优先输出,如需添加例外
+//        mASREngine.setLocalBetterDomains(new String[]{"aihomeopen", "aihomegoods", "aihomeplay", "aihomenum", "aihomenextup", "aihomehello"});//设置本地擅长的领域范围
+        mASREngine.setLocalBetterDomains(new String[]{});//设置本地擅长的领域范围
         mASREngine.setWaitCloudTimeout(2000);// 设置等待云端识别结果超时时长
-        mASREngine.setPauseTime(1000);// 设置VAD右边界
+        mASREngine.setPauseTime(0);// 设置VAD右边界
         mASREngine.setUseConf(true);// 设置是否开启置信度
         mASREngine.setNoSpeechTimeOut(0);// 设置无语音超时时长
         mASREngine.setMaxSpeechTimeS(0);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常
@@ -152,6 +154,9 @@ public class AISpeechEar implements IEar {
         if (mASREngine != null) {
             mASREngine.start();
             LogUtils.d(TAG, "startRecognition");
+        } else {
+            needStartRecognitionFlag = true;
+            LogUtils.d(TAG, "startRecognition null");
         }
     }
 
@@ -160,7 +165,8 @@ public class AISpeechEar implements IEar {
         if (mASREngine != null) {
             mASREngine.stopRecording();
             LogUtils.d(TAG, "stopRecording");
-        }
+        } else
+            LogUtils.d(TAG, "stopRecognition null");
     }
 
     @Override
@@ -186,6 +192,11 @@ public class AISpeechEar implements IEar {
         public void onUpdateCompleted(String recordId, String path) {
             LogUtils.d(TAG, "资源生成/更新成功\n path=" + path + "\n 重新加载识别引擎...");
             mASREngine = initAsrEngine();
+            LogUtils.d(TAG, "mASREngine=:" + mASREngine);
+            if (needStartRecognitionFlag) {
+                needStartRecognitionFlag = false;
+                startRecognition();
+            }
         }
 
         @Override
@@ -254,6 +265,7 @@ public class AISpeechEar implements IEar {
         @Override
         public void onError(AIError error) {
             LogUtils.d(TAG, "识别发生错误:" + error.getErrId());
+            initAsrEngine();
         }
 
         @Override

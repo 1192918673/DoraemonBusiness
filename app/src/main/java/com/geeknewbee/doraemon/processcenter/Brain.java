@@ -3,6 +3,7 @@ package com.geeknewbee.doraemon.processcenter;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
@@ -21,13 +22,14 @@ import java.util.List;
 public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
 
     public void translateSound(SoundTranslateInput input) {
+        LogUtils.d(AISpeechEar.TAG, "translateSound");
         SoundTranslateTaskQueue.getInstance().setTranslatorListener(this);
         SoundTranslateTaskQueue.getInstance().addTask(input);
     }
 
     public void addCommand(Command command) {
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
-        Doraemon.getInstance(App.mContext).stopASR();
+//        Doraemon.getInstance(App.mContext).stopASR();
         switch (command.getType()) {
             case PLAY_SOUND:
                 //讲话
@@ -61,6 +63,19 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
         }
+    }
+
+    public void addCommand(List<Command> commands) {
+        if (commands == null || commands.isEmpty()) return;
+        for (Command command : commands) {
+            addCommand(command);
+        }
+    }
+
+    @Override
+    public void onTranslateComplete(List<Command> commands) {
+        LogUtils.d(AISpeechEar.TAG, "onTranslateComplete");
+        addCommand(commands);
         new Thread() {
             @Override
             public void run() {
@@ -73,18 +88,6 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 Doraemon.getInstance(App.mContext).startASR();
             }
         }.start();
-    }
-
-    public void addCommand(List<Command> commands) {
-        if (commands == null || commands.isEmpty()) return;
-        for (Command command : commands) {
-            addCommand(command);
-        }
-    }
-
-    @Override
-    public void onTranslateComplete(List<Command> commands) {
-        addCommand(commands);
     }
 
 }
