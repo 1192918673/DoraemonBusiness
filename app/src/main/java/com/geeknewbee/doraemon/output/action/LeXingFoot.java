@@ -29,7 +29,7 @@ public class LeXingFoot implements IFoot {
 
     @Override
     public boolean init() {
-        String deviceName = DeviceUtil.getDeviceName(LE_XING_DEVICE_NAME_PREFIX);
+        String deviceName = DeviceUtil.getIODeviceName(LE_XING_DEVICE_NAME_PREFIX);
         if (TextUtils.isEmpty(deviceName)) {
             LogUtils.d(TAG, "can not find device");
             return false;

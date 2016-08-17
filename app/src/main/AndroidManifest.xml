@@ -75,6 +75,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".broadcast.BatteryReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <!-- 高德地图 配置 -->
         <meta-data
             android:name="com.amap.api.v2.apikey"

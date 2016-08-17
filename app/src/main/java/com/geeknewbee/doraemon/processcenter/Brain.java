@@ -33,10 +33,6 @@ public class Brain implements ISoundTranslate.OnTranslatorListener {
                 //讲话
                 MouthTaskQueue.getInstance().addTask(command);
                 break;
-            case WEATHER:
-                // 天气预报
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
             case MECHANICAL_MOVEMENT:
                 //肢体运动
                 LimbsTaskQueue.getInstance().addTask(command);
