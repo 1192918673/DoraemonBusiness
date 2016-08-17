@@ -1,5 +1,7 @@
 package com.geeknewbee.doraemon.processcenter;
 
+import android.text.TextUtils;
+
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -44,7 +46,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     @Override
     public List<Command> performTask(SoundTranslateInput input) {
         // 1.先过滤本地命令
-        List<Command> localResponse = localPerform(input.input);
+        List<Command> localResponse = localPerform(input);
         if (localResponse != null) return localResponse;
 
         // 2.再请求后台，走我们的13万库
@@ -66,15 +68,22 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     /**
      * 本地响应处理
      *
-     * @param input
+     * @param soundTranslateInput
      * @return
      */
-    private List<Command> localPerform(String input) {
+    private List<Command> localPerform(SoundTranslateInput soundTranslateInput) {
+        String input = soundTranslateInput.input;
+        if (!TextUtils.isEmpty(soundTranslateInput.starName) || !TextUtils.isEmpty(soundTranslateInput.musicName)) {
+            return Arrays.asList(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
+        }
         if (input.indexOf("你好") != -1) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "你好"));
         }
         if (input.indexOf("自我介绍") != -1) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》"));
+        }
+        if (input.indexOf("讲个笑话") != -1) {
+            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "好的"), new Command(CommandType.PLAY_MUSIC, "笑话"));
         }
         if (input.indexOf("温度") != -1) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内温度是" + SensorUtil.getInstance().temperture + "度"));

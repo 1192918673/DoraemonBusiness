@@ -87,7 +87,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
      * @param asrOutput 三方的响应结果(如思必驰的库给出的响应信息)
      */
     @Override
-    public void onASRResult(String input, String asrOutput) {
+    public void onASRResult(String input, String asrOutput, String starName, String musicName) {
         /**
          * 如果返回有对应的响应直接声音播放(比如思必驰后台直接返回对应的答复)，
          * 否则需要通过后台服务器进行解析
@@ -95,7 +95,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
         LogUtils.d(AISpeechEar.TAG, input + ":" + asrOutput);
 
         if (!TextUtils.isEmpty(input)) {
-            brain.translateSound(new SoundTranslateInput(input, asrOutput));
+            brain.translateSound(new SoundTranslateInput(input, asrOutput, starName, musicName));
         } else {
             brain.addCommand(new Command(CommandType.PLAY_SOUND, SpeechConstants.EMPTY_SOUND));
         }

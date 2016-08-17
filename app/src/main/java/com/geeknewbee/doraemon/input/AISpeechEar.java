@@ -102,7 +102,7 @@ public class AISpeechEar implements IEar {
         mASREngine.setIsRelyOnLocalConf(true);//是否开启依据本地置信度优先输出,如需添加例外
         mASREngine.setLocalBetterDomains(new String[]{"aihomeopen", "aihomegoods", "aihomeplay", "aihomenum", "aihomenextup", "aihomehello"});//设置本地擅长的领域范围
         mASREngine.setWaitCloudTimeout(2000);// 设置等待云端识别结果超时时长
-        mASREngine.setPauseTime(1000);// 设置VAD右边界
+        mASREngine.setPauseTime(200);// 设置VAD右边界；VAD普及：静音抑制，或者说它会检测是否有声音
         mASREngine.setUseConf(true);// 设置是否开启置信度
         mASREngine.setNoSpeechTimeOut(0);// 设置无语音超时时长
         mASREngine.setMaxSpeechTimeS(0);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常
@@ -233,6 +233,7 @@ public class AISpeechEar implements IEar {
                     JSONResultParser parser = new JSONResultParser(results.getResultObject().toString());
                     String outputString = parser.getResult().optString("output", (String) null);
                     String originSoundString = "";
+                    JSONObject semantics = parser.getSemantics();
                     if (outputString == null) {
                         //当没有output 的时候 存在两种情况: input 的值 在 "input" 或者 "rec"中
                         originSoundString = parser.getRec();
@@ -244,8 +245,22 @@ public class AISpeechEar implements IEar {
                     } else
                         originSoundString = parser.getInput();
 
+                    String star_name = "";
+                    String music_name = "";
+                    if (semantics != null) {
+                        try {
+                            JSONObject request = semantics.getJSONObject("request");
+                            if (TextUtils.equals(request.getString("action"), "播放音乐")) {
+                                star_name = request.getJSONObject("param").getString("歌手");
+                                music_name = request.getJSONObject("param").getString("歌曲");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     if (asrListener != null) {
-                        asrListener.onASRResult(originSoundString, outputString);
+                        asrListener.onASRResult(originSoundString, outputString, star_name, music_name);
                     }
                 }
             }

@@ -23,6 +23,6 @@ public interface IEar {
     void setASRListener(ASRListener listener);
 
     interface ASRListener {
-        void onASRResult(String input, String asrOutput);
+        void onASRResult(String input, String asrOutput, String starName, String musicName);
     }
 }
