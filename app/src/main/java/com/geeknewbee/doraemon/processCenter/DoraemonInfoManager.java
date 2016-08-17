@@ -7,10 +7,10 @@ import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.utils.PrefUtils;
+import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.RetrofitCallBack;
 import com.geeknewbee.doraemon.webservice.RetrofitHelper;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
-import com.geeknewbee.doraemon.webservice.SoundService;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.geeknewbee.doraemonsdk.utils.MD5Util;
@@ -51,7 +51,7 @@ public class DoraemonInfoManager {
             return;
 
         Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
-        SoundService service = retrofit.create(SoundService.class);
+        ApiService service = retrofit.create(ApiService.class);
         String mac = DeviceUtil.getWifiMAC(context);
         String versionName = DeviceUtil.getVersionName(context);
         String param = String.format("serial_no=%s&version=%s&api_secret=%s", mac, versionName, Constants.API_SECRET);
@@ -81,7 +81,7 @@ public class DoraemonInfoManager {
     public void uploadBattery(int battery) {
         if (TextUtils.isEmpty(getToken())) return;
         Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
-        SoundService service = retrofit.create(SoundService.class);
+        ApiService service = retrofit.create(ApiService.class);
 
         RetrofitHelper.sendRequest(service.robotBattery(getToken(), battery), new RetrofitCallBack<Object>() {
             @Override
