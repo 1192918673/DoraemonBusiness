@@ -3,14 +3,15 @@ package com.geeknewbee.doraemon.processcenter;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.CommandType;
+import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.IEar;
 import com.geeknewbee.doraemon.input.IEye;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
+import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-
 import java.util.List;
 
 
@@ -82,22 +83,21 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     /**
      * 语音识别结果
      *
-     * @param originSoundString
-     * @param outputString
+     * @param input 语音识别到的输入文本
+     * @param asrOutput 三方的响应结果(如思必驰的库给出的响应信息)
      */
     @Override
-    public void onASRResult(String originSoundString, String outputString) {
+    public void onASRResult(String input, String asrOutput) {
         /**
          * 如果返回有对应的响应直接声音播放(比如思必驰后台直接返回对应的答复)，
          * 否则需要通过后台服务器进行解析
          */
-        LogUtils.d("Doraemon识别结果：", originSoundString + ":" + outputString);
-        if (!TextUtils.isEmpty(outputString)) {
-            brain.addCommand(new Command(CommandType.PLAY_SOUND, outputString));
-        } else if (!TextUtils.isEmpty(originSoundString)) {
-            brain.translateSound(originSoundString);
+        LogUtils.d(AISpeechEar.TAG, input + ":" + asrOutput);
+
+        if (!TextUtils.isEmpty(input)) {
+            brain.translateSound(new SoundTranslateInput(input, asrOutput));
         } else {
-            brain.addCommand(new Command(CommandType.PLAY_SOUND, "啥也没听清，请再说一遍吧"));
+            brain.addCommand(new Command(CommandType.PLAY_SOUND, SpeechConstants.EMPTY_SOUND));
         }
     }
 

@@ -12,8 +12,8 @@ import com.aispeech.export.engines.AILocalGrammarEngine;
 import com.aispeech.export.engines.AIMixASREngine;
 import com.aispeech.export.listeners.AIASRListener;
 import com.aispeech.export.listeners.AILocalGrammarListener;
-import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.GrammarHelper;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.geeknewbee.doraemonsdk.utils.NetworkUtil;
@@ -105,6 +105,7 @@ public class AISpeechEar implements IEar {
         mASREngine.setPauseTime(1000);// 设置VAD右边界
         mASREngine.setUseConf(true);// 设置是否开启置信度
         mASREngine.setNoSpeechTimeOut(0);// 设置无语音超时时长
+        mASREngine.setMaxSpeechTimeS(0);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常
         mASREngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));// 设置设备Id
         // 自行设置合并规则:
         // 1. 如果无云端结果,则直接返回本地结果
@@ -150,6 +151,7 @@ public class AISpeechEar implements IEar {
     public void startRecognition() {
         if (mASREngine != null) {
             mASREngine.start();
+            LogUtils.d(TAG, "startRecognition");
         }
     }
 
@@ -157,6 +159,7 @@ public class AISpeechEar implements IEar {
     public void stopRecognition() {
         if (mASREngine != null) {
             mASREngine.stopRecording();
+            LogUtils.d(TAG, "stopRecording");
         }
     }
 
@@ -229,12 +232,18 @@ public class AISpeechEar implements IEar {
                 if (results.getResultType() == AIConstant.AIENGINE_MESSAGE_TYPE_JSON) {
                     JSONResultParser parser = new JSONResultParser(results.getResultObject().toString());
                     String outputString = parser.getResult().optString("output", (String) null);
-                    String originSoundString = "0";
+                    String originSoundString = "";
                     if (outputString == null) {
+                        //当没有output 的时候 存在两种情况: input 的值 在 "input" 或者 "rec"中
                         originSoundString = parser.getRec();
+                        if (originSoundString == null)
+                            originSoundString = parser.getInput();
                     } else if (outputString.startsWith("为您搜索")) {
                         originSoundString = parser.getInput();
-                    }
+                        outputString = "";
+                    } else
+                        originSoundString = parser.getInput();
+
                     if (asrListener != null) {
                         asrListener.onASRResult(originSoundString, outputString);
                     }
@@ -249,7 +258,7 @@ public class AISpeechEar implements IEar {
 
         @Override
         public void onRmsChanged(float rmsdB) {
-            LogUtils.d(TAG, "音频、音量发生改变，RmsDB = " + rmsdB);
+//            LogUtils.d(TAG, "音频、音量发生改变，RmsDB = " + rmsdB);
         }
 
         @Override

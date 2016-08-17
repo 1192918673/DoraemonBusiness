@@ -1,11 +1,13 @@
 package com.geeknewbee.doraemon.processcenter;
 
-import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
+import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.util.List;
@@ -19,12 +21,13 @@ import java.util.List;
 public class Brain implements ISoundTranslate.OnTranslatorListener {
     private ISoundTranslate soundTranslate;
 
-    public void translateSound(String s) {
-        soundTranslate.translateSound(s);
+    public void translateSound(SoundTranslateInput input) {
+        soundTranslate.translateSound(input);
     }
 
     public void addCommand(Command command) {
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
+        Doraemon.getInstance(App.mContext).stopASR();
         switch (command.getType()) {
             case PLAY_SOUND:
                 //讲话
@@ -62,6 +65,18 @@ public class Brain implements ISoundTranslate.OnTranslatorListener {
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
         }
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    Thread.sleep(10 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Doraemon.getInstance(App.mContext).startASR();
+            }
+        }.start();
     }
 
     public void addCommand(List<Command> commands) {

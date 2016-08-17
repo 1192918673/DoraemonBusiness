@@ -1,12 +1,14 @@
 package com.geeknewbee.doraemon.output.action;
 
+import android.text.TextUtils;
+
 import com.aispeech.AIError;
 import com.aispeech.common.AIConstant;
 import com.aispeech.common.Util;
 import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
-import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 /**
@@ -42,6 +44,8 @@ public class AISpeechTTS implements ITTS {
     @Override
     public boolean talk(String text) {
         if (mTTSEngine != null) {
+            if (TextUtils.isEmpty(text))
+                text = SpeechConstants.EMPTY_SOUND;
             /**
              * refText：合成文本；utteranceId：本次合成的ID
              */
