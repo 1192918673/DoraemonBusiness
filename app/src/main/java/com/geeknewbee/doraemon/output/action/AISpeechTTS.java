@@ -1,5 +1,7 @@
 package com.geeknewbee.doraemon.output.action;
 
+import android.text.TextUtils;
+
 import com.aispeech.AIError;
 import com.aispeech.common.AIConstant;
 import com.aispeech.common.Util;
@@ -18,6 +20,7 @@ public class AISpeechTTS implements ITTS {
     public boolean isSpeaking;// 是否正在说话；如果你的嘴正在说话，当然得先停止正在说的话再让他说新话喽
     private String TAG = AISpeechTTS.class.getSimpleName();
     private AILocalTTSEngine mTTSEngine;
+    private TTSListener ttsListener;
 
     public AISpeechTTS() {
         init();
@@ -42,10 +45,13 @@ public class AISpeechTTS implements ITTS {
 
     @Override
     public boolean talk(String text) {
+        if (TextUtils.isEmpty(text)) {
+            if (ttsListener != null)
+                ttsListener.onComplete();
+            return true;
+        }
+
         if (mTTSEngine != null) {
-            /**
-             * refText：合成文本；utteranceId：本次合成的ID
-             */
             mTTSEngine.speak(text, "1024");
         }
         return true;
@@ -57,6 +63,11 @@ public class AISpeechTTS implements ITTS {
             mTTSEngine.stop();
         }
         return true;
+    }
+
+    @Override
+    public void setTTSListener(TTSListener listener) {
+        this.ttsListener = listener;
     }
 
     private class AILocalTTSListenerImpl implements AITTSListener {
@@ -87,6 +98,8 @@ public class AISpeechTTS implements ITTS {
 //            LogUtils.d(TAG, utteranceId + "播放完毕！");
             isSpeaking = false;
             LogUtils.d(AISpeechEar.TAG, "tts onCompletion");
+            if (ttsListener != null)
+                ttsListener.onComplete();
         }
 
         @Override

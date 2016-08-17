@@ -10,15 +10,21 @@ import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 /**
  * 声音 task queue
  */
-public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
+public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implements ITTS.TTSListener {
     private volatile static MouthTaskQueue instance;
     private ITTS itts;
     private IMusicPlayer iMusicPlayer;
+    private MouthQueueListener listener;
 
     private MouthTaskQueue() {
         super();
         itts = new AISpeechTTS();
         iMusicPlayer = new XMLYMusicPlayer();
+        itts.setTTSListener(this);
+    }
+
+    public void setListener(MouthQueueListener listener) {
+        this.listener = listener;
     }
 
     public static MouthTaskQueue getInstance() {
@@ -61,5 +67,15 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     public void stop() {
         iMusicPlayer.stop();
         clearTasks();
+    }
+
+    @Override
+    public void onComplete() {
+        if (listener != null)
+            listener.onTTSComplete();
+    }
+
+    public interface MouthQueueListener {
+        void onTTSComplete();
     }
 }

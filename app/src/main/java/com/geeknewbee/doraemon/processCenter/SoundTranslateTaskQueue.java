@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
@@ -51,7 +52,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     public List<Command> performTask(SoundTranslateInput input) {
         // 0.当没有解析到声音的时候不做任何输出
         if (TextUtils.isEmpty(input.input))
-            return null;
+            return Arrays.asList(new Command(CommandType.PLAY_SOUND, Constants.EMPTY_STRING));
 
         // 1.先过滤本地命令
         List<Command> localResponse = localPerform(input.input);

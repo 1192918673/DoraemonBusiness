@@ -8,4 +8,10 @@ public interface ITTS {
     boolean talk(String param);
 
     boolean stop();
+
+    void setTTSListener(TTSListener listener);
+
+    public interface TTSListener {
+        void onComplete();
+    }
 }
