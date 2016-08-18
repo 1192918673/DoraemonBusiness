@@ -53,7 +53,7 @@ public class BluetoothCommand {
     public List<Command> getCommand() {
         List<Command> commands = new ArrayList<>();
         if (!TextUtils.isEmpty(faceName)) {
-            commands.add(new Command(CommandType.SHOW_EXPRESSION, faceName));
+            commands.add(new ExpressionCommand(faceName, 1));
         }
 
         if (!TextUtils.isEmpty(sound)) {

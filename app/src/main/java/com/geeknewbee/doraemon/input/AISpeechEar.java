@@ -13,6 +13,7 @@ import com.aispeech.export.engines.AIMixASREngine;
 import com.aispeech.export.listeners.AIASRListener;
 import com.aispeech.export.listeners.AILocalGrammarListener;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.GrammarHelper;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -103,12 +104,12 @@ public class AISpeechEar implements IEar {
         mASREngine.setUseXbnfRec(true);// 设置是否启用基于语法的语义识别
         mASREngine.setUsePinyin(false);
         mASREngine.setUseForceout(false);
-        mASREngine.setAthThreshold(0.9f);//设置本地置信度阀值
+        mASREngine.setAthThreshold(0.1f);//设置本地置信度阀值
         mASREngine.setIsRelyOnLocalConf(false);//是否开启依据本地置信度优先输出,如需添加例外
 //        mASREngine.setLocalBetterDomains(new String[]{"aihomeopen", "aihomegoods", "aihomeplay", "aihomenum", "aihomenextup", "aihomehello"});//设置本地擅长的领域范围
         mASREngine.setLocalBetterDomains(new String[]{});//设置本地擅长的领域范围
         mASREngine.setWaitCloudTimeout(2000);// 设置等待云端识别结果超时时长
-        mASREngine.setPauseTime(200);// 设置VAD右边界；VAD普及：静音抑制，或者说它会检测是否有声音
+        mASREngine.setPauseTime(500);// 设置VAD右边界；VAD普及：静音抑制，或者说它会检测是否有声音
         mASREngine.setUseConf(true);// 设置是否开启置信度
         mASREngine.setNoSpeechTimeOut(0);// 设置无语音超时时长
         mASREngine.setMaxSpeechTimeS(0);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常
@@ -204,6 +205,15 @@ public class AISpeechEar implements IEar {
         return "";
     }
 
+    @Override
+    public synchronized boolean isListening() {
+        return isListening;
+    }
+
+    private synchronized void setListerStatue(boolean isListening) {
+        this.isListening = isListening;
+    }
+
     /**
      * 语法编译引擎监听
      */
@@ -256,6 +266,7 @@ public class AISpeechEar implements IEar {
         @Override
         public void onBeginningOfSpeech() {
             LogUtils.d(TAG, "检测到说话");
+            EventManager.sendBeginningOfSpeechEvent();
         }
 
         @Override
@@ -269,6 +280,7 @@ public class AISpeechEar implements IEar {
             LogUtils.d(TAG, results.getResultObject().toString());
 
             if (results.isLast()) {
+                EventManager.sendBeginningOfDealWithEvent();
                 if (results.getResultType() == AIConstant.AIENGINE_MESSAGE_TYPE_JSON) {
                     JSONResultParser parser = new JSONResultParser(results.getResultObject().toString());
                     String outputString = parser.getResult().optString("output", (String) null);
@@ -297,10 +309,9 @@ public class AISpeechEar implements IEar {
                         }
                     }
 
-                    if (asrListener != null) {
-                        asrListener.onASRResult(originSoundString, outputString, action, star_name, music_name);
-                    }
-                }
+                    asrListener.onASRResult(originSoundString, outputString, action, star_name, music_name);
+                } else
+                    EventManager.sendStartAsrEvent();
             }
         }
 
@@ -339,13 +350,5 @@ public class AISpeechEar implements IEar {
                 startRecognition();
             LogUtils.d(TAG, "检测到录音机停止");
         }
-    }
-
-    private synchronized boolean isListening() {
-        return isListening;
-    }
-
-    private synchronized void setListerStatue(boolean isListening) {
-        this.isListening = isListening;
     }
 }

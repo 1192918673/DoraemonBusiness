@@ -1,13 +1,14 @@
 package com.geeknewbee.doraemon.output;
 
 import android.app.Activity;
-import android.os.CountDownTimer;
 
+import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemonsdk.BaseApplication;
-import com.geeknewbee.doraemon.constants.Constants;
 
 import java.io.IOException;
 
+import pl.droidsonroids.gif.AnimationListener;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -17,9 +18,20 @@ import pl.droidsonroids.gif.GifImageView;
 public class FaceManager {
     public static GifImageView faceView;
     public static Activity faceActivity;
-    private static int duration;
+    public static int loopNumber;
+    public static GifDrawable gifFromResource;
+    private static AnimationListener animationListener;
 
-    public static void display(final String content) {
+    public synchronized static void display(final String content) {
+        display(content, 1);
+    }
+
+    public synchronized static void display(final String content, int loops) {
+        int imageResId = BaseApplication.mContext.getResources().getIdentifier(content, "drawable", BaseApplication.mContext.getPackageName());
+        if (imageResId <= 0)
+            return;
+
+        loopNumber = loops;
         showGif(content);
     }
 
@@ -31,30 +43,29 @@ public class FaceManager {
 
                 int imageResId = BaseApplication.mContext.getResources().getIdentifier(name, "drawable", BaseApplication.mContext.getPackageName());
 
+
                 if (imageResId > 0) {
-                    GifDrawable gifFromResource;
                     try {
                         gifFromResource = new GifDrawable(BaseApplication.mContext.getResources(), imageResId);
-                        if (name.equalsIgnoreCase(Constants.DEFAULT_GIF)) {
-                            gifFromResource.setLoopCount(0);
-                        } else {
-                            gifFromResource.setLoopCount(1);
-                        }
-                        duration = gifFromResource.getDuration();
+                        gifFromResource.setLoopCount(loopNumber);
+
+                        animationListener = new AnimationListener() {
+                            @Override
+                            public void onAnimationCompleted(int loopNumber) {
+                                if (loopNumber == 0)
+                                    display(name, 0); //一直循环现在自己
+                                else if (loopNumber == 1) {
+                                    //对应只显示一次的Gif,需要根据当前状态显示不同的表情 正在监听说话、默认两种情况
+                                    if (Doraemon.getInstance(App.mContext).isListening())
+                                        display("eyegif_fa_dai", 0);
+                                    else
+                                        display("default_gif", 0);
+                                } else
+                                    display(name, --loopNumber);
+                            }
+                        };
+                        gifFromResource.addAnimationListener(animationListener);
                         faceView.setImageDrawable(gifFromResource);
-
-                        new CountDownTimer(duration, duration) {
-                            @Override
-                            public void onTick(long l) {
-
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                if (!name.equalsIgnoreCase(Constants.DEFAULT_GIF))
-                                    showGif(Constants.DEFAULT_GIF);
-                            }
-                        }.start();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

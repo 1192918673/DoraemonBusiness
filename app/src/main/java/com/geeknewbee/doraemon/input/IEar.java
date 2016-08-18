@@ -22,6 +22,8 @@ public interface IEar {
      */
     void setASRListener(ASRListener listener);
 
+    boolean isListening();
+
     interface ASRListener {
         void onASRResult(String input, String asrOutput, String action, String starName, String musicName);
     }

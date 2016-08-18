@@ -10,6 +10,7 @@ import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
+import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
@@ -99,7 +100,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         //本地的GIF 图像
         String localGifResource = data.getLocal_resource();
         if (!TextUtils.isEmpty(localGifResource))
-            commandList.add(new Command(CommandType.SHOW_EXPRESSION, localGifResource));
+            commandList.add(new ExpressionCommand(localGifResource, 1));
 
         //现在的动作是固定的几个动作，以后改成服务器生成动作脚步，直接执行
         return commandList;

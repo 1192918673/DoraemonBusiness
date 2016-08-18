@@ -3,16 +3,22 @@ package com.geeknewbee.doraemon.processcenter;
 import android.content.Context;
 
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
+import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
+import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
+import com.geeknewbee.doraemon.input.AISpeechDevice;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.HYMessageReceive;
 import com.geeknewbee.doraemon.input.IEar;
 import com.geeknewbee.doraemon.input.IEye;
 import com.geeknewbee.doraemon.input.IMessageReceive;
+import com.geeknewbee.doraemon.input.ISoundInputDevice;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,6 +37,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     private IEar ear;
     private IEye eye;
     private IMessageReceive receive;
+    private ISoundInputDevice soundInputDevice;
     private Brain brain;
 
     private Doraemon(Context context) {
@@ -39,6 +46,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         eye = new ReadSenseEye();
         receive = HYMessageReceive.getInstance();
         brain = new Brain();
+        soundInputDevice = new AISpeechDevice();
         EventBus.getDefault().register(this);
     }
 
@@ -54,11 +62,30 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
+     * 声音输入板是否唤醒
+     *
+     * @return
+     */
+    public boolean inputIsWakeUp() {
+        return soundInputDevice.isWakeUp();
+    }
+
+    /**
+     * 是否正在监听声音
+     *
+     * @return
+     */
+    public boolean isListening() {
+        return ear.isListening();
+    }
+
+    /**
      * 开始自动声音识别 Automatic Speech Recognition
      */
     public void startASR() {
         ear.setASRListener(this);
         ear.startRecognition();
+        addCommand(new ExpressionCommand("eyegif_fa_dai", 0));
     }
 
     /**
@@ -157,6 +184,46 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Override
     public void onReceivedMessage(List<Command> commands) {
         addCommand(commands);
+    }
+
+    /*
+     * 开始说话
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBeginningOfSpeech(BeginningOfSpeechEvent event) {
+        //显示正在监听Gif
+        LogUtils.d(AISpeechEar.TAG, "onBeginningOfSpeech");
+        addCommand(new ExpressionCommand("eyegif_ting", 0));
+    }
+
+    /**
+     * 开始处理语音的内容
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBeginningOfDealWith(BeginningofDealWithEvent event) {
+        //正在处理收到的声音指令
+        LogUtils.d(AISpeechEar.TAG, "onBeginningOfDealWith");
+        addCommand(new ExpressionCommand("eyegif_sikao", 0));
+    }
+
+    /**
+     * 声音输入解析完成
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTranslateSoundComplete(TranslateSoundCompleteEvent event) {
+        //声音输入解析完成 显示默认Gif
+        LogUtils.d(AISpeechEar.TAG, "onTranslateSoundComplete");
+        addCommand(new ExpressionCommand("default_gif", 0));
+        if (isListening())
+            addCommand(new ExpressionCommand("eyegif_fa_dai", 0));
+        else
+            addCommand(new ExpressionCommand("default_gif", 0));
     }
 
     /**
