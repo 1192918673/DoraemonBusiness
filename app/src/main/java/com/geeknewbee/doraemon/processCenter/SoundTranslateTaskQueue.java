@@ -7,7 +7,6 @@ import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
-import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
@@ -17,8 +16,6 @@ import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,15 +53,15 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         // 1.当MouthQueue 正在播放多媒体的时候 只识别 停的指令, 其他的命令则重新开启ASR
         if (MouthTaskQueue.getInstance().isPlayMedia()) {
             if (Constants.STOP_FLAG.equals(input.input))
-                return Arrays.asList(new Command(CommandType.STOP, Constants.EMPTY_STRING));
+                return Arrays.asList(new Command(CommandType.STOP));
 
-            EventBus.getDefault().post(new StartASREvent());
+            EventManager.sendStartAsrEvent();
             return null;
         }
 
         // 2.当没有解析到声音的时候不做任何输出,重新开启ASR
         if (TextUtils.isEmpty(input.input)) {
-            EventBus.getDefault().post(new StartASREvent());
+            EventManager.sendStartAsrEvent();
             return null;
         }
 
@@ -87,7 +84,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
         // 5.如果以上都不能寻找到答案的时候。当思必驰有回复用思必驰的结果，思必驰没有则直接重新开启声音监听
         if (TextUtils.isEmpty(input.asrOutput)) {
-            EventBus.getDefault().post(new StartASREvent());
+            EventManager.sendStartAsrEvent();
             return null;
         } else
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, input.asrOutput));
@@ -119,19 +116,19 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (TextUtils.equals(soundTranslateInput.action, "播放音乐")) {
             return Arrays.asList(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
         }
-        if (input.indexOf("你好") != -1) {
+        if (input.contains("你好")) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "你好"));
         }
-        if (input.indexOf("自我介绍") != -1) {
+        if (input.contains("自我介绍")) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》"));
         }
-        if (input.indexOf("讲个笑话") != -1) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "好"), new Command(CommandType.PLAY_MUSIC, "笑话"));
+        if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
+            return Arrays.asList(new Command(CommandType.PLAY_JOKE));
         }
-        if (input.indexOf("温度") != -1) {
+        if (input.contains("温度")) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内温度是" + SensorUtil.getInstance().temperture + "度"));
         }
-        if (input.indexOf("湿度") != -1) {
+        if (input.contains("湿度")) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内湿度是" + SensorUtil.getInstance().humidity + "度"));
         }
         if (input.indexOf("光强度") != -1) {

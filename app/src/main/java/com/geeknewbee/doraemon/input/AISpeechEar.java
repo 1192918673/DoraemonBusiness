@@ -156,7 +156,7 @@ public class AISpeechEar implements IEar {
     @Override
     public synchronized void startRecognition() {
         if (mASREngine != null) {
-            if (isListening) {
+            if (isListening()) {
                 LogUtils.d(TAG, "asr is listing");
                 return;
             }
@@ -319,6 +319,10 @@ public class AISpeechEar implements IEar {
             setListerStatue(false);
             LogUtils.d(TAG, "检测到录音机停止");
         }
+    }
+
+    private synchronized boolean isListening() {
+        return isListening;
     }
 
     private synchronized void setListerStatue(boolean isListening) {
