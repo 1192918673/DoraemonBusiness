@@ -1,6 +1,7 @@
 package com.geeknewbee.doraemon.output.action;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.MusicEvent;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
@@ -9,8 +10,6 @@ import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
 import com.ximalaya.ting.android.opensdk.model.PlayableModel;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 import com.ximalaya.ting.android.opensdk.model.album.AlbumList;
-import com.ximalaya.ting.android.opensdk.model.live.radio.Radio;
-import com.ximalaya.ting.android.opensdk.model.live.schedule.Schedule;
 import com.ximalaya.ting.android.opensdk.model.track.SearchTrackList;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 import com.ximalaya.ting.android.opensdk.model.track.TrackList;
@@ -18,6 +17,8 @@ import com.ximalaya.ting.android.opensdk.player.XmPlayerManager;
 import com.ximalaya.ting.android.opensdk.player.service.IXmPlayerStatusListener;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerConfig;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerException;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     private CommonRequest mXimalaya; // 命令请求对象
     private List<Track> tracks = new ArrayList<>();
     private List<Long> albumId = new ArrayList<>();
-    private MusicListener listener;
     //正在播放标示
     private boolean isPlaying;
 
@@ -53,17 +53,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
         @Override
         public void onPlayProgress(int currPos, int duration) {
-            String title = "";
-            PlayableModel info = mPlayerManager.getCurrSound();
-            if (info != null) {
-                if (info instanceof Track) {
-                    title = ((Track) info).getTrackTitle();
-                } else if (info instanceof Schedule) {
-                    title = ((Schedule) info).getRelatedProgram().getProgramName();
-                } else if (info instanceof Radio) {
-                    title = ((Radio) info).getRadioName();
-                }
-            }
+            LogUtils.d(Constants.TAG_MUSIC, "onPlayProgress");
         }
 
         @Override
@@ -243,8 +233,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     private void notifyComplete() {
         isPlaying = false;
-        if (listener != null)
-            listener.onComplete();
+        EventBus.getDefault().post(new MusicEvent());
     }
 
     @Override
@@ -266,10 +255,5 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     @Override
     public boolean isPlaying() {
         return isPlaying;
-    }
-
-    @Override
-    public void setListener(MusicListener listener) {
-        this.listener = listener;
     }
 }

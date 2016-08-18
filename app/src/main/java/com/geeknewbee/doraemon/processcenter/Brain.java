@@ -1,6 +1,5 @@
 package com.geeknewbee.doraemon.processcenter;
 
-import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.input.AISpeechEar;
@@ -19,11 +18,7 @@ import java.util.List;
  * 输出行为有 语音| 四肢运动|显示表情|播放电影等
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
-public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener, MouthTaskQueue.MouthQueueListener {
-
-    public Brain() {
-        MouthTaskQueue.getInstance().setListener(this);
-    }
+public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
 
     public void translateSound(SoundTranslateInput input) {
         LogUtils.d(AISpeechEar.TAG, "translateSound");
@@ -80,10 +75,5 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener, Mout
     public void onTranslateComplete(List<Command> commands) {
         LogUtils.d(AISpeechEar.TAG, "onTranslateComplete");
         addCommand(commands);
-    }
-
-    @Override
-    public void onTTSComplete() {
-        Doraemon.getInstance(App.mContext).startASR();
     }
 }
