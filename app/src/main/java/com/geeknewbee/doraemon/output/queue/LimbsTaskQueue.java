@@ -2,18 +2,18 @@ package com.geeknewbee.doraemon.output.queue;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.output.action.IArmsAndHead;
 import com.geeknewbee.doraemon.output.action.IFoot;
 import com.geeknewbee.doraemon.output.action.LeXingFoot;
 import com.geeknewbee.doraemon.output.action.SDArmsAndHead;
-import com.geeknewbee.doraemonsdk.BaseApplication;
-import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.DanceAction;
 import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
+import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
@@ -76,7 +76,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 break;
 
             if (!TextUtils.isEmpty(danceAction.expressionName))
-                Doraemon.getInstance(BaseApplication.mContext).addCommand(new Command(CommandType.SHOW_EXPRESSION, danceAction.expressionName));
+                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(danceAction.expressionName, 1));
 
             sendCommandContent(danceAction.topCommand);
             try {

@@ -6,9 +6,11 @@ import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
+import com.geeknewbee.doraemon.input.AISpeechDevice;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.IEar;
 import com.geeknewbee.doraemon.input.IEye;
+import com.geeknewbee.doraemon.input.ISoundInputDevice;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -28,6 +30,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     private final Context context;
     private IEar ear;
     private IEye eye;
+    private ISoundInputDevice soundInputDevice;
     private Brain brain;
 
     private Doraemon(Context context) {
@@ -35,6 +38,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
         ear = new AISpeechEar();
         eye = new ReadSenseEye();
         brain = new Brain();
+        soundInputDevice = new AISpeechDevice();
         EventBus.getDefault().register(this);
     }
 
@@ -47,6 +51,24 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
             }
         }
         return instance;
+    }
+
+    /**
+     * 声音输入板是否唤醒
+     *
+     * @return
+     */
+    public boolean inputIsWakeUp() {
+        return soundInputDevice.isWakeUp();
+    }
+
+    /**
+     * 是否正在监听声音
+     *
+     * @return
+     */
+    public boolean isListening() {
+        return ear.isListening();
     }
 
     /**

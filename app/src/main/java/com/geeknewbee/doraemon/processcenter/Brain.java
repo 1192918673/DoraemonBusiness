@@ -8,6 +8,7 @@ import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.util.List;
@@ -40,7 +41,8 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case SHOW_EXPRESSION:
                 //面部表情
-                FaceManager.display(command.getContent());
+                ExpressionCommand expressionCommand = (ExpressionCommand) command;
+                FaceManager.display(expressionCommand.getContent(), expressionCommand.loops);
                 break;
             case PLAY_MUSIC:
                 // 音乐

@@ -341,7 +341,8 @@ public class AISpeechEar implements IEar {
         }
     }
 
-    private synchronized boolean isListening() {
+    @Override
+    public synchronized boolean isListening() {
         return isListening;
     }
 
