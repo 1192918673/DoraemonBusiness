@@ -3,9 +3,12 @@ package com.geeknewbee.doraemon.processcenter;
 import android.content.Context;
 
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
+import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
+import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechDevice;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.IEar;
@@ -13,6 +16,7 @@ import com.geeknewbee.doraemon.input.IEye;
 import com.geeknewbee.doraemon.input.ISoundInputDevice;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -77,6 +81,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     public void startASR() {
         ear.setASRListener(this);
         ear.startRecognition();
+        addCommand(new ExpressionCommand("eyegif_fa_dai", 0));
     }
 
     /**
@@ -159,6 +164,46 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     public void onStartASREvent(StartASREvent event) {
         //完成后开启语音监听
         startASR();
+    }
+
+    /**
+     * 开始说话
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBeginningOfSpeech(BeginningOfSpeechEvent event) {
+        //显示正在监听Gif
+        LogUtils.d(AISpeechEar.TAG, "onBeginningOfSpeech");
+        addCommand(new ExpressionCommand("eyegif_ting", 0));
+    }
+
+    /**
+     * 开始处理语音的内容
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBeginningOfDealWith(BeginningofDealWithEvent event) {
+        //正在处理收到的声音指令
+        LogUtils.d(AISpeechEar.TAG, "onBeginningOfDealWith");
+        addCommand(new ExpressionCommand("eyegif_sikao", 0));
+    }
+
+    /**
+     * 声音输入解析完成
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTranslateSoundComplete(TranslateSoundCompleteEvent event) {
+        //声音输入解析完成 显示默认Gif
+        LogUtils.d(AISpeechEar.TAG, "onTranslateSoundComplete");
+        addCommand(new ExpressionCommand("default_gif", 0));
+        if (isListening())
+            addCommand(new ExpressionCommand("eyegif_fa_dai", 0));
+        else
+            addCommand(new ExpressionCommand("default_gif", 0));
     }
 
     /**

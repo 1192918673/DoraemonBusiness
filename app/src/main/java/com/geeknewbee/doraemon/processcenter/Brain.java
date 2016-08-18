@@ -81,5 +81,6 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     public void onTranslateComplete(List<Command> commands) {
         LogUtils.d(AISpeechEar.TAG, "onTranslateComplete");
         addCommand(commands);
+        EventManager.sendTranslateSoundComplete();
     }
 }
