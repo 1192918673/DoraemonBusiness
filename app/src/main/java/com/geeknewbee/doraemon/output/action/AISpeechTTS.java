@@ -8,12 +8,10 @@ import com.aispeech.common.Util;
 import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
-import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
+import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 /**
  * 思必驰 实现 mouth
@@ -65,7 +63,7 @@ public class AISpeechTTS implements ITTS {
         if (mTTSEngine != null) {
             mTTSEngine.stop();
         }
-        isSpeaking = false;
+        notifyComplete();
         return true;
     }
 
@@ -110,6 +108,6 @@ public class AISpeechTTS implements ITTS {
 
     private void notifyComplete() {
         isSpeaking = false;
-        EventBus.getDefault().post(new TTSCompleteEvent());
+        EventManager.sendTTSCompleteEvent();
     }
 }

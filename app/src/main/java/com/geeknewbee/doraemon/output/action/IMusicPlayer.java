@@ -14,7 +14,4 @@ public interface IMusicPlayer {
 
     boolean isPlaying();
 
-    public interface MusicListener {
-        void onComplete();
-    }
 }

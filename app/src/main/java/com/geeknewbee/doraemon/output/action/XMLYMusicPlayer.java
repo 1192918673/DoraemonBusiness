@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.output.action;
 
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
+import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
@@ -17,8 +17,6 @@ import com.ximalaya.ting.android.opensdk.player.XmPlayerManager;
 import com.ximalaya.ting.android.opensdk.player.service.IXmPlayerStatusListener;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerConfig;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerException;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -233,7 +231,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     private void notifyComplete() {
         isPlaying = false;
-        EventBus.getDefault().post(new MusicCompleteEvent());
+        EventManager.sendMusicCompleteEvent();
     }
 
     @Override
@@ -241,7 +239,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         if (mPlayerManager != null) {
             mPlayerManager.stop();
         }
-        isPlaying = false;
+        notifyComplete();
         return true;
     }
 

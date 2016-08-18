@@ -4,6 +4,7 @@ import com.geeknewbee.doraemon.output.action.AISpeechTTS;
 import com.geeknewbee.doraemon.output.action.IMusicPlayer;
 import com.geeknewbee.doraemon.output.action.ITTS;
 import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
+import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 
@@ -36,19 +37,17 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     public Boolean performTask(Command input) {
         switch (input.getType()) {
             case PLAY_SOUND:
-                iMusicPlayer.stop();
                 itts.talk(input.getContent());
                 break;
             case PLAY_MUSIC:
-                iMusicPlayer.stop();
                 itts.talk("正在搜索音乐");
-                if (input.getContent().equalsIgnoreCase("笑话")) {
-                    iMusicPlayer.joke();
-                    break;
-                } else {
-                    iMusicPlayer.play(input.getContent());
-                    break;
-                }
+                iMusicPlayer.play(input.getContent());
+                EventManager.sendStartAsrEvent();
+                break;
+            case PLAY_JOKE:
+                iMusicPlayer.joke();
+                EventManager.sendStartAsrEvent();
+                break;
         }
         return true;
     }

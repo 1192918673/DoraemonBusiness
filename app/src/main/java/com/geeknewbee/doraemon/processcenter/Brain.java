@@ -46,6 +46,10 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 // 音乐
                 MouthTaskQueue.getInstance().addTask(command);
                 break;
+            case PLAY_JOKE:
+                // 笑话
+                MouthTaskQueue.getInstance().addTask(command);
+                break;
             case STOP:
                 MouthTaskQueue.getInstance().stop();
                 break;
