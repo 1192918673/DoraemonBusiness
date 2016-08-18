@@ -128,7 +128,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (input.contains("温度")) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内温度是" + SensorUtil.getInstance().temperture + "度"));
         }
-        if (input.contains("湿度")) {
+        if (input.contains("湿度") || input.contains("适度") || input.contains("十度")) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内湿度是" + SensorUtil.getInstance().humidity + "度"));
         }
         if (input.indexOf("光强度") != -1) {
