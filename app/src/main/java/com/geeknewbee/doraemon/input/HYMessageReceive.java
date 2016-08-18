@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
@@ -140,9 +141,9 @@ public class HYMessageReceive implements IMessageReceive {
 
     private void initLogin() {
         // 1.获取登录需要的token、userName、pwd
-        authToken = PrefUtils.getString(App.mContext, "authToken", null);
-        hxUsername = PrefUtils.getString(App.mContext, "hxUsername", null);
-        hxPassword = PrefUtils.getString(App.mContext, "hxPassword", null);
+        authToken = PrefUtils.getString(App.mContext, Constants.KEY_TOKEN, null);
+        hxUsername = PrefUtils.getString(App.mContext, Constants.KEY_HX_USERNAME, null);
+        hxPassword = PrefUtils.getString(App.mContext, Constants.KEY_HX_USERPWD, null);
         LogUtils.d(TAG, "authToken:" + authToken + ",hxUsername:" + hxUsername + ",hxPassword:" + hxPassword);
 
         // 2.注册一个监听连接状态的listener

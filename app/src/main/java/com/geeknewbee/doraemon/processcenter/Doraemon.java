@@ -113,7 +113,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
-     * 开始接受后台消息
+     * 开始自动接受后台消息 Automatic receive pushData
      */
     public void startReceive() {
         receive.setMessageListener(this);
