@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.output.action;
 
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.entity.event.MusicEvent;
+import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
@@ -233,7 +233,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     private void notifyComplete() {
         isPlaying = false;
-        EventBus.getDefault().post(new MusicEvent());
+        EventBus.getDefault().post(new MusicCompleteEvent());
     }
 
     @Override
@@ -241,6 +241,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         if (mPlayerManager != null) {
             mPlayerManager.stop();
         }
+        notifyComplete();
         return true;
     }
 

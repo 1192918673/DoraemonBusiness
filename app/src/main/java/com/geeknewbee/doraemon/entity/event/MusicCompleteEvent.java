@@ -1,4 +1,4 @@
 package com.geeknewbee.doraemon.entity.event;
 
-public class MusicEvent {
+public class MusicCompleteEvent {
 }

@@ -3,8 +3,9 @@ package com.geeknewbee.doraemon.processcenter;
 import android.content.Context;
 
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
-import com.geeknewbee.doraemon.entity.event.MusicEvent;
-import com.geeknewbee.doraemon.entity.event.TTSEvent;
+import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
+import com.geeknewbee.doraemon.entity.event.StartASREvent;
+import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.IEar;
 import com.geeknewbee.doraemon.input.IEye;
@@ -111,7 +112,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTTSComplete(TTSEvent event) {
+    public void onTTSComplete(TTSCompleteEvent event) {
         //完成后开启语音监听
         startASR();
     }
@@ -122,7 +123,18 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPlayMusicComplete(MusicEvent event) {
+    public void onPlayMusicComplete(MusicCompleteEvent event) {
+        //完成后开启语音监听
+        startASR();
+    }
+
+    /**
+     * 开始声音监听
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onStartASREvent(StartASREvent event) {
         //完成后开启语音监听
         startASR();
     }

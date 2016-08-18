@@ -5,9 +5,9 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
@@ -17,6 +17,8 @@ import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,23 +53,26 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
     @Override
     public List<Command> performTask(SoundTranslateInput input) {
-        // -1.当MouthQueue 正在播放多媒体的时候 只识别 停的指令
+        // 1.当MouthQueue 正在播放多媒体的时候 只识别 停的指令, 其他的命令则重新开启ASR
         if (MouthTaskQueue.getInstance().isPlayMedia()) {
             if (Constants.STOP_FLAG.equals(input))
                 return Arrays.asList(new Command(CommandType.STOP, Constants.EMPTY_STRING));
 
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, Constants.EMPTY_STRING));
+            EventBus.getDefault().post(new StartASREvent());
+            return null;
         }
 
-        // 0.当没有解析到声音的时候不做任何输出
-        if (TextUtils.isEmpty(input.input))
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, Constants.EMPTY_STRING));
+        // 2.当没有解析到声音的时候不做任何输出,重新开启ASR
+        if (TextUtils.isEmpty(input.input)) {
+            EventBus.getDefault().post(new StartASREvent());
+            return null;
+        }
 
-        // 1.先过滤本地命令
+        // 3.先过滤本地命令
         List<Command> localResponse = localPerform(input);
         if (localResponse != null) return localResponse;
 
-        // 2.再请求后台，走我们的13万库
+        // 4.再请求后台，走我们的13万库
         Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
         ApiService service = retrofit.create(ApiService.class);
         try {
@@ -76,13 +81,16 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             if (response.isSuccessful() && response.body().isSuccess() && !TextUtils.isEmpty(response.body().getData().getAnswer())) {
                 return getCommands(response.body().getData());
             }
-
         } catch (IOException e) {
             LogUtils.d("SoundTranslateTaskQueue", e.getMessage());
         }
 
-        // 3.如果以上结果都为空，就使用三方(如思必驰)的响应结果
-        return Arrays.asList(new Command(CommandType.PLAY_SOUND, TextUtils.isEmpty(input.asrOutput) ? SpeechConstants.EMPTY_SOUND : input.asrOutput));
+        // 5.如果以上都不能寻找到答案的时候。当思必驰有回复用思必驰的结果，思必驰没有则直接重新开启声音监听
+        if (TextUtils.isEmpty(input.asrOutput)) {
+            EventBus.getDefault().post(new StartASREvent());
+            return null;
+        } else
+            return Arrays.asList(new Command(CommandType.PLAY_SOUND, input.asrOutput));
     }
 
     private List<Command> getCommands(GetAnswerResponse data) {
