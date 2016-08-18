@@ -33,6 +33,8 @@ public class AISpeechEar implements IEar {
     private AILocalGrammarEngine mGrammarEngine;
     private IEar.ASRListener asrListener;
     private boolean needStartRecognitionFlag;//是否需要在初始引擎成功后启动监听,存在调用startRecognition 时候mASREngine==null的情况
+    //正在监听标示
+    private boolean isListening;
 
     public AISpeechEar() {
         init();
@@ -152,8 +154,13 @@ public class AISpeechEar implements IEar {
     }
 
     @Override
-    public void startRecognition() {
+    public synchronized void startRecognition() {
         if (mASREngine != null) {
+            if (isListening) {
+                LogUtils.d(TAG, "asr is listing");
+                return;
+            }
+            setListerStatue(true);
             mASREngine.start();
             LogUtils.d(TAG, "startRecognition");
         } else {
@@ -163,8 +170,9 @@ public class AISpeechEar implements IEar {
     }
 
     @Override
-    public void stopRecognition() {
+    public synchronized void stopRecognition() {
         if (mASREngine != null) {
+            setListerStatue(false);
             mASREngine.stopRecording();
             LogUtils.d(TAG, "stopRecording");
         } else
@@ -247,7 +255,6 @@ public class AISpeechEar implements IEar {
         @Override
         public void onBeginningOfSpeech() {
             LogUtils.d(TAG, "检测到说话");
-
         }
 
         @Override
@@ -297,6 +304,7 @@ public class AISpeechEar implements IEar {
 
         @Override
         public void onError(AIError error) {
+            setListerStatue(false);
             LogUtils.d(TAG, "识别发生错误:" + error.getErrId());
             initAsrEngine();
         }
@@ -308,8 +316,12 @@ public class AISpeechEar implements IEar {
 
         @Override
         public void onRecorderReleased() {
+            setListerStatue(false);
             LogUtils.d(TAG, "检测到录音机停止");
         }
+    }
 
+    private synchronized void setListerStatue(boolean isListening) {
+        this.isListening = isListening;
     }
 }

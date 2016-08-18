@@ -241,7 +241,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         if (mPlayerManager != null) {
             mPlayerManager.stop();
         }
-        notifyComplete();
+        isPlaying = false;
         return true;
     }
 

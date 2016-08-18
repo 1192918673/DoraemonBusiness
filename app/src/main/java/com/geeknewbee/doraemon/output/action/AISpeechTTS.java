@@ -65,7 +65,7 @@ public class AISpeechTTS implements ITTS {
         if (mTTSEngine != null) {
             mTTSEngine.stop();
         }
-        notifyComplete();
+        isSpeaking = false;
         return true;
     }
 
