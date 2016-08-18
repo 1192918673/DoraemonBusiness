@@ -86,7 +86,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
          *
          * 否则需要通过后台服务器进行解析
          */
-        LogUtils.d(AISpeechEar.TAG, input + ":" + asrOutput);
+        LogUtils.d(AISpeechEar.TAG, input + ":" + asrOutput + ":" + action + ":" + starName + ":" + musicName);
         brain.translateSound(new SoundTranslateInput(input, asrOutput, action, starName, musicName));
     }
 

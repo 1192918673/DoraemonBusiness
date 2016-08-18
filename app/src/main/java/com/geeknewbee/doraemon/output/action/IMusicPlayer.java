@@ -11,4 +11,10 @@ public interface IMusicPlayer {
     boolean stop();
 
     void release();
+
+    void setListener(MusicListener listener);
+
+    public interface MusicListener {
+        void onComplete();
+    }
 }

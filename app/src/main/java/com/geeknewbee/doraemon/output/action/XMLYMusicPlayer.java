@@ -1,14 +1,12 @@
 package com.geeknewbee.doraemon.output.action;
 
-import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
 import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
 import com.ximalaya.ting.android.opensdk.model.PlayableModel;
-import com.ximalaya.ting.android.opensdk.model.advertis.Advertis;
-import com.ximalaya.ting.android.opensdk.model.advertis.AdvertisList;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 import com.ximalaya.ting.android.opensdk.model.album.AlbumList;
 import com.ximalaya.ting.android.opensdk.model.live.radio.Radio;
@@ -17,7 +15,6 @@ import com.ximalaya.ting.android.opensdk.model.track.SearchTrackList;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 import com.ximalaya.ting.android.opensdk.model.track.TrackList;
 import com.ximalaya.ting.android.opensdk.player.XmPlayerManager;
-import com.ximalaya.ting.android.opensdk.player.advertis.IXmAdsStatusListener;
 import com.ximalaya.ting.android.opensdk.player.service.IXmPlayerStatusListener;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerConfig;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerException;
@@ -38,6 +35,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     private CommonRequest mXimalaya; // 命令请求对象
     private List<Track> tracks = new ArrayList<>();
     private List<Long> albumId = new ArrayList<>();
+    private MusicListener listener;
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
 
         @Override
@@ -68,11 +66,13 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         @Override
         public void onPlayPause() {
             LogUtils.d(Constants.TAG_MUSIC, "onPlayPause");
+            notifyComplete();
         }
 
         @Override
         public void onSoundPlayComplete() {
             LogUtils.d(Constants.TAG_MUSIC, "onSoundPlayComplete");
+            notifyComplete();
         }
 
         @Override
@@ -83,11 +83,13 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         @Override
         public void onPlayStop() {
             LogUtils.d(Constants.TAG_MUSIC, "onPlayStop");
+            notifyComplete();
         }
 
         @Override
         public boolean onError(XmPlayerException exception) {
             LogUtils.d(Constants.TAG_MUSIC, "onError " + exception.getMessage());
+            notifyComplete();
             return false;
         }
 
@@ -106,44 +108,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
             LogUtils.d(Constants.TAG_MUSIC, "onBufferingStop");
         }
     };
-    private IXmAdsStatusListener mAdsListener = new IXmAdsStatusListener() {
-
-        @Override
-        public void onStartPlayAds(Advertis ad, int position) {
-            LogUtils.d(Constants.TAG_MUSIC, "onStartPlayAds, Ad:" + ad.getName() + ", pos:" + position);
-        }
-
-        @Override
-        public void onStartGetAdsInfo() {
-            LogUtils.d(Constants.TAG_MUSIC, "onStartGetAdsInfo");
-        }
-
-        @Override
-        public void onGetAdsInfo(AdvertisList ads) {
-            LogUtils.d(Constants.TAG_MUSIC, "onGetAdsInfo " + (ads != null));
-        }
-
-        @Override
-        public void onError(int what, int extra) {
-            LogUtils.d(Constants.TAG_MUSIC, "onError what:" + what + ", extra:" + extra);
-        }
-
-        @Override
-        public void onCompletePlayAds() {
-            LogUtils.d(Constants.TAG_MUSIC, "onCompletePlayAds");
-            PlayableModel model = mPlayerManager.getCurrSound();
-        }
-
-        @Override
-        public void onAdsStopBuffering() {
-            LogUtils.d(Constants.TAG_MUSIC, "onAdsStopBuffering");
-        }
-
-        @Override
-        public void onAdsStartBuffering() {
-            LogUtils.d(Constants.TAG_MUSIC, "onAdsStartBuffering");
-        }
-    };
 
     public XMLYMusicPlayer() {
         init();
@@ -158,13 +122,12 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         mPlayerManager.init();
         XmPlayerConfig.getInstance(BaseApplication.mContext).setBreakpointResume(false);
         mPlayerManager.addPlayerStatusListener(mPlayerStatusListener);
-        mPlayerManager.addAdsStatusListener(mAdsListener);
         mPlayerManager.getPlayerStatus();
 
         Map<String, String> map = new HashMap<String, String>();
         map.put(DTransferConstants.CATEGORY_ID, "4");
-        map.put(DTransferConstants.CALC_DIMENSION, "1");
-        map.put(DTransferConstants.TAG_NAME, "内涵段子");
+        map.put(DTransferConstants.CALC_DIMENSION, "3");
+        map.put(DTransferConstants.TAG_NAME, "冷笑话");
         CommonRequest.getAlbumList(map, new IDataCallBack<AlbumList>() {
             @Override
             public void onSuccess(AlbumList albumList) {
@@ -217,6 +180,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
             @Override
             public void onError(int code, String message) {
                 LogUtils.d("搜索声音", "code:" + code);
+                notifyComplete();
             }
         });
         return true;
@@ -267,16 +231,21 @@ public class XMLYMusicPlayer implements IMusicPlayer {
             @Override
             public void onError(int i, String s) {
                 LogUtils.d("专辑ID下的专辑列表", "获取失败:" + s);
+                notifyComplete();
             }
         });
         return true;
+    }
+
+    private void notifyComplete() {
+        if (listener != null)
+            listener.onComplete();
     }
 
     @Override
     public boolean stop() {
         if (mPlayerManager != null) {
             mPlayerManager.stop();
-            mPlayerManager.removePlayerStatusListener(mPlayerStatusListener);
         }
         return true;
     }
@@ -284,7 +253,13 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     @Override
     public void release() {
         if (mPlayerManager != null) {
+            mPlayerManager.removePlayerStatusListener(mPlayerStatusListener);
             mPlayerManager.release();
         }
+    }
+
+    @Override
+    public void setListener(MusicListener listener) {
+        this.listener = listener;
     }
 }

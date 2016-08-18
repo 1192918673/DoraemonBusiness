@@ -176,6 +176,24 @@ public class AISpeechEar implements IEar {
         asrListener = listener;
     }
 
+    private JSONObject getJSONObject(JSONObject semantics, String request) {
+        try {
+            return semantics.getJSONObject(request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new JSONObject();
+    }
+
+    private String getJSONString(JSONObject request, String action) {
+        try {
+            return request.getString(action);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     /**
      * 语法编译引擎监听
      */
@@ -262,17 +280,11 @@ public class AISpeechEar implements IEar {
                     String star_name = "";
                     String music_name = "";
                     if (semantics != null) {
-                        try {
-                            JSONObject request = semantics.getJSONObject("request");
-                            action = request.getString("action");
-                            if (TextUtils.equals(action, "播放音乐")) {
-                                star_name = request.getJSONObject("param").getString("歌手");
-                                music_name = request.getJSONObject("param").getString("歌曲");
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            star_name = "张学友";
-                            music_name = "吻别";
+                        JSONObject request = getJSONObject(semantics, "request");
+                        action = getJSONString(request, "action");
+                        if (TextUtils.equals(action, "播放音乐")) {
+                            star_name = getJSONString(getJSONObject(request, "param"), "歌手");
+                            music_name = getJSONString(getJSONObject(request, "param"), "歌曲");
                         }
                     }
 
@@ -298,5 +310,6 @@ public class AISpeechEar implements IEar {
         public void onRecorderReleased() {
             LogUtils.d(TAG, "检测到录音机停止");
         }
+
     }
 }

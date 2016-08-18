@@ -8,6 +8,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.utils.SensorUtil;
@@ -50,6 +51,14 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
     @Override
     public List<Command> performTask(SoundTranslateInput input) {
+        // -1.当MouthQueue 正在播放的时候 只识别 停的指令
+        if (MouthTaskQueue.getInstance().isUse()) {
+            if (Constants.STOP_FLAG.equals(input))
+                return Arrays.asList(new Command(CommandType.STOP, Constants.EMPTY_STRING));
+
+            return Arrays.asList(new Command(CommandType.PLAY_SOUND, Constants.EMPTY_STRING));
+        }
+
         // 0.当没有解析到声音的时候不做任何输出
         if (TextUtils.isEmpty(input.input))
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, Constants.EMPTY_STRING));
@@ -109,7 +118,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》"));
         }
         if (input.indexOf("讲个笑话") != -1) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "好的"), new Command(CommandType.PLAY_MUSIC, "笑话"));
+            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "好"), new Command(CommandType.PLAY_MUSIC, "笑话"));
         }
         if (input.indexOf("温度") != -1) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内温度是" + SensorUtil.getInstance().temperture + "度"));

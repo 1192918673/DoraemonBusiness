@@ -10,21 +10,20 @@ import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 /**
  * 声音 task queue
  */
-public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implements ITTS.TTSListener {
+public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implements ITTS.TTSListener, IMusicPlayer.MusicListener {
     private volatile static MouthTaskQueue instance;
     private ITTS itts;
     private IMusicPlayer iMusicPlayer;
     private MouthQueueListener listener;
+    //是否正在使用
+    private volatile boolean isUse;
 
     private MouthTaskQueue() {
         super();
         itts = new AISpeechTTS();
         iMusicPlayer = new XMLYMusicPlayer();
         itts.setTTSListener(this);
-    }
-
-    public void setListener(MouthQueueListener listener) {
-        this.listener = listener;
+        iMusicPlayer.setListener(this);
     }
 
     public static MouthTaskQueue getInstance() {
@@ -38,20 +37,27 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
         return instance;
     }
 
+    public void setListener(MouthQueueListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public Boolean performTask(Command input) {
         switch (input.getType()) {
             case PLAY_SOUND:
                 iMusicPlayer.stop();
+                setUse(true);
                 itts.talk(input.getContent());
                 break;
             case PLAY_MUSIC:
                 iMusicPlayer.stop();
+                itts.talk("正在搜索音乐");
                 if (input.getContent().equalsIgnoreCase("笑话")) {
+                    setUse(true);
                     iMusicPlayer.joke();
                     break;
                 } else {
-                    itts.talk("正在为您搜索音乐");
+                    setUse(true);
                     iMusicPlayer.play(input.getContent());
                     break;
                 }
@@ -73,6 +79,16 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
     public void onComplete() {
         if (listener != null)
             listener.onTTSComplete();
+
+        setUse(false);
+    }
+
+    public synchronized boolean isUse() {
+        return isUse;
+    }
+
+    public synchronized void setUse(boolean use) {
+        isUse = use;
     }
 
     public interface MouthQueueListener {
