@@ -51,8 +51,8 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
     @Override
     public List<Command> performTask(SoundTranslateInput input) {
-        // -1.当MouthQueue 正在播放的时候 只识别 停的指令
-        if (MouthTaskQueue.getInstance().isUse()) {
+        // -1.当MouthQueue 正在播放多媒体的时候 只识别 停的指令
+        if (MouthTaskQueue.getInstance().isPlayMedia()) {
             if (Constants.STOP_FLAG.equals(input))
                 return Arrays.asList(new Command(CommandType.STOP, Constants.EMPTY_STRING));
 

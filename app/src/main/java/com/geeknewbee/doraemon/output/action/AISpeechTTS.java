@@ -8,9 +8,12 @@ import com.aispeech.common.Util;
 import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.entity.event.TTSEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 思必驰 实现 mouth
@@ -19,7 +22,6 @@ public class AISpeechTTS implements ITTS {
 
     private String TAG = AISpeechTTS.class.getSimpleName();
     private AILocalTTSEngine mTTSEngine;
-    private TTSListener ttsListener;
     //是否正在讲话
     private boolean isSpeaking;
 
@@ -47,8 +49,7 @@ public class AISpeechTTS implements ITTS {
     @Override
     public synchronized boolean talk(String text) {
         if (TextUtils.isEmpty(text)) {
-            if (ttsListener != null)
-                ttsListener.onComplete();
+            notifyComplete();
             return true;
         }
 
@@ -64,12 +65,8 @@ public class AISpeechTTS implements ITTS {
         if (mTTSEngine != null) {
             mTTSEngine.stop();
         }
+        notifyComplete();
         return true;
-    }
-
-    @Override
-    public void setTTSListener(TTSListener listener) {
-        this.ttsListener = listener;
     }
 
     @Override
@@ -100,16 +97,19 @@ public class AISpeechTTS implements ITTS {
 
         @Override
         public void onCompletion(String utteranceId) {
-            isSpeaking = false;
+            notifyComplete();
             LogUtils.d(AISpeechEar.TAG, "tts onCompletion");
-            if (ttsListener != null)
-                ttsListener.onComplete();
         }
 
         @Override
         public void onError(String utteranceId, AIError error) {
-            isSpeaking = false;
+            notifyComplete();
             LogUtils.d(TAG, "检测到错误：" + error.toString());
         }
+    }
+
+    private void notifyComplete() {
+        isSpeaking = false;
+        EventBus.getDefault().post(new TTSEvent());
     }
 }

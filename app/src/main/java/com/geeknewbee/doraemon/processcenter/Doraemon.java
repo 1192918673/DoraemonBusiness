@@ -3,12 +3,18 @@ package com.geeknewbee.doraemon.processcenter;
 import android.content.Context;
 
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.entity.event.MusicEvent;
+import com.geeknewbee.doraemon.entity.event.TTSEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.IEar;
 import com.geeknewbee.doraemon.input.IEye;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -28,6 +34,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
         ear = new AISpeechEar();
         eye = new ReadSenseEye();
         brain = new Brain();
+        EventBus.getDefault().register(this);
     }
 
     public static Doraemon getInstance(Context context) {
@@ -96,6 +103,28 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     @Override
     public void onDetectFace() {
 
+    }
+
+    /**
+     * TTS 语音合成完成
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTTSComplete(TTSEvent event) {
+        //完成后开启语音监听
+        startASR();
+    }
+
+    /**
+     * 当 音乐播放完成(包括 音乐，笑话)
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayMusicComplete(MusicEvent event) {
+        //完成后开启语音监听
+        startASR();
     }
 
     /**
