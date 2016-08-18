@@ -17,10 +17,11 @@ import com.geeknewbee.doraemonsdk.utils.LogUtils;
  */
 public class AISpeechTTS implements ITTS {
 
-    public boolean isSpeaking;// 是否正在说话；如果你的嘴正在说话，当然得先停止正在说的话再让他说新话喽
     private String TAG = AISpeechTTS.class.getSimpleName();
     private AILocalTTSEngine mTTSEngine;
     private TTSListener ttsListener;
+    //是否正在讲话
+    private boolean isSpeaking;
 
     public AISpeechTTS() {
         init();
@@ -44,7 +45,7 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
-    public boolean talk(String text) {
+    public synchronized boolean talk(String text) {
         if (TextUtils.isEmpty(text)) {
             if (ttsListener != null)
                 ttsListener.onComplete();
@@ -52,6 +53,7 @@ public class AISpeechTTS implements ITTS {
         }
 
         if (mTTSEngine != null) {
+            isSpeaking = true;
             mTTSEngine.speak(text, "1024");
         }
         return true;
@@ -70,6 +72,11 @@ public class AISpeechTTS implements ITTS {
         this.ttsListener = listener;
     }
 
+    @Override
+    public boolean isSpeaking() {
+        return isSpeaking;
+    }
+
     private class AILocalTTSListenerImpl implements AITTSListener {
 
         @Override
@@ -83,8 +90,6 @@ public class AISpeechTTS implements ITTS {
 
         @Override
         public void onReady(String utteranceId) {
-//            LogUtils.d(TAG, utteranceId + "开始播放。。。");
-            isSpeaking = true;
             LogUtils.d(AISpeechEar.TAG, "tts onReady");
         }
 
@@ -95,7 +100,6 @@ public class AISpeechTTS implements ITTS {
 
         @Override
         public void onCompletion(String utteranceId) {
-//            LogUtils.d(TAG, utteranceId + "播放完毕！");
             isSpeaking = false;
             LogUtils.d(AISpeechEar.TAG, "tts onCompletion");
             if (ttsListener != null)
@@ -104,6 +108,7 @@ public class AISpeechTTS implements ITTS {
 
         @Override
         public void onError(String utteranceId, AIError error) {
+            isSpeaking = false;
             LogUtils.d(TAG, "检测到错误：" + error.toString());
         }
     }

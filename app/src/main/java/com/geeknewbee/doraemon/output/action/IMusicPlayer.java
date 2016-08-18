@@ -12,6 +12,8 @@ public interface IMusicPlayer {
 
     void release();
 
+    boolean isPlaying();
+
     void setListener(MusicListener listener);
 
     public interface MusicListener {

@@ -15,8 +15,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
     private ITTS itts;
     private IMusicPlayer iMusicPlayer;
     private MouthQueueListener listener;
-    //是否正在使用
-    private volatile boolean isUse;
 
     private MouthTaskQueue() {
         super();
@@ -46,18 +44,15 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
         switch (input.getType()) {
             case PLAY_SOUND:
                 iMusicPlayer.stop();
-                setUse(true);
                 itts.talk(input.getContent());
                 break;
             case PLAY_MUSIC:
                 iMusicPlayer.stop();
                 itts.talk("正在搜索音乐");
                 if (input.getContent().equalsIgnoreCase("笑话")) {
-                    setUse(true);
                     iMusicPlayer.joke();
                     break;
                 } else {
-                    setUse(true);
                     iMusicPlayer.play(input.getContent());
                     break;
                 }
@@ -79,16 +74,10 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
     public void onComplete() {
         if (listener != null)
             listener.onTTSComplete();
-
-        setUse(false);
     }
 
-    public synchronized boolean isUse() {
-        return isUse;
-    }
-
-    public synchronized void setUse(boolean use) {
-        isUse = use;
+    public synchronized boolean isPlayMedia() {
+        return iMusicPlayer.isPlaying();
     }
 
     public interface MouthQueueListener {

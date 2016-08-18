@@ -36,6 +36,9 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     private List<Track> tracks = new ArrayList<>();
     private List<Long> albumId = new ArrayList<>();
     private MusicListener listener;
+    //正在播放标示
+    private boolean isPlaying;
+
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
 
         @Override
@@ -149,13 +152,13 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     @Override
-    public boolean play(String param) {
+    public synchronized boolean play(String param) {
+        isPlaying = true;
         Map<String, String> map = new HashMap<String, String>();
         map.put(DTransferConstants.SEARCH_KEY, param);
         map.put(DTransferConstants.CATEGORY_ID, "2");
         map.put(DTransferConstants.PAGE, "1");
         map.put(DTransferConstants.CALC_DIMENSION, "1");
-
         /*ConnectivityManager mgrConn = (ConnectivityManager) BaseApplication.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         TelephonyManager mgrTel = (TelephonyManager) BaseApplication.mContext.getSystemService(Context.TELEPHONY_SERVICE);
         boolean isConnected = ((mgrConn.getActiveNetworkInfo() != null
@@ -187,7 +190,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     @Override
-    public boolean joke() {
+    public synchronized boolean joke() {
         // 分类列表：娱乐
         // 1--资讯,2--音乐,3--有声书,4--娱乐,6--儿童,7--健康养生,8--商业财经,9--历史人文,10--情感生活,
         // 11--其他,12--相声评书,13--教育培训,14--百家讲坛,15--广播剧,16--戏曲,17--电台,18--IT科技,
@@ -206,6 +209,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         // 4839492$$【花絮集】无干货，非骨灰级粉丝慎入~~我笑点比较低。。,4566428$$笑话,3524159$$【每日一笑】,
         // 4078745$$段子搬运工,4218901$$哈哈逗你,4342792$$波波讲段子,3849250$$Alpha冷,4388970$$不止是幽默,
         // 4422113$$竹子讲笑话，羞羞哒,4322121$$生活小趣,4694948$$乐在其中,4660402$$晨彩飞扬,
+        isPlaying = true;
         Map<String, String> map = new HashMap<String, String>();
         map.put(DTransferConstants.ALBUM_ID, albumId.get(new Random().nextInt(albumId.size())) + "");
         map.put(DTransferConstants.SORT, "asc");
@@ -238,6 +242,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     private void notifyComplete() {
+        isPlaying = false;
         if (listener != null)
             listener.onComplete();
     }
@@ -256,6 +261,11 @@ public class XMLYMusicPlayer implements IMusicPlayer {
             mPlayerManager.removePlayerStatusListener(mPlayerStatusListener);
             mPlayerManager.release();
         }
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return isPlaying;
     }
 
     @Override

@@ -11,6 +11,8 @@ public interface ITTS {
 
     void setTTSListener(TTSListener listener);
 
+    boolean isSpeaking();
+
     public interface TTSListener {
         void onComplete();
     }
