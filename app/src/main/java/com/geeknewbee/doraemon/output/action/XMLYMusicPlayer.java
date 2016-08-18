@@ -158,19 +158,21 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
             @Override
             public void onSuccess(SearchTrackList searchTrackList) {
-                LogUtils.d("搜索声音数量", searchTrackList.getTracks().size() + "");
+                LogUtils.d(Constants.TAG_MUSIC, "搜索声音数量" + searchTrackList.getTracks().size() + "");
                 //LogUtils.d("搜索声音", searchTrackList.getTracks().get(0).toString());
                 if (searchTrackList.getTracks() != null && searchTrackList.getTracks().size() > 0) {
                     tracks.clear();
                     tracks.add(searchTrackList.getTracks().get(0));
                     mPlayerManager.clearPlayCache();
                     mPlayerManager.playList(tracks, 0);
+                } else {
+                    notifyComplete();
                 }
             }
 
             @Override
             public void onError(int code, String message) {
-                LogUtils.d("搜索声音", "code:" + code);
+                LogUtils.d(Constants.TAG_MUSIC, "搜索声音Error:" + "code:" + code);
                 notifyComplete();
             }
         });
@@ -222,7 +224,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
             @Override
             public void onError(int i, String s) {
-                LogUtils.d("专辑ID下的专辑列表", "获取失败:" + s);
+                LogUtils.d(Constants.TAG_MUSIC, "专辑ID下的专辑列表" + "获取失败:" + s);
                 notifyComplete();
             }
         });

@@ -265,6 +265,7 @@ public class AISpeechEar implements IEar {
 
         @Override
         public void onResults(AIResult results) {
+            setListerStatue(false);
             LogUtils.d(TAG, results.getResultObject().toString());
 
             if (results.isLast()) {
