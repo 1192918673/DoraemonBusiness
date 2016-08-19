@@ -49,7 +49,8 @@ public class MainActivity extends Activity {
 
     private void startBluetoothService() {
         bluetoothServiceManager = BluetoothServiceManager.getInstance(getApplicationContext());
-        bluetoothServiceManager.onCreate();
+        bluetoothServiceManager.init();
+        bluetoothServiceManager.start();
     }
 
     private void test() {
@@ -68,16 +69,9 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        bluetoothServiceManager.onStart();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
-        bluetoothServiceManager.onResume();
     }
 
     @Override

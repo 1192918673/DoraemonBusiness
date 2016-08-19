@@ -55,14 +55,11 @@ public class BluetoothServiceManager {
                     switch (msg.arg1) {
                         case BluetoothChatService.STATE_CONNECTED:
                             talkTask.start();
-//                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "已连接"));
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
-//                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "连接中"));
                             break;
                         case BluetoothChatService.STATE_LISTEN:
                         case BluetoothChatService.STATE_NONE:
-//                            doraemon.addCommand(new Command(CommandType.PLAY_SOUND, "断开连接"));
                             break;
                     }
                     break;
@@ -103,7 +100,7 @@ public class BluetoothServiceManager {
         return instance;
     }
 
-    public void onCreate() {
+    public void init() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         context.registerReceiver(mReceiver, filter);
@@ -111,22 +108,12 @@ public class BluetoothServiceManager {
         talkTask = new BluetoothTalkTask(audioData);
     }
 
-    public void onStart() {
+    public void start() {
         if (!mBluetoothAdapter.isEnabled()) {
             mBluetoothAdapter.enable();
             // Otherwise, setup the chat session
         } else if (mChatService == null) {
             setupChat();
-        }
-    }
-
-    public void onResume() {
-        if (mChatService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
-                // Start the Bluetooth chat services
-                mChatService.start();
-            }
         }
     }
 
@@ -149,5 +136,4 @@ public class BluetoothServiceManager {
             mChatService.start();
         }
     }
-
 }
