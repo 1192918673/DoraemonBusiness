@@ -88,6 +88,17 @@ public class BluetoothServiceManager {
                         e.printStackTrace();
                     }
                     break;
+                case Constants.MESSAGE_BLE_WIFI:
+                    byte[] wifiBuf = (byte[]) msg.obj;
+                    Gson gsonSecond = new Gson();
+                    try {
+                        String readMessage = new String(wifiBuf, 0, wifiBuf.length);
+                        BLECommand command = gsonSecond.fromJson(readMessage, BLECommand.class);
+                        doraemon.addCommand(command.getCommand());
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
+                    }
+                    break;
             }
         }
     };
@@ -174,7 +185,7 @@ public class BluetoothServiceManager {
             mBTAdvertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();
         }
         if (mBTAdvertiser != null) {
-            ias = new ImmediateAlertService();
+            ias = new ImmediateAlertService(mHandler);
             mGattServer = BleUtil.getManager(context).openGattServer(context, ias);
             ias.setupServices(mGattServer);
 

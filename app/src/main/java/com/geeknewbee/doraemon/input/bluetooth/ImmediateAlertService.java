@@ -7,21 +7,25 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattServer;
 import android.bluetooth.BluetoothGattServerCallback;
 import android.bluetooth.BluetoothGattService;
+import android.os.Handler;
 import android.util.Log;
 
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.util.UUID;
 
 public class ImmediateAlertService extends BluetoothGattServerCallback {
     public static final String TAG = "BLE_TAG";
-    private byte[] mAlertLevel = new byte[]{
-            (byte) 0x00
-    };
+    private final Handler mHandler;
 
     private BluetoothGattServer mGattServer;
     private BluetoothDevice bluetoothDevice;
     private BluetoothGattCharacteristic mansc;
+
+    public ImmediateAlertService(Handler mHandler) {
+        this.mHandler = mHandler;
+    }
 
     public void setupServices(BluetoothGattServer gattServer) {
         if (gattServer == null) {
@@ -86,8 +90,8 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                 UUID.fromString(BleUuid.CHAR_SET_WIFI_STRING))) {
             LogUtils.d(TAG, "CHAR_ALERT_LEVEL");
             if (value != null && value.length > 0) {
-                LogUtils.d(TAG, "value.length=" + value.length);
-                mAlertLevel[0] = value[0];
+                mHandler.obtainMessage(Constants.MESSAGE_READ_COMMAND, value.length, -1, value)
+                        .sendToTarget();
             } else {
                 LogUtils.d(TAG, "invalid value written");
             }

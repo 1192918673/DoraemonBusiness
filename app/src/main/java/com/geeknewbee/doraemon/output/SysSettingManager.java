@@ -22,6 +22,7 @@ public class SysSettingManager {
         WifiManager wm = (WifiManager) BaseApplication.mContext.getSystemService(Context.WIFI_SERVICE);
         WifiConfiguration wfc = new WifiConfiguration();
         String[] data = content.split("#");
+        if (data.length != 3) return;
         /*----------------------WPA连接方式------------------------*/
         wfc.SSID = "\"".concat(data[0]).concat("\"");
         wfc.status = WifiConfiguration.Status.DISABLED;
@@ -44,6 +45,65 @@ public class SysSettingManager {
         if (res != -1) {
             wm.enableNetwork(res, true);
         }
+    }
+
+    public static boolean connectWiFi(String ssid, String pwd, int type) {
+        WifiManager wm = (WifiManager) BaseApplication.mContext.getSystemService(Context.WIFI_SERVICE);
+        WifiConfiguration config = new WifiConfiguration();
+        config.SSID = "\"".concat(ssid).concat("\"");
+        config.status = WifiConfiguration.Status.DISABLED;
+        config.priority = 40;
+        if (type == 1) {
+            //NO PWD
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            config.allowedAuthAlgorithms.clear();
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+        } else if (type == 2) {
+            //wep
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+            config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+
+            if (pwd.matches("^[0-9a-fA-F]+$")) {
+                config.wepKeys[0] = pwd;
+            } else {
+                config.wepKeys[0] = "\"".concat(pwd).concat("\"");
+            }
+            config.wepTxKeyIndex = 0;
+        } else if (type == 3) {
+            //WPA连接方式
+            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+            config.preSharedKey = "\"".concat(pwd).concat("\"");
+        }
+        LogUtils.d("PWD", config.preSharedKey);
+        int res = wm.addNetwork(config);
+
+        if (res != -1) {
+            return wm.enableNetwork(res, true);
+        }
+
+        return false;
     }
 
     /**

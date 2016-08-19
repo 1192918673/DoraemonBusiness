@@ -9,6 +9,7 @@ import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
+import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.util.List;
@@ -56,7 +57,8 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 MouthTaskQueue.getInstance().stop();
                 break;
             case WIFI_MESSAGE:// 设置连接WIFI
-                SysSettingManager.connectWiFi(command.getContent());
+                WifiCommand wifiCommand = (WifiCommand) command;
+                SysSettingManager.connectWiFi(wifiCommand.ssid, wifiCommand.pwd, wifiCommand.type);
                 break;
             case SETTING_VOLUME:// 设置系统音量
                 SysSettingManager.setVolume(command.getContent());

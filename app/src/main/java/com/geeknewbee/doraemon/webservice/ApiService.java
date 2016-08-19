@@ -2,6 +2,7 @@ package com.geeknewbee.doraemon.webservice;
 
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
+import com.geeknewbee.doraemon.entity.GetMembersCountResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -23,4 +24,12 @@ public interface ApiService {
     @FormUrlEncoded
     @PUT("robot/battery")
     Call<BaseResponseBody<Object>> robotBattery(@Field("token") String token, @Field("percent") int percent);
+
+    @GET("robot/members_count")
+    Call<BaseResponseBody<GetMembersCountResponse>> getMembersCount(@Query("token") String token);
+
+    @FormUrlEncoded
+    @PUT("robot/ssid")
+    Call<BaseResponseBody<Object>> uploadSsid(@Field("token") String token, @Field("ssid") String ssid);
+
 }
