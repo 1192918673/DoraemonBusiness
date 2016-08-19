@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
+import com.geeknewbee.doraemon.processcenter.ShowQRTask;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
@@ -100,7 +101,9 @@ public class SysSettingManager {
         int res = wm.addNetwork(config);
 
         if (res != -1) {
-            return wm.enableNetwork(res, true);
+            boolean enableNetwork = wm.enableNetwork(res, true);
+            if (enableNetwork) new ShowQRTask().start();
+            return enableNetwork;
         }
 
         return false;
