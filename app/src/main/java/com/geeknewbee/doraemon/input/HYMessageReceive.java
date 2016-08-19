@@ -105,17 +105,17 @@ public class HYMessageReceive implements IMessageReceive {
                     int error = msg.arg1;
                     if (error == EMError.USER_REMOVED) {
                         // 显示帐号已经被移除
-                        LogUtils.d("HYMessageReceive", "显示帐号已经被移除");
+                        LogUtils.d(TAG, "显示帐号已经被移除");
                     } else if (error == EMError.USER_LOGIN_ANOTHER_DEVICE) {
                         // 显示帐号在其他设备登陆
-                        LogUtils.d("HYMessageReceive", "显示帐号在其他设备登陆");
+                        LogUtils.d(TAG, "显示帐号在其他设备登陆");
                     } else {
                         if (NetUtils.hasNetwork(App.mContext)) {
                             //连接不到聊天服务器
-                            LogUtils.d("HYMessageReceive", "连接不到聊天服务器");
+                            LogUtils.d(TAG, "连接不到聊天服务器");
                         } else {
                             //当前网络不可用，请检查网络设置
-                            LogUtils.d("HYMessageReceive", "当前网络不可用，请检查网络设置");
+                            LogUtils.d(TAG, "当前网络不可用，请检查网络设置");
                         }
                     }
                     break;
@@ -202,6 +202,8 @@ public class HYMessageReceive implements IMessageReceive {
                     String readData = pushData.getString("data");
                     messageListener.onReceivedMessage(Arrays.asList(new Command(CommandType.PLAY_SOUND, "定时提醒：" + readData)));
                 } else if (type == 2) {// 改变声音大小命令
+                    int vol = pushData.getInt("data");// 音量大小百分比，取值范围为 0-100
+                    messageListener.onReceivedMessage(Arrays.asList(new Command(CommandType.SETTING_VOLUME, vol + "")));
                 } else if (type == 3) {// 播放电影{"type":3,"data":"XMTYwODE0MjIxMg=="}
                 } else if (type == 4) {// 透传动作控制
                 } else if (type == 5) {// 手机识别

@@ -49,13 +49,14 @@ public class SysSettingManager {
     /**
      * 设置系统音量
      *
-     * @param content
+     * @param volPercent 音量大小百分比，取值范围为 0-100
      */
-    public static void setVolume(String content) {
+    public static void setVolume(String volPercent) {
         AudioManager am = (AudioManager) BaseApplication.mContext.getSystemService(Context.AUDIO_SERVICE);
-        am.setStreamVolume(AudioManager.STREAM_MUSIC, Integer.parseInt(content), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         int streamMaxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int currentVol = (int) (Integer.parseInt(volPercent) / 100.0 * streamMaxVolume);
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, currentVol, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         LogUtils.d("MAX", streamMaxVolume + "");
-        LogUtils.d("VOLUME", content);
+        LogUtils.d("VOLUME", volPercent);
     }
 }
