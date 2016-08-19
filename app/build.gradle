@@ -105,4 +105,5 @@ dependencies {
     compile 'de.greenrobot:greendao:2.0.0'
     compile 'com.facebook.stetho:stetho:1.1.0'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.google.zxing:core:3.2.1'
 }

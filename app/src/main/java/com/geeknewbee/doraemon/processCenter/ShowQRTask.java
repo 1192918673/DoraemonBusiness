@@ -34,16 +34,16 @@ public class ShowQRTask extends Thread {
             if (index >= number)
                 return;
 
-            if (DeviceUtil.isNetworkConnected(context)) {
+            String token = DoraemonInfoManager.getInstance(context).getToken();
+            if (DeviceUtil.isNetworkConnected(context) && !TextUtils.isEmpty(token)) {
                 Doraemon.getInstance(context).addCommand(new Command(CommandType.PLAY_SOUND, "网络已连接"));
-                String token = DoraemonInfoManager.getInstance(context).getToken();
                 if (TextUtils.isEmpty(token)) return;
                 Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
                 ApiService service = retrofit.create(ApiService.class);
                 try {
                     Response<BaseResponseBody<GetMembersCountResponse>> response = service.getMembersCount(token).execute();
                     if (response.isSuccessful() && response.body().isSuccess() && response.body().getData().count == 0)
-                        Doraemon.getInstance(context).addCommand(new Command(CommandType.SHOW_QR));
+                        Doraemon.getInstance(context).addCommand(new Command(CommandType.SHOW_QR, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

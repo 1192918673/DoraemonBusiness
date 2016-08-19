@@ -43,7 +43,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case SHOW_EXPRESSION:
                 //面部表情
                 ExpressionCommand expressionCommand = (ExpressionCommand) command;
-                FaceManager.display(expressionCommand.getContent(), expressionCommand.loops);
+                FaceManager.getInstance().displayGif(expressionCommand.getContent(), expressionCommand.loops);
                 break;
             case PLAY_MUSIC:
                 // 音乐
@@ -68,6 +68,12 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case LE_XING_FOOT://乐行Foot
                 LimbsTaskQueue.getInstance().addTask(command);
+                break;
+            case SHOW_QR:
+                FaceManager.getInstance().showQR(command.getContent());
+                break;
+            case BIND_ACCOUNT_SUCCESS:
+                FaceManager.getInstance().hideQR();
                 break;
         }
     }

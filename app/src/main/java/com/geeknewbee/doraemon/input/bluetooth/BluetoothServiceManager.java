@@ -14,12 +14,17 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.output.BluetoothTalkTask;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -108,6 +113,7 @@ public class BluetoothServiceManager {
 
     private BluetoothServiceManager(Context context) {
         this.context = context;
+        EventBus.getDefault().register(this);
     }
 
     public static BluetoothServiceManager getInstance(Context context) {
@@ -207,6 +213,16 @@ public class BluetoothServiceManager {
         if (mBTAdvertiser != null) {
             mBTAdvertiser.stopAdvertising(mAdvCallback);
             mBTAdvertiser = null;
+        }
+    }
+
+    /**
+     * 当设置wifi 完成的回调
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSetWifiComplete(SetWifiCompleteEvent event) {
+        if (ias != null) {
+            ias.sendNotification(event.isSuccess ? "1" : "0");
         }
     }
 

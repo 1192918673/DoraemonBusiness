@@ -21,7 +21,7 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
 
     private BluetoothGattServer mGattServer;
     private BluetoothDevice bluetoothDevice;
-    private BluetoothGattCharacteristic mansc;
+    private BluetoothGattCharacteristic read;
 
     public ImmediateAlertService(Handler mHandler) {
         this.mHandler = mHandler;
@@ -39,12 +39,21 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                     UUID.fromString(BleUuid.SERVICE_DEVICE_INFORMATION),
                     BluetoothGattService.SERVICE_TYPE_PRIMARY);
             // manufacturer name string char.
-            mansc = new BluetoothGattCharacteristic(
+            BluetoothGattCharacteristic mansc = new BluetoothGattCharacteristic(
                     UUID.fromString(BleUuid.CHAR_SET_WIFI_STRING),
+                    BluetoothGattCharacteristic.PROPERTY_READ |
+                            BluetoothGattCharacteristic.PROPERTY_WRITE |
+                            BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                    BluetoothGattCharacteristic.PERMISSION_READ |
+                            BluetoothGattCharacteristic.PERMISSION_WRITE);
+
+            read = new BluetoothGattCharacteristic(
+                    UUID.fromString(BleUuid.CHAR_NOTIFY_WIFI_STRING),
                     BluetoothGattCharacteristic.PROPERTY_READ |
                             BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                     BluetoothGattCharacteristic.PERMISSION_READ);
             dis.addCharacteristic(mansc);
+            dis.addCharacteristic(read);
             mGattServer.addService(dis);
         }
     }
@@ -90,7 +99,7 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                 UUID.fromString(BleUuid.CHAR_SET_WIFI_STRING))) {
             LogUtils.d(TAG, "CHAR_ALERT_LEVEL");
             if (value != null && value.length > 0) {
-                mHandler.obtainMessage(Constants.MESSAGE_READ_COMMAND, value.length, -1, value)
+                mHandler.obtainMessage(Constants.MESSAGE_BLE_WIFI, value.length, -1, value)
                         .sendToTarget();
             } else {
                 LogUtils.d(TAG, "invalid value written");
@@ -106,11 +115,10 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
     }
 
     //主动写值并通知远程设备
-//    public void sendNotification() {
-//        if (bluetoothDevice != null && mGattServer != null) {
-//            mansc.setValue("new123:Hoge");
-//            mGattServer.notifyCharacteristicChanged(bluetoothDevice, mansc, false);//测试发现必须发送此通知,并且保证特征值的notify权限
-//        }
-//    }
-
+    public void sendNotification(String value) {
+        if (bluetoothDevice != null && mGattServer != null) {
+            read.setValue(value);
+            mGattServer.notifyCharacteristicChanged(bluetoothDevice, read, false);//测试发现必须发送此通知,并且保证特征值的notify权限
+        }
+    }
 }

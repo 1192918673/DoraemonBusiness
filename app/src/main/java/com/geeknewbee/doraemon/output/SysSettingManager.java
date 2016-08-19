@@ -5,9 +5,12 @@ import android.media.AudioManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
+import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.processcenter.ShowQRTask;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 系统功能设置
@@ -49,6 +52,7 @@ public class SysSettingManager {
     }
 
     public static boolean connectWiFi(String ssid, String pwd, int type) {
+        boolean result = false;
         WifiManager wm = (WifiManager) BaseApplication.mContext.getSystemService(Context.WIFI_SERVICE);
         WifiConfiguration config = new WifiConfiguration();
         config.SSID = "\"".concat(ssid).concat("\"");
@@ -101,12 +105,12 @@ public class SysSettingManager {
         int res = wm.addNetwork(config);
 
         if (res != -1) {
-            boolean enableNetwork = wm.enableNetwork(res, true);
-            if (enableNetwork) new ShowQRTask().start();
-            return enableNetwork;
+            result = wm.enableNetwork(res, true);
+            if (result) new ShowQRTask().start();
         }
 
-        return false;
+        EventBus.getDefault().post(new SetWifiCompleteEvent(result));
+        return result;
     }
 
     /**
