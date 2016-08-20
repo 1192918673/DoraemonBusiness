@@ -50,7 +50,7 @@
             android:screenOrientation="landscape"
             android:theme="@style/NoActionBar">
             <intent-filter>
-                <sportAction android:name="android.intent.sportAction.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -58,21 +58,21 @@
 
         <receiver android:name=".broadcast.BootReceiver">
             <intent-filter>
-                <sportAction android:name="android.intent.sportAction.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
 
         <receiver android:name=".broadcast.BatteryReceiver">
             <intent-filter>
-                <sportAction android:name="android.intent.sportAction.BATTERY_CHANGED" />
+                <action android:name="android.intent.action.BATTERY_CHANGED" />
             </intent-filter>
         </receiver>
 
         <receiver android:name=".broadcast.NetworkChangeReceiver">
             <intent-filter>
-                <sportAction android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <sportAction android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
 
@@ -110,13 +110,13 @@
         <!-- 声明SDK所需的receiver -->
         <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
             <intent-filter>
-                <sportAction android:name="android.intent.sportAction.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
                 <data android:scheme="package" />
             </intent-filter>
             <!-- 可选filter -->
             <intent-filter>
-                <sportAction android:name="android.intent.sportAction.BOOT_COMPLETED" />
-                <sportAction android:name="android.intent.sportAction.USER_PRESENT" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
         <!-- 环信 配置-->
