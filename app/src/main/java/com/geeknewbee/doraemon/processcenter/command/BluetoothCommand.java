@@ -43,7 +43,7 @@ public class BluetoothCommand {
     /**
      * 跳舞动作
      */
-    private List<DanceAction> danceActions;
+    private List<SportAction> sportActions;
 
     /**
      * 根据蓝牙指令获取对应的Command
@@ -79,8 +79,8 @@ public class BluetoothCommand {
             commands.add(new Command(CommandType.SETTING_VOLUME, volume));
         }
 
-        if (danceActions != null && !danceActions.isEmpty()) {
-            commands.add(new DanceCommand(danceActions));
+        if (sportActions != null && !sportActions.isEmpty()) {
+            commands.add(new ActionSetCommand(sportActions));
         }
 
         return commands;

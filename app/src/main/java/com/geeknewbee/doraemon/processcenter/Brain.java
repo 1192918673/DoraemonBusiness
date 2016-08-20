@@ -63,7 +63,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case SETTING_VOLUME:// 设置系统音量
                 SysSettingManager.setVolume(command.getContent());
                 break;
-            case DANCE:
+            case ACTIONSET:
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
             case LE_XING_FOOT://乐行Foot

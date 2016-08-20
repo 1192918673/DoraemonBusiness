@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.processcenter;
 
-import com.geeknewbee.doraemon.processcenter.command.DanceAction;
-import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
+import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
+import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 
 import java.io.BufferedReader;
@@ -59,14 +59,14 @@ public class ParseDanceCommandTask {
             super.run();
             isStop = false;
 
-            List<DanceAction> commands = new ArrayList<>();
+            List<SportAction> commands = new ArrayList<>();
             try {
                 BufferedReader bufReader = new BufferedReader(inputStreamReader);
                 String line;
-                DanceAction danceAction;
+                SportAction sportAction;
                 while ((line = bufReader.readLine()) != null && !isStop) {
-                    danceAction = HeadAndArmActionUtil.parseCommand(line);
-                    commands.add(danceAction);
+                    sportAction = HeadAndArmActionUtil.parseCommand(line);
+                    commands.add(sportAction);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -79,7 +79,7 @@ public class ParseDanceCommandTask {
             }
 
             if (!isStop)
-                Doraemon.getInstance(BaseApplication.mContext).addCommand(new DanceCommand(commands));
+                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ActionSetCommand(commands));
         }
 
         public void cancel() {
