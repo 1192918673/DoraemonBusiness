@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 从文件中解析舞蹈动作
@@ -37,7 +39,6 @@ public class ParseDanceCommandTask {
     public static final int FOOT_DIRECTION_RIGHT = 3;
     public static final int FOOT_DIRECTION_LEFT = 4;
 
-    public static final int ROUND_COUNT = 1;
     public static final int RESET_FLAG = 1;//复位到默认位置Flag
     public static final int UNCHANGED_FLAG = 0;//角度不变的Flag
 
@@ -46,6 +47,8 @@ public class ParseDanceCommandTask {
 
     public static char DEFAULT_HEAD_HORIZONTAL_ANGLE = 0x0;//头左右方向初始向前
     public static char DEFAULT_HEAD_VERTICAL_ANGLE = 0x0;//头上下方向初始向前
+
+    public static char UNCHANGE_ANGLE = 0xFFFF;//当前不改变的时候返回该值
 
     //手臂上下方向最大角度(默认垂直地面是0，只能向上运动)
     public static int MAX_ARM_UP_DOWN_ANGLE = 45;
@@ -61,13 +64,6 @@ public class ParseDanceCommandTask {
     //头的上下方向最大/最小角度(默认超前是0，可以上下运动)
     public static int MAX_HEAD_VERTICAL_ANGLE = 12;
     public static int MIN_HEAD_VERTICAL_ANGLE = -12;
-
-    private static char current_left_duoji;
-    private static char current_right_duoji;
-    private static char current_right_dianji;
-    private static char current_left_dianji;
-    private static char current_head_horizontal;
-    private static char current_head_vertical;
 
     private ParseThread parseThread;
 
@@ -86,16 +82,6 @@ public class ParseDanceCommandTask {
     public void stop() {
         if (parseThread != null)
             parseThread.cancel();
-    }
-
-    private void resetData() {
-        current_left_duoji = DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE;
-        current_right_duoji = DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE;
-        current_right_dianji = DEFAULT_ARM_UP_DOWN_ANGLE;
-        current_left_dianji = DEFAULT_ARM_UP_DOWN_ANGLE;
-
-        current_head_horizontal = DEFAULT_HEAD_HORIZONTAL_ANGLE;
-        current_head_vertical = DEFAULT_HEAD_VERTICAL_ANGLE;
     }
 
     private DanceAction parseCommand(String line) {
@@ -140,25 +126,67 @@ public class ParseDanceCommandTask {
         return danceAction;
     }
 
+    /**
+     * 获取头和手的动作指令
+     * 运动关节		协议中电机号
+     * 脑袋	左右	电机1
+     * 俯仰	电机2
+     * 左手	前后	电机3
+     * 上下	电机4
+     * 右手	前后	电机5
+     * 上下	电机6
+     *
+     * @param leftUpAndDownAngle
+     * @param rightUpAndDownAngle
+     * @param rightAPAngle
+     * @param leftAPAngle
+     * @param headHorizontal
+     * @param headVertical
+     * @param time
+     * @return
+     */
     private String getTopCommand(int leftUpAndDownAngle, int rightUpAndDownAngle, int rightAPAngle, int leftAPAngle, int headHorizontal, int headVertical, int time) {
-        current_left_duoji = calculateArmUpAndDownAngle(current_left_duoji, leftUpAndDownAngle);
-        current_right_duoji = calculateArmUpAndDownAngle(current_right_duoji, rightUpAndDownAngle);
+        Map<Character, Character> contentMap = new HashMap<>();
+        char result;
+        result = calculateHeadHorizontalAngle(headHorizontal);
+        if (result != UNCHANGE_ANGLE)
+            contentMap.put((char) 0x01, result);
 
-        current_left_dianji = calculateArmAnterioPosteriorAngle(current_left_dianji, leftAPAngle);
-        current_right_dianji = calculateArmAnterioPosteriorAngle(current_right_dianji, rightAPAngle);
+        result = calculateHeadVerticalAngle(headVertical);
+        if (result != UNCHANGE_ANGLE)
+            contentMap.put((char) 0x02, result);
 
-        current_head_horizontal = calculateHeadHorizontalAngle(current_head_horizontal, headHorizontal);
-        current_head_vertical = calculateHeadVerticalAngle(current_head_vertical, headVertical);
+        result = calculateArmAnterioPosteriorAngle(leftAPAngle);
+        if (result != UNCHANGE_ANGLE)
+            contentMap.put((char) 0x03, result);
+
+        result = calculateArmUpAndDownAngle(leftUpAndDownAngle);
+        if (result != UNCHANGE_ANGLE)
+            contentMap.put((char) 0x04, result);
+
+        result = calculateArmAnterioPosteriorAngle(rightAPAngle);
+        if (result != UNCHANGE_ANGLE)
+            contentMap.put((char) 0x05, result);
+
+        result = calculateArmUpAndDownAngle(rightUpAndDownAngle);
+        if (result != UNCHANGE_ANGLE)
+            contentMap.put((char) 0x06, result);
 
         char[] timeChar = BytesUtils.getHighAndLowChar(time);
-        char[] buf = new char[]{0x02, 0x06,
-                0x01, current_left_duoji,
-                0x02, current_right_duoji,
-                0x03, current_right_dianji,
-                0x04, current_left_dianji,
-                0x05, current_head_horizontal,
-                0x06, current_head_vertical,
-                timeChar[0], timeChar[1], 0x00, 0x00};
+        char[] buf = new char[contentMap.size() * 2 + 6];
+
+        buf[0] = 0x02;
+        buf[1] = (char) contentMap.size();
+        int index = 1;
+        for (Character key : contentMap.keySet()) {
+            buf[index + 1] = key;
+            buf[index + 2] = contentMap.get(key);
+            index += 2;
+        }
+        buf[index + 1] = timeChar[0];
+        buf[index + 2] = timeChar[1];
+        buf[index + 3] = 0x00;
+        buf[index + 4] = 0x00;
 
         return String.valueOf(buf);
     }
@@ -166,15 +194,14 @@ public class ParseDanceCommandTask {
     /**
      * 计算头部水平方向角度
      *
-     * @param currentAngle
      * @param headVertical
      * @return
      */
-    private char calculateHeadVerticalAngle(char currentAngle, int headVertical) {
+    private char calculateHeadVerticalAngle(int headVertical) {
         if (headVertical == RESET_FLAG)
             return DEFAULT_HEAD_VERTICAL_ANGLE;
         else if (headVertical == UNCHANGED_FLAG)
-            return currentAngle;
+            return UNCHANGE_ANGLE;
         else if (headVertical < MIN_HEAD_VERTICAL_ANGLE)
             headVertical = MIN_HEAD_VERTICAL_ANGLE;
         else if (headVertical > MAX_HEAD_VERTICAL_ANGLE)
@@ -186,15 +213,14 @@ public class ParseDanceCommandTask {
     /**
      * 计算头部水平方向角度
      *
-     * @param currentAngle
      * @param headHorizontal
      * @return
      */
-    private char calculateHeadHorizontalAngle(char currentAngle, int headHorizontal) {
+    private char calculateHeadHorizontalAngle(int headHorizontal) {
         if (headHorizontal == RESET_FLAG)
             return DEFAULT_HEAD_HORIZONTAL_ANGLE;
         else if (headHorizontal == UNCHANGED_FLAG)
-            return currentAngle;
+            return UNCHANGE_ANGLE;
         else if (headHorizontal < MIN_HEAD_HORIZONTAL)
             headHorizontal = MIN_HEAD_HORIZONTAL;
         else if (headHorizontal > MAX_HEAD_HORIZONTAL_ANGLE)
@@ -209,11 +235,11 @@ public class ParseDanceCommandTask {
      * @param leftDianjiAngle
      * @return
      */
-    private char calculateArmAnterioPosteriorAngle(char currentAngle, int leftDianjiAngle) {
+    private char calculateArmAnterioPosteriorAngle(int leftDianjiAngle) {
         if (leftDianjiAngle == RESET_FLAG)
             return DEFAULT_ARM_UP_DOWN_ANGLE;
         else if (leftDianjiAngle == UNCHANGED_FLAG)
-            return currentAngle;
+            return UNCHANGE_ANGLE;
         else if (leftDianjiAngle < MIN_ARM_ANTERIO_POSTERIOR_ANGLE)
             leftDianjiAngle = MIN_ARM_ANTERIO_POSTERIOR_ANGLE;
         else if (leftDianjiAngle > MAX_ARM_ANTERIO_POSTERIOR_ANGLE)
@@ -228,11 +254,11 @@ public class ParseDanceCommandTask {
      * @param leftDuojiAngle
      * @return
      */
-    private char calculateArmUpAndDownAngle(char currentAngle, int leftDuojiAngle) {
+    private char calculateArmUpAndDownAngle(int leftDuojiAngle) {
         if (leftDuojiAngle == RESET_FLAG)
             return DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE;
         else if (leftDuojiAngle == UNCHANGED_FLAG)
-            return currentAngle;
+            return UNCHANGE_ANGLE;
         else if (leftDuojiAngle > MAX_ARM_UP_DOWN_ANGLE)
             leftDuojiAngle = MAX_ARM_UP_DOWN_ANGLE;
 
@@ -336,7 +362,6 @@ public class ParseDanceCommandTask {
         public void run() {
             super.run();
             isStop = false;
-            resetData();
 
             List<DanceAction> commands = new ArrayList<>();
             try {
