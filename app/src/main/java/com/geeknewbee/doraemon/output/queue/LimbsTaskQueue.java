@@ -79,12 +79,13 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(danceAction.expressionName, 1));
 
             sendCommandContent(danceAction.topCommand);
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            sendCommandContent(danceAction.footCommand);
+//            try {
+//                Thread.sleep(50);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            sendCommandContent(danceAction.footCommand);
+            sendLeXingFootCommand(danceAction.footCommand);
 
             try {
                 Thread.sleep(danceAction.delayTime);
@@ -92,6 +93,15 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void sendLeXingFootCommand(String footCommand) {
+        if (TextUtils.isEmpty(footCommand))
+            return;
+
+        String[] split = footCommand.split("|");
+        if (split.length != 2) return;
+        foot.setSpeed(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
     }
 
     private Boolean sendCommandContent(String s) {

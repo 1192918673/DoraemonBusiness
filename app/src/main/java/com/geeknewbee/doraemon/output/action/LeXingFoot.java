@@ -13,12 +13,6 @@ import java.io.File;
  */
 public class LeXingFoot implements IFoot {
 
-    public static final int DIRECTION_FORE = 0;
-    public static final int DIRECTION_BACK = 1;
-    public static final int DIRECTION_LEFT = 2;
-    public static final int DIRECTION_RIGHT = 3;
-    public static final int DIRECTION_CLOCKWISE = 4;
-    public static final int DIRECTION_EASTERN = 5;
     public static final String LE_XING_DEVICE_NAME_PREFIX = "ttyACM";
     private final static int deviceParam = 115200;
     public static String TAG = LeXingFoot.class.getSimpleName();
@@ -68,30 +62,33 @@ public class LeXingFoot implements IFoot {
      * 直线行走
      *
      * @param direction 方向：0 向前，1 向后
-     * @param distance  距离
-     * @param duration  时间
+     * @param distance  距离  cm
+     * @param duration  时间  ms
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
     @Override
-    public int setWalkStraight(int direction, int distance, int duration) {
+    public synchronized int setWalkStraight(int direction, int distance, int duration) {
         checkDeviceChange();
 
         if (mNaviPack == null) {
             LogUtils.d("setWalkStraight", "The instance of NaviPack is null");
             return -1;
         }
-        mNaviPack.setSpeed(0, 0, 0);
-        int vSpeed = 0;
-        if (DIRECTION_FORE == direction) {
-            vSpeed = (int) Math.abs((float) distance / duration);
-        } else if (DIRECTION_BACK == direction) {
-            vSpeed = (int) -Math.abs((float) distance / duration);
-        } else {
-            LogUtils.d("setWalkStraight", "Walking direction error...");
-            return -2;
+        stop();
+        int[] speed = LeXingUtil.getSpeed(direction, distance, duration);
+        mNaviPack.setSpeed(handlerId, speed[0], speed[1]);
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        mNaviPack.setSpeed(vSpeed, 0, duration);
+        stop();
+
         return 0;
+    }
+
+    private void stop() {
+        mNaviPack.setSpeed(handlerId, 0, 0);
     }
 
     /**
@@ -100,50 +97,27 @@ public class LeXingFoot implements IFoot {
      * @param direction      方向：0 左，1 右
      * @param clockDirection 方式：0 顺时针，1 逆时针
      * @param angle          角度
-     * @param radius         半径
-     * @param duration       时间
+     * @param radius         半径 cm
+     * @param duration       时间 ms
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
     @Override
-    public int setTurn(int direction, int clockDirection, int angle, int radius, int duration) {
+    public synchronized int setTurn(int direction, int clockDirection, int angle, int radius, int duration) {
         checkDeviceChange();
-        
+
         if (mNaviPack == null) {
             LogUtils.d("setWalkStraight", "The instance of NaviPack is null");
             return -1;
         }
-        mNaviPack.setSpeed(0, 0, 0);
-        int vSpeed, wSpeed = 0;
-        switch (direction) {
-            case DIRECTION_LEFT: // 往左转
-                if (DIRECTION_CLOCKWISE == clockDirection) { // 顺时针
-                    wSpeed = (int) Math.abs((float) angle / duration);
-                    vSpeed = -wSpeed * radius;
-                } else if (DIRECTION_EASTERN == clockDirection) { // 逆时针
-                    wSpeed = -(int) Math.abs((float) angle / duration);
-                    vSpeed = wSpeed * radius;
-                } else {
-                    LogUtils.d("setTurn", "Clock direction error...");
-                    return -3;
-                }
-                break;
-            case DIRECTION_RIGHT: // 往右转
-                if (DIRECTION_CLOCKWISE == clockDirection) { // 顺时针
-                    wSpeed = (int) Math.abs((float) angle / duration);
-                    vSpeed = wSpeed * radius;
-                } else if (DIRECTION_EASTERN == clockDirection) { // 逆时针
-                    wSpeed = -(int) Math.abs((float) angle / duration);
-                    vSpeed = -wSpeed * radius;
-                } else {
-                    LogUtils.d("setTurn", "Clock direction error...");
-                    return -3;
-                }
-                break;
-            default:
-                LogUtils.d("setTurn", "Turning direction error...");
-                return -2;
+        stop();
+        int[] speed = LeXingUtil.getSpeed(direction, clockDirection, angle, radius, duration);
+        mNaviPack.setSpeed(handlerId, speed[0], speed[1]);
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        mNaviPack.setSpeed(vSpeed, wSpeed, duration);
+        stop();
         return 0;
     }
 }

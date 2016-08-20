@@ -2,6 +2,7 @@ package com.geeknewbee.doraemon.processcenter;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.output.action.LeXingUtil;
 import com.geeknewbee.doraemon.processcenter.command.DanceAction;
 import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
@@ -132,7 +133,9 @@ public class ParseDanceCommandTask {
         danceAction.delayTime = time;
 
         danceAction.topCommand = getTopCommand(leftDuojiAngle, rightDuojiAngle, rightDianjiAngle, leftDianjiAngle, headHorizontal, headVertical, time);
-        danceAction.footCommand = getFootCommand(footDirection, footSpeed, ROUND_COUNT);
+//        danceAction.footCommand = getFootCommand(footDirection, footSpeed, ROUND_COUNT);
+        danceAction.footCommand = getFootCommandOfLeXing(footDirection, footSpeed);
+
 
         //9 运动的表情
         if (strings.length == 10 && !TextUtils.isEmpty(strings[9].trim())) {
@@ -241,6 +244,14 @@ public class ParseDanceCommandTask {
         return (char) (DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE + leftDuojiAngle);
     }
 
+    /**
+     * 以前的的中空板的脚步命令
+     *
+     * @param footDirection
+     * @param footSpeed
+     * @param roundCount
+     * @return
+     */
     private String getFootCommand(int footDirection, int footSpeed, int roundCount) {
         if (footDirection == 0 || footSpeed == 0)
             return "";
@@ -286,6 +297,37 @@ public class ParseDanceCommandTask {
         }
         char[] buf = new char[]{0x03, 0x02, 0x01, hSpeedChar_1, lSpeedChar_1, 0x00, round_count, 0x02, hSpeedChar_2, lSpeedChar_2, 0x00, round_count};
         return String.valueOf(buf);
+    }
+
+    /**
+     * 乐行的脚步命令
+     *
+     * @param footDirection
+     * @param footSpeed
+     * @return
+     */
+    private String getFootCommandOfLeXing(int footDirection, int footSpeed) {
+        if (footDirection == 0 || footSpeed == 0)
+            return "";
+
+        int[] result = new int[2];
+        int distance = 100;
+        int angle = 30;
+        switch (footDirection) {
+            case FOOT_DIRECTION_UP:
+                result = LeXingUtil.getSpeed(LeXingUtil.DIRECTION_FORE, distance, footDirection);
+                break;
+            case FOOT_DIRECTION_DOWN:
+                result = LeXingUtil.getSpeed(LeXingUtil.DIRECTION_BACK, distance, footDirection);
+                break;
+            case FOOT_DIRECTION_RIGHT:
+                result = LeXingUtil.getSpeed(LeXingUtil.DIRECTION_RIGHT, LeXingUtil.DIRECTION_CLOCKWISE, angle, 0, footDirection);
+                break;
+            case FOOT_DIRECTION_LEFT:
+                result = LeXingUtil.getSpeed(LeXingUtil.DIRECTION_LEFT, LeXingUtil.DIRECTION_EASTERN, angle, 0, footDirection);
+                break;
+        }
+        return String.format("%d|%d", result[0], result[0]);
     }
 
     private class ParseThread extends Thread {
