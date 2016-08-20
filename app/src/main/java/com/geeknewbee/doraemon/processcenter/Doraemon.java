@@ -11,8 +11,10 @@ import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechDevice;
 import com.geeknewbee.doraemon.input.AISpeechEar;
+import com.geeknewbee.doraemon.input.HYMessageReceive;
 import com.geeknewbee.doraemon.input.IEar;
 import com.geeknewbee.doraemon.input.IEye;
+import com.geeknewbee.doraemon.input.IMessageReceive;
 import com.geeknewbee.doraemon.input.ISoundInputDevice;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -29,11 +31,12 @@ import java.util.List;
 /**
  * 哆啦A梦 单利模式
  */
-public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
+public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageReceive.MessageListener {
     private volatile static Doraemon instance;
     private final Context context;
     private IEar ear;
     private IEye eye;
+    private IMessageReceive receive;
     private ISoundInputDevice soundInputDevice;
     private Brain brain;
 
@@ -41,6 +44,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
         this.context = context;
         ear = new AISpeechEar();
         eye = new ReadSenseEye();
+        receive = HYMessageReceive.getInstance();
         brain = new Brain();
         soundInputDevice = new AISpeechDevice();
         EventBus.getDefault().register(this);
@@ -108,6 +112,12 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
         eye.stopRecognition();
     }
 
+    /**
+     * 开始自动接受后台消息 Automatic receive pushData
+     */
+    public void startReceive() {
+        receive.setMessageListener(this);
+    }
 
     /**
      * 语音识别结果
@@ -167,6 +177,16 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     }
 
     /**
+     * 收到后台推送的消息
+     *
+     * @param commands
+     */
+    @Override
+    public void onReceivedMessage(List<Command> commands) {
+        addCommand(commands);
+    }
+
+    /*
      * 开始说话
      *
      * @param event
@@ -218,5 +238,4 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener {
     public synchronized void addCommand(List<Command> commands) {
         brain.addCommand(commands);
     }
-
 }

@@ -205,6 +205,15 @@ public class AISpeechEar implements IEar {
         return "";
     }
 
+    @Override
+    public synchronized boolean isListening() {
+        return isListening;
+    }
+
+    private synchronized void setListerStatue(boolean isListening) {
+        this.isListening = isListening;
+    }
+
     /**
      * 语法编译引擎监听
      */
@@ -341,14 +350,5 @@ public class AISpeechEar implements IEar {
                 startRecognition();
             LogUtils.d(TAG, "检测到录音机停止");
         }
-    }
-
-    @Override
-    public synchronized boolean isListening() {
-        return isListening;
-    }
-
-    private synchronized void setListerStatue(boolean isListening) {
-        this.isListening = isListening;
     }
 }

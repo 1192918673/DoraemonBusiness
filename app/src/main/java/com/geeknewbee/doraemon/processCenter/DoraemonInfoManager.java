@@ -64,6 +64,7 @@ public class DoraemonInfoManager {
                 PrefUtils.saveString(context, Constants.KEY_TOKEN, response.getToken());
                 PrefUtils.saveString(context, Constants.KEY_HX_USERNAME, response.getHx_user().getUsername());
                 PrefUtils.saveString(context, Constants.KEY_HX_USERPWD, response.getHx_user().getPassword());
+                EventManager.sendHxInfoEvent(response.getHx_user());
             }
 
             @Override

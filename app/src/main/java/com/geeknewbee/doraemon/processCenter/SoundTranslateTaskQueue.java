@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -53,7 +54,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     public List<Command> performTask(SoundTranslateInput input) {
         // 1.当MouthQueue 正在播放多媒体的时候 只识别 停的指令, 其他的命令则重新开启ASR
         if (MouthTaskQueue.getInstance().isPlayMedia()) {
-            if (Constants.STOP_FLAG.equals(input.input))
+            if (input.input.contains(Constants.STOP_FLAG))
                 return Arrays.asList(new Command(CommandType.STOP));
 
             EventManager.sendStartAsrEvent();
@@ -115,6 +116,11 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     private List<Command> localPerform(SoundTranslateInput soundTranslateInput) {
         String input = soundTranslateInput.input;
         if (TextUtils.equals(soundTranslateInput.action, "播放音乐")) {
+            if (TextUtils.isEmpty(soundTranslateInput.starName) && TextUtils.isEmpty(soundTranslateInput.musicName)) {
+                int i = new Random().nextInt(Constants.musics.size());
+                soundTranslateInput.starName = Constants.musics.get(i).get("starName");
+                soundTranslateInput.musicName = Constants.musics.get(i).get("musicName");
+            }
             return Arrays.asList(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
         }
         if (input.contains("你好")) {
@@ -129,7 +135,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (input.contains("温度")) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内温度是" + SensorUtil.getInstance().temperture + "度"));
         }
-        if (input.contains("湿度")) {
+        if (input.contains("湿度") || input.contains("适度") || input.contains("十度")) {
             return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内湿度是" + SensorUtil.getInstance().humidity + "度"));
         }
         if (input.indexOf("光强度") != -1) {

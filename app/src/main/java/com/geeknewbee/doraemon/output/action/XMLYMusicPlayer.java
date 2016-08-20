@@ -34,9 +34,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     private CommonRequest mXimalaya; // 命令请求对象
     private List<Track> tracks = new ArrayList<>();
     private List<Long> albumId = new ArrayList<>();
-    //正在播放标示
-    private boolean isPlaying;
-
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
 
         @Override
@@ -141,7 +138,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     @Override
     public synchronized boolean play(String param) {
-        isPlaying = true;
         Map<String, String> map = new HashMap<String, String>();
         map.put(DTransferConstants.SEARCH_KEY, param);
         map.put(DTransferConstants.CATEGORY_ID, "2");
@@ -199,7 +195,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         // 4839492$$【花絮集】无干货，非骨灰级粉丝慎入~~我笑点比较低。。,4566428$$笑话,3524159$$【每日一笑】,
         // 4078745$$段子搬运工,4218901$$哈哈逗你,4342792$$波波讲段子,3849250$$Alpha冷,4388970$$不止是幽默,
         // 4422113$$竹子讲笑话，羞羞哒,4322121$$生活小趣,4694948$$乐在其中,4660402$$晨彩飞扬,
-        isPlaying = true;
         Map<String, String> map = new HashMap<String, String>();
         map.put(DTransferConstants.ALBUM_ID, albumId.get(new Random().nextInt(albumId.size())) + "");
         map.put(DTransferConstants.SORT, "asc");
@@ -232,7 +227,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     private void notifyComplete() {
-        isPlaying = false;
         EventManager.sendMusicCompleteEvent();
     }
 
@@ -255,6 +249,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     @Override
     public boolean isPlaying() {
-        return isPlaying;
+        return mPlayerManager.isPlaying();
     }
 }

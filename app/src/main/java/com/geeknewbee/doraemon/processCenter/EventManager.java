@@ -1,5 +1,6 @@
 package com.geeknewbee.doraemon.processcenter;
 
+import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
@@ -35,5 +36,9 @@ public class EventManager {
 
     public static void sendTranslateSoundComplete() {
         EventBus.getDefault().post(new TranslateSoundCompleteEvent());
+    }
+
+    public static void sendHxInfoEvent(AuthRobotResponse.HxUserInfo userInfo) {
+        EventBus.getDefault().post(new AuthRobotResponse.HxUserInfo());
     }
 }

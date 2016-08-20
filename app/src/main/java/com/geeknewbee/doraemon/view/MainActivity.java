@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
         initData();
 //        test();
         Doraemon.getInstance(getApplicationContext()).startASR();
+        Doraemon.getInstance(getApplicationContext()).startReceive();
     }
 
     private void initView() {
