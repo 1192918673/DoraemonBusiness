@@ -78,7 +78,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
         }
     }
 
-    public void addCommand(List<Command> commands) {
+    protected void addCommand(List<Command> commands) {
         if (commands == null || commands.isEmpty()) return;
         for (Command command : commands) {
             addCommand(command);

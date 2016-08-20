@@ -22,10 +22,10 @@ import java.util.List;
  * 1.必须是以"{" 开头 "}"结尾
  * 1.如果角度为0 则是维持上次的角度不变  如果是1则是复位到默认位置
  * 2.所有的角度都是绝对值
- * 3.舵机:默认角度是0，这个值一直都是正数 ，最大值是45
- * 4.电机:默认角度是0，向前是正数，向后是负数，最大值是180,最小值是-30
- * 5.头部水平：默认角度是0，向左是负数，向右是正数，最大值是70,最小值是-70
- * 6.头部垂直:默认角度是0，向上是正数，向下是负数,最大值是70,最小值是-70
+ * 3.手臂的上下电机:默认角度是0，这个值一直都是正数 ，最大值是45
+ * 4.手臂的前后电机:默认角度是0，向前是正数，向后是负数，最大值是180,最小值是-45
+ * 5.头部水平：默认角度是0，向左是正数，向右是负数，最大值是60,最小值是-60
+ * 6.头部垂直:默认角度是0，向上是正数，向下是负数,最大值是12,最小值是-12
  * 7.行走现在有4个选项(1 向前，2向后，3向右30度，4向左30度)
  * 8.行走速度一直是正数(0-1500)
  * 9.有对于表情则填写对应表情的名字，没有则不用填写
@@ -36,22 +36,31 @@ public class ParseDanceCommandTask {
     public static final int FOOT_DIRECTION_DOWN = 2;
     public static final int FOOT_DIRECTION_RIGHT = 3;
     public static final int FOOT_DIRECTION_LEFT = 4;
+
     public static final int ROUND_COUNT = 1;
-    public static final int RESET_FLAG = 1;//复位到默认位置
+    public static final int RESET_FLAG = 1;//复位到默认位置Flag
     public static final int UNCHANGED_FLAG = 0;//角度不变的Flag
 
-    public static char DEFALUT_DOUJI = 0x87;//垂直
-    public static char DEFALUT_DIANJI = 0xC9;//垂直
-    public static char DEFALUT_HEAD_HORIZONTAL = 0x83;//向前
-    public static char DEFALUT_HEAD_VERTICAL = 0x80;//向前
+    public static char DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE = 0x0;//手臂前后方向垂直
+    public static char DEFAULT_ARM_UP_DOWN_ANGLE = 0x0;//手臂上下方向垂直
 
-    public static int MAX_DUOJI_ANGLE = 45;//舵机最大角度
-    public static int MAX_DIANJI_ANGLE = 180;
-    public static int MIN_DIANJI_ANGLE = -30;
-    public static int MAX_HEAD_HORIZONTAL = 70;
-    public static int MIN_HEAD_HORIZONTAL = -70;
-    public static int MAX_HEAD_VERTICAL = 70;
-    public static int MIN_HEAD_VERTICAL = -70;
+    public static char DEFAULT_HEAD_HORIZONTAL_ANGLE = 0x0;//头左右方向初始向前
+    public static char DEFAULT_HEAD_VERTICAL_ANGLE = 0x0;//头上下方向初始向前
+
+    //手臂上下方向最大角度(默认垂直地面是0，只能向上运动)
+    public static int MAX_ARM_UP_DOWN_ANGLE = 45;
+
+    //手臂前后方向最大/最小角度(默认垂直地面是0，可以前后运动)
+    public static int MAX_ARM_ANTERIO_POSTERIOR_ANGLE = 180;
+    public static int MIN_ARM_ANTERIO_POSTERIOR_ANGLE = -45;
+
+    //头的左右方向最大/最小角度(默认超前是0，可以左右运动)
+    public static int MAX_HEAD_HORIZONTAL_ANGLE = 60;
+    public static int MIN_HEAD_HORIZONTAL = -60;
+
+    //头的上下方向最大/最小角度(默认超前是0，可以上下运动)
+    public static int MAX_HEAD_VERTICAL_ANGLE = 12;
+    public static int MIN_HEAD_VERTICAL_ANGLE = -12;
 
     private static char current_left_duoji;
     private static char current_right_duoji;
@@ -80,13 +89,13 @@ public class ParseDanceCommandTask {
     }
 
     private void resetData() {
-        current_left_duoji = DEFALUT_DOUJI;
-        current_right_duoji = DEFALUT_DOUJI;
-        current_right_dianji = DEFALUT_DIANJI;
-        current_left_dianji = DEFALUT_DIANJI;
+        current_left_duoji = DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE;
+        current_right_duoji = DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE;
+        current_right_dianji = DEFAULT_ARM_UP_DOWN_ANGLE;
+        current_left_dianji = DEFAULT_ARM_UP_DOWN_ANGLE;
 
-        current_head_horizontal = DEFALUT_HEAD_HORIZONTAL;
-        current_head_vertical = DEFALUT_HEAD_VERTICAL;
+        current_head_horizontal = DEFAULT_HEAD_HORIZONTAL_ANGLE;
+        current_head_vertical = DEFAULT_HEAD_VERTICAL_ANGLE;
     }
 
     private DanceAction parseCommand(String line) {
@@ -165,15 +174,15 @@ public class ParseDanceCommandTask {
      */
     private char calculateHeadVerticalAngle(char currentAngle, int headVertical) {
         if (headVertical == RESET_FLAG)
-            return DEFALUT_HEAD_VERTICAL;
+            return DEFAULT_HEAD_VERTICAL_ANGLE;
         else if (headVertical == UNCHANGED_FLAG)
             return currentAngle;
-        else if (headVertical < MIN_HEAD_VERTICAL)
-            headVertical = MIN_HEAD_VERTICAL;
-        else if (headVertical > MAX_HEAD_VERTICAL)
-            headVertical = MAX_HEAD_VERTICAL;
+        else if (headVertical < MIN_HEAD_VERTICAL_ANGLE)
+            headVertical = MIN_HEAD_VERTICAL_ANGLE;
+        else if (headVertical > MAX_HEAD_VERTICAL_ANGLE)
+            headVertical = MAX_HEAD_VERTICAL_ANGLE;
 
-        return (char) (DEFALUT_HEAD_VERTICAL + headVertical);
+        return (char) (DEFAULT_HEAD_VERTICAL_ANGLE + headVertical);
     }
 
     /**
@@ -185,51 +194,51 @@ public class ParseDanceCommandTask {
      */
     private char calculateHeadHorizontalAngle(char currentAngle, int headHorizontal) {
         if (headHorizontal == RESET_FLAG)
-            return DEFALUT_HEAD_HORIZONTAL;
+            return DEFAULT_HEAD_HORIZONTAL_ANGLE;
         else if (headHorizontal == UNCHANGED_FLAG)
             return currentAngle;
         else if (headHorizontal < MIN_HEAD_HORIZONTAL)
             headHorizontal = MIN_HEAD_HORIZONTAL;
-        else if (headHorizontal > MAX_HEAD_HORIZONTAL)
-            headHorizontal = MAX_HEAD_HORIZONTAL;
+        else if (headHorizontal > MAX_HEAD_HORIZONTAL_ANGLE)
+            headHorizontal = MAX_HEAD_HORIZONTAL_ANGLE;
 
-        return (char) (DEFALUT_HEAD_HORIZONTAL + headHorizontal);
+        return (char) (DEFAULT_HEAD_HORIZONTAL_ANGLE + headHorizontal);
     }
 
     /**
-     * 计算电机的角度
+     * 计算手臂的前后的角度
      *
      * @param leftDianjiAngle
      * @return
      */
     private char calculateDianjiAngle(char currentAngle, int leftDianjiAngle) {
         if (leftDianjiAngle == RESET_FLAG)
-            return DEFALUT_DIANJI;
+            return DEFAULT_ARM_UP_DOWN_ANGLE;
         else if (leftDianjiAngle == UNCHANGED_FLAG)
             return currentAngle;
-        else if (leftDianjiAngle < MIN_DIANJI_ANGLE)
-            leftDianjiAngle = MIN_DIANJI_ANGLE;
-        else if (leftDianjiAngle > MAX_DIANJI_ANGLE)
-            leftDianjiAngle = MAX_DIANJI_ANGLE;
+        else if (leftDianjiAngle < MIN_ARM_ANTERIO_POSTERIOR_ANGLE)
+            leftDianjiAngle = MIN_ARM_ANTERIO_POSTERIOR_ANGLE;
+        else if (leftDianjiAngle > MAX_ARM_ANTERIO_POSTERIOR_ANGLE)
+            leftDianjiAngle = MAX_ARM_ANTERIO_POSTERIOR_ANGLE;
 
-        return (char) (DEFALUT_DIANJI - leftDianjiAngle);
+        return (char) (DEFAULT_ARM_UP_DOWN_ANGLE + leftDianjiAngle);
     }
 
     /**
-     * 计算舵机的角度
+     * 计算手臂的上下的角度
      *
      * @param leftDuojiAngle
      * @return
      */
     private char calculateDuoJiValue(char currentAngle, int leftDuojiAngle) {
         if (leftDuojiAngle == RESET_FLAG)
-            return DEFALUT_DOUJI;
+            return DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE;
         else if (leftDuojiAngle == UNCHANGED_FLAG)
             return currentAngle;
-        else if (leftDuojiAngle > MAX_DUOJI_ANGLE)
-            leftDuojiAngle = MAX_DUOJI_ANGLE;
+        else if (leftDuojiAngle > MAX_ARM_UP_DOWN_ANGLE)
+            leftDuojiAngle = MAX_ARM_UP_DOWN_ANGLE;
 
-        return (char) (DEFALUT_DOUJI - leftDuojiAngle);
+        return (char) (DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE + leftDuojiAngle);
     }
 
     private String getFootCommand(int footDirection, int footSpeed, int roundCount) {
