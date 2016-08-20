@@ -17,8 +17,8 @@ import java.util.List;
 
 /**
  * 从文件中解析舞蹈动作
- * {左手舵机(90),右手舵机(90),右臂电机(180),左臂电机(180),头部旋转(120) ,头部俯仰(30),
- * 行走(1 向前，2向后，3向右30度，4向左30度),持续时间（毫秒）,行走的速度（0-1500），表情名字(可能没有)}
+ * {头部左右0 ,头部上下1,左手前后2,左手上下3,右手前后4,右手上下5,
+ * 行走6(1 向前，2向后，3向右30度，4向左30度),持续时间（毫秒）7,表情名字(可能没有)8}
  * 规则：
  * 1.必须是以"{" 开头 "}"结尾
  * 1.如果角度为0 则是维持上次的角度不变  如果是1则是复位到默认位置
@@ -28,8 +28,7 @@ import java.util.List;
  * 5.头部水平：默认角度是0，向左是正数，向右是负数，最大值是60,最小值是-60
  * 6.头部垂直:默认角度是0，向上是正数，向下是负数,最大值是12,最小值是-12
  * 7.行走现在有4个选项(1 向前，2向后，3向右30度，4向左30度)
- * 8.行走速度一直是正数(0-1500)
- * 9.有对于表情则填写对应表情的名字，没有则不用填写
+ * 8.有对于表情则填写对应表情的名字，没有则不用填写
  */
 public class ParseDanceCommandTask {
 
@@ -105,52 +104,48 @@ public class ParseDanceCommandTask {
             return null;
         String content = line.substring(1, line.length() - 1);
         String[] strings = content.split(",");
-        if (strings.length < 9)
+        if (strings.length < 8)
             return null;
 
         DanceAction danceAction = new DanceAction();
-        //0 左手舵机
-        int leftDuojiAngle = Integer.parseInt(strings[0].trim());
-        //1 右手舵机
-        int rightDuojiAngle = Integer.parseInt(strings[1].trim());
-        //2 右手电机
-        int rightDianjiAngle = Integer.parseInt(strings[2].trim());
-        //3 左手电机
-        int leftDianjiAngle = Integer.parseInt(strings[3].trim());
 
-        //4 头部水平旋转
-        int headHorizontal = Integer.parseInt(strings[4].trim());
-        //5 头部上下运动
-        int headVertical = Integer.parseInt(strings[5].trim());
+        //0 头部水平旋转
+        int headHorizontal = Integer.parseInt(strings[0].trim());
+        //1 头部上下运动
+        int headVertical = Integer.parseInt(strings[1].trim());
+        //2 左手前后
+        int leftAPAngle = Integer.parseInt(strings[2].trim());
+        //3 左手上下
+        int leftUpAnDownAngle = Integer.parseInt(strings[3].trim());
+        //4 右手前后
+        int rightAPAngle = Integer.parseInt(strings[4].trim());
+        //5 右手上下
+        int rightUpAndDownAngle = Integer.parseInt(strings[5].trim());
 
         //6 脚步运动方向
         int footDirection = Integer.parseInt(strings[6].trim());
-        //8 脚步运动速度
-        int footSpeed = Integer.parseInt(strings[8].trim());
 
         //7 整个运动持续时间
         int time = Integer.parseInt(strings[7].trim());
         danceAction.delayTime = time;
 
-        danceAction.topCommand = getTopCommand(leftDuojiAngle, rightDuojiAngle, rightDianjiAngle, leftDianjiAngle, headHorizontal, headVertical, time);
-//        danceAction.footCommand = getFootCommand(footDirection, footSpeed, ROUND_COUNT);
-        danceAction.footCommand = getFootCommandOfLeXing(footDirection, footSpeed);
+        danceAction.topCommand = getTopCommand(leftUpAnDownAngle, rightUpAndDownAngle, rightAPAngle, leftAPAngle, headHorizontal, headVertical, time);
+        danceAction.footCommand = getFootCommandOfLeXing(footDirection);
 
-
-        //9 运动的表情
-        if (strings.length == 10 && !TextUtils.isEmpty(strings[9].trim())) {
-            danceAction.expressionName = strings[9].trim();
+        //8 运动的表情
+        if (strings.length == 9 && !TextUtils.isEmpty(strings[8].trim())) {
+            danceAction.expressionName = strings[8].trim();
         }
 
         return danceAction;
     }
 
-    private String getTopCommand(int leftDuojiAngle, int rightDuojiAngle, int rightDianjiAngle, int leftDianjiAngle, int headHorizontal, int headVertical, int time) {
-        current_left_duoji = calculateArmUpAndDownAngle(current_left_duoji, leftDuojiAngle);
-        current_right_duoji = calculateArmUpAndDownAngle(current_right_duoji, rightDuojiAngle);
+    private String getTopCommand(int leftUpAndDownAngle, int rightUpAndDownAngle, int rightAPAngle, int leftAPAngle, int headHorizontal, int headVertical, int time) {
+        current_left_duoji = calculateArmUpAndDownAngle(current_left_duoji, leftUpAndDownAngle);
+        current_right_duoji = calculateArmUpAndDownAngle(current_right_duoji, rightUpAndDownAngle);
 
-        current_left_dianji = calculateArmAnterioPosteriorAngle(current_left_dianji, leftDianjiAngle);
-        current_right_dianji = calculateArmAnterioPosteriorAngle(current_right_dianji, rightDianjiAngle);
+        current_left_dianji = calculateArmAnterioPosteriorAngle(current_left_dianji, leftAPAngle);
+        current_right_dianji = calculateArmAnterioPosteriorAngle(current_right_dianji, rightAPAngle);
 
         current_head_horizontal = calculateHeadHorizontalAngle(current_head_horizontal, headHorizontal);
         current_head_vertical = calculateHeadVerticalAngle(current_head_vertical, headVertical);
@@ -303,11 +298,10 @@ public class ParseDanceCommandTask {
      * 乐行的脚步命令
      *
      * @param footDirection
-     * @param footSpeed
      * @return
      */
-    private String getFootCommandOfLeXing(int footDirection, int footSpeed) {
-        if (footDirection == 0 || footSpeed == 0)
+    private String getFootCommandOfLeXing(int footDirection) {
+        if (footDirection == 0)
             return "";
 
         int[] result = new int[2];
