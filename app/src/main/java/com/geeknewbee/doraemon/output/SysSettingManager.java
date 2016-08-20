@@ -17,40 +17,6 @@ import org.greenrobot.eventbus.EventBus;
  */
 public class SysSettingManager {
 
-    /**
-     * 设置系统连接wifi
-     *
-     * @param content
-     */
-    public static void connectWiFi(String content) {
-        WifiManager wm = (WifiManager) BaseApplication.mContext.getSystemService(Context.WIFI_SERVICE);
-        WifiConfiguration wfc = new WifiConfiguration();
-        String[] data = content.split("#");
-        if (data.length != 3) return;
-        /*----------------------WPA连接方式------------------------*/
-        wfc.SSID = "\"".concat(data[0]).concat("\"");
-        wfc.status = WifiConfiguration.Status.DISABLED;
-        wfc.priority = 40;
-
-        wfc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-        wfc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-        wfc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-        wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-        wfc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-        wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-        wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
-        wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-        wfc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-        wfc.preSharedKey = "\"".concat(data[1]).concat("\"");
-
-        LogUtils.d("PWD", wfc.preSharedKey);
-        int res = wm.addNetwork(wfc);
-
-        if (res != -1) {
-            wm.enableNetwork(res, true);
-        }
-    }
-
     public static boolean connectWiFi(String ssid, String pwd, int type) {
         boolean result = false;
         WifiManager wm = (WifiManager) BaseApplication.mContext.getSystemService(Context.WIFI_SERVICE);

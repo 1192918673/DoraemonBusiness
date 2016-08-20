@@ -33,7 +33,7 @@ public class BluetoothCommand {
     /**
      * WIFI信息
      */
-    private String wiFiMessage;
+    private WifiCommand wifiMessage;
 
     /**
      * Volume值
@@ -71,8 +71,8 @@ public class BluetoothCommand {
                 commands.add(new Command(CommandType.PLAY_MUSIC, musicName));
         }
 
-        if (!TextUtils.isEmpty(wiFiMessage)) {
-            commands.add(new Command(CommandType.WIFI_MESSAGE, wiFiMessage));
+        if (wifiMessage != null) {
+            commands.add(new WifiCommand(wifiMessage.ssid, wifiMessage.pwd, wifiMessage.type));
         }
 
         if (!TextUtils.isEmpty(volume)) {
@@ -121,5 +121,11 @@ public class BluetoothCommand {
          * 角速度
          */
         public int w;
+    }
+
+    private static class WifiInfo {
+        public String ssid;
+        public String pwd;
+        public int wifitype;
     }
 }
