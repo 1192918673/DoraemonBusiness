@@ -1,5 +1,6 @@
 package com.geeknewbee.doraemon.processcenter.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,5 +12,15 @@ public class ActionSetCommand extends Command {
     public ActionSetCommand(List<SportAction> sportActions) {
         super(CommandType.ACTIONSET, "");
         this.sportActions = sportActions;
+    }
+
+    public ActionSetCommand() {
+        super(CommandType.ACTIONSET);
+        sportActions = new ArrayList<>();
+    }
+
+    public void addSportAction(List<SportAction> actions) {
+        if (actions != null)
+            sportActions.addAll(actions);
     }
 }

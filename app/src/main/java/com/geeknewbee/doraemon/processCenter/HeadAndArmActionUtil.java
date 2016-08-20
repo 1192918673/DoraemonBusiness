@@ -3,9 +3,16 @@ package com.geeknewbee.doraemon.processcenter;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +50,36 @@ public class HeadAndArmActionUtil {
     public static int MAX_HEAD_VERTICAL_ANGLE = 12;
     public static int MIN_HEAD_VERTICAL_ANGLE = -12;
 
-    public static SportAction parseCommand(String line) {
+    public static List<SportAction> parseSportCommand(int rawId) {
+        if (rawId < 1)
+            return null;
+
+        InputStream in = BaseApplication.mContext.getResources().openRawResource(rawId);
+        InputStreamReader reader = new InputStreamReader(in);
+        List<SportAction> commands = new ArrayList<>();
+        try {
+            BufferedReader bufReader = new BufferedReader(reader);
+            String line;
+            SportAction sportAction;
+            while ((line = bufReader.readLine()) != null) {
+                sportAction = parseSportCommand(line);
+                if (sportAction != null)
+                    commands.add(sportAction);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return commands;
+    }
+
+    public static SportAction parseSportCommand(String line) {
         //必须是以"{" 开头 "}"结尾
         if (TextUtils.isEmpty(line) || !line.startsWith("{") || !line.endsWith("}"))
             return null;

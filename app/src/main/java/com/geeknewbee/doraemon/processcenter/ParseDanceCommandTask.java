@@ -65,7 +65,8 @@ public class ParseDanceCommandTask {
                 String line;
                 SportAction sportAction;
                 while ((line = bufReader.readLine()) != null && !isStop) {
-                    sportAction = HeadAndArmActionUtil.parseCommand(line);
+                    sportAction = HeadAndArmActionUtil.parseSportCommand(line);
+                    if (sportAction != null)
                     commands.add(sportAction);
                 }
             } catch (Exception e) {
