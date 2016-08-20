@@ -72,7 +72,7 @@ public class BluetoothCommand {
         }
 
         if (wifiInfo != null) {
-            commands.add(new WifiCommand(wifiInfo.type, wifiInfo.SSID, wifiInfo.pwd));
+            commands.add(new WifiCommand(wifiInfo.SSID, wifiInfo.pwd, wifiInfo.type));
         }
 
         if (!TextUtils.isEmpty(volume)) {

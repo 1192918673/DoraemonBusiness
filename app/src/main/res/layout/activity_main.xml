@@ -12,6 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/iv_qr"
+        android:layout_width="360dp"
+        android:layout_height="360dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="120dp"
+        android:layout_marginTop="90dp"
+        android:adjustViewBounds="false"
+        android:background="#eeeeee"
+        android:scaleType="center"
+        android:visibility="invisible" />
+
     <!--<Button-->
     <!--android:id="@+id/bt_test"-->
     <!--android:layout_width="200dp"-->

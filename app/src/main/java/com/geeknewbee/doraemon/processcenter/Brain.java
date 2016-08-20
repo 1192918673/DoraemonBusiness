@@ -43,7 +43,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case SHOW_EXPRESSION:
                 //面部表情
                 ExpressionCommand expressionCommand = (ExpressionCommand) command;
-                FaceManager.display(expressionCommand.getContent(), expressionCommand.loops);
+                FaceManager.getInstance().displayGif(expressionCommand.getContent(), expressionCommand.loops);
                 break;
             case PLAY_MUSIC:
                 // 音乐
@@ -58,7 +58,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case WIFI_MESSAGE:// 设置连接WIFI
                 WifiCommand wifiCommand = (WifiCommand) command;
-                SysSettingManager.connectWiFi(wifiCommand.encryptType, wifiCommand.SSID, wifiCommand.pwd);
+                SysSettingManager.connectWiFi(wifiCommand.ssid, wifiCommand.pwd, wifiCommand.type);
                 break;
             case SETTING_VOLUME:// 设置系统音量
                 SysSettingManager.setVolume(command.getContent());
@@ -68,6 +68,12 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case LE_XING_FOOT://乐行Foot
                 LimbsTaskQueue.getInstance().addTask(command);
+                break;
+            case SHOW_QR:
+                FaceManager.getInstance().showQR(command.getContent());
+                break;
+            case BIND_ACCOUNT_SUCCESS:
+                FaceManager.getInstance().hideQR();
                 break;
         }
     }

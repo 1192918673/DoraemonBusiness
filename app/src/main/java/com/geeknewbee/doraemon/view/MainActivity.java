@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
@@ -20,6 +21,7 @@ import pl.droidsonroids.gif.GifImageView;
 public class MainActivity extends Activity {
     public GifImageView gifView;
     private BluetoothServiceManager bluetoothServiceManager;
+    public ImageView imageQR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,19 +40,21 @@ public class MainActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
+        imageQR = (ImageView) findViewById(R.id.iv_qr);
+
         initFaceView();
     }
 
     private void initFaceView() {
         gifView = (GifImageView) findViewById(R.id.gifview);
-        FaceManager.faceView = gifView;
-        FaceManager.faceActivity = this;
+        FaceManager.getInstance().faceActivity = this;
         Doraemon.getInstance(getApplicationContext()).addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
     }
 
     private void startBluetoothService() {
         bluetoothServiceManager = BluetoothServiceManager.getInstance(getApplicationContext());
-        bluetoothServiceManager.onCreate();
+        bluetoothServiceManager.init();
+        bluetoothServiceManager.start();
     }
 
     private void test() {
@@ -69,16 +73,9 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        bluetoothServiceManager.onStart();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
-        bluetoothServiceManager.onResume();
     }
 
     @Override
