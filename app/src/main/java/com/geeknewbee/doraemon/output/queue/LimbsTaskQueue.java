@@ -123,9 +123,10 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     /**
-     * 停止跳舞
+     * 停止任务
      */
-    public void stopActionSet() {
+    public void stop() {
         isStopAction = true;
+        clearTasks();
     }
 }
