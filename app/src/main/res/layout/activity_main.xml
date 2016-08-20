@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:layout_height="match_parent">
+
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifview"
@@ -14,17 +11,15 @@
 
     <ImageView
         android:id="@+id/iv_qr"
-        android:layout_width="360dp"
-        android:layout_height="360dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="120dp"
         android:layout_marginTop="90dp"
-        android:adjustViewBounds="false"
         android:background="#eeeeee"
         android:scaleType="center"
         android:visibility="invisible" />
-
     <!--<Button-->
     <!--android:id="@+id/bt_test"-->
     <!--android:layout_width="200dp"-->

@@ -15,7 +15,6 @@ import java.io.IOException;
 
 import pl.droidsonroids.gif.AnimationListener;
 import pl.droidsonroids.gif.GifDrawable;
-import pl.droidsonroids.gif.GifImageView;
 
 /**
  * 处理表情
@@ -23,11 +22,31 @@ import pl.droidsonroids.gif.GifImageView;
 public class FaceManager {
     private static volatile FaceManager instance;
 
-    public GifImageView faceView;
     public MainActivity faceActivity;
     private int loopNumber;
     private GifDrawable gifFromResource;
     private AnimationListener animationListener;
+    //上次显示的GIF name
+    private String lastName;
+
+
+    private FaceManager() {
+        animationListener = new AnimationListener() {
+            @Override
+            public void onAnimationCompleted(int loopNumber) {
+                if (loopNumber == 0)
+                    displayGif(lastName, 0); //一直循环现在自己
+                else if (loopNumber == 1) {
+                    //对应只显示一次的Gif,需要根据当前状态显示不同的表情 正在监听说话、默认两种情况
+                    if (Doraemon.getInstance(App.mContext).isListening())
+                        displayGif("eyegif_fa_dai", 0);
+                    else
+                        displayGif("default_gif", 0);
+                } else
+                    displayGif(lastName, --loopNumber);
+            }
+        };
+    }
 
     public static FaceManager getInstance() {
         if (instance == null) {
@@ -57,33 +76,19 @@ public class FaceManager {
         faceActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (faceView == null) return;
+                if (faceActivity.gifView == null) return;
 
                 int imageResId = BaseApplication.mContext.getResources().getIdentifier(name, "drawable", BaseApplication.mContext.getPackageName());
-
-
                 if (imageResId > 0) {
                     try {
-                        gifFromResource = new GifDrawable(BaseApplication.mContext.getResources(), imageResId);
-                        gifFromResource.setLoopCount(loopNumber);
+                        if (!name.equals(lastName) || gifFromResource == null)
+                            gifFromResource = new GifDrawable(BaseApplication.mContext.getResources(), imageResId);
 
-                        animationListener = new AnimationListener() {
-                            @Override
-                            public void onAnimationCompleted(int loopNumber) {
-                                if (loopNumber == 0)
-                                    displayGif(name, 0); //一直循环现在自己
-                                else if (loopNumber == 1) {
-                                    //对应只显示一次的Gif,需要根据当前状态显示不同的表情 正在监听说话、默认两种情况
-                                    if (Doraemon.getInstance(App.mContext).isListening())
-                                        displayGif("eyegif_fa_dai", 0);
-                                    else
-                                        displayGif("default_gif", 0);
-                                } else
-                                    displayGif(name, --loopNumber);
-                            }
-                        };
+                        lastName = name;
+                        gifFromResource.removeAnimationListener(animationListener);
+                        gifFromResource.setLoopCount(loopNumber);
                         gifFromResource.addAnimationListener(animationListener);
-                        faceView.setImageDrawable(gifFromResource);
+                        faceActivity.gifView.setImageDrawable(gifFromResource);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -91,6 +96,7 @@ public class FaceManager {
             }
         });
     }
+
 
     public void showQR(final String content) {
         new AsyncTask<Void, Void, Bitmap>() {
