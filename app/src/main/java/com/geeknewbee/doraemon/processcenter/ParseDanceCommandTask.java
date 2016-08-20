@@ -143,11 +143,11 @@ public class ParseDanceCommandTask {
     }
 
     private String getTopCommand(int leftDuojiAngle, int rightDuojiAngle, int rightDianjiAngle, int leftDianjiAngle, int headHorizontal, int headVertical, int time) {
-        current_left_duoji = calculateDuoJiValue(current_left_duoji, leftDuojiAngle);
-        current_right_duoji = calculateDuoJiValue(current_right_duoji, rightDuojiAngle);
+        current_left_duoji = calculateArmUpAndDownAngle(current_left_duoji, leftDuojiAngle);
+        current_right_duoji = calculateArmUpAndDownAngle(current_right_duoji, rightDuojiAngle);
 
-        current_left_dianji = calculateDianjiAngle(current_left_dianji, leftDianjiAngle);
-        current_right_dianji = calculateDianjiAngle(current_right_dianji, rightDianjiAngle);
+        current_left_dianji = calculateArmAnterioPosteriorAngle(current_left_dianji, leftDianjiAngle);
+        current_right_dianji = calculateArmAnterioPosteriorAngle(current_right_dianji, rightDianjiAngle);
 
         current_head_horizontal = calculateHeadHorizontalAngle(current_head_horizontal, headHorizontal);
         current_head_vertical = calculateHeadVerticalAngle(current_head_vertical, headVertical);
@@ -211,7 +211,7 @@ public class ParseDanceCommandTask {
      * @param leftDianjiAngle
      * @return
      */
-    private char calculateDianjiAngle(char currentAngle, int leftDianjiAngle) {
+    private char calculateArmAnterioPosteriorAngle(char currentAngle, int leftDianjiAngle) {
         if (leftDianjiAngle == RESET_FLAG)
             return DEFAULT_ARM_UP_DOWN_ANGLE;
         else if (leftDianjiAngle == UNCHANGED_FLAG)
@@ -230,7 +230,7 @@ public class ParseDanceCommandTask {
      * @param leftDuojiAngle
      * @return
      */
-    private char calculateDuoJiValue(char currentAngle, int leftDuojiAngle) {
+    private char calculateArmUpAndDownAngle(char currentAngle, int leftDuojiAngle) {
         if (leftDuojiAngle == RESET_FLAG)
             return DEFAULT_ARM_ANTERIO_POSTERIOR_ANGLE;
         else if (leftDuojiAngle == UNCHANGED_FLAG)
