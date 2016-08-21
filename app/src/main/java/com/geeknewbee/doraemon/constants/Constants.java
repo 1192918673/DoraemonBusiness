@@ -1,15 +1,12 @@
 package com.geeknewbee.doraemon.constants;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 public class Constants {
-    public static final String BLUETOOTH_NAME = "Geek_Doraemon";
+    public static final String BLUETOOTH_NAME = "Do_not_care";
     public static final int RESPONSE_STATUS_SUCCESS = 200;
     public static final int HTTP_TIME_OUT = 30 * 1000;
     public static final String TAG_COMMAND = "ROBOT_COMMAND";
