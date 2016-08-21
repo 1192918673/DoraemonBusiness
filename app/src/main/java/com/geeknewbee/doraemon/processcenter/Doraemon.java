@@ -5,12 +5,13 @@ import android.content.Context;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
+import com.geeknewbee.doraemon.entity.event.InputTimeoutEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
-import com.geeknewbee.doraemon.input.AISpeechDevice;
 import com.geeknewbee.doraemon.input.AISpeechEar;
+import com.geeknewbee.doraemon.input.AISpeechSoundInputDevice;
 import com.geeknewbee.doraemon.input.HYMessageReceive;
 import com.geeknewbee.doraemon.input.IEar;
 import com.geeknewbee.doraemon.input.IEye;
@@ -34,6 +35,7 @@ import java.util.List;
 public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageReceive.MessageListener {
     private volatile static Doraemon instance;
     private final Context context;
+    private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
     private IEar ear;
     private IEye eye;
     private IMessageReceive receive;
@@ -46,7 +48,9 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         eye = new ReadSenseEye();
         receive = HYMessageReceive.getInstance();
         brain = new Brain();
-        soundInputDevice = new AISpeechDevice();
+        soundInputDevice = new AISpeechSoundInputDevice();
+        inputTimeOutMonitorTask = new InputTimeoutMonitorTask(context);
+//        inputTimeOutMonitorTask.start();  //TODO 这里还没有连接语音输入板 暂时不起用超时的逻辑
         EventBus.getDefault().register(this);
     }
 
@@ -59,15 +63,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
             }
         }
         return instance;
-    }
-
-    /**
-     * 声音输入板是否唤醒
-     *
-     * @return
-     */
-    public boolean inputIsWakeUp() {
-        return soundInputDevice.isWakeUp();
     }
 
     /**
@@ -193,8 +188,10 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBeginningOfSpeech(BeginningOfSpeechEvent event) {
-        //显示正在监听Gif
         LogUtils.d(AISpeechEar.TAG, "onBeginningOfSpeech");
+        //设置input 监听
+        inputTimeOutMonitorTask.setInputFlag();
+        //显示正在监听Gif
         addCommand(new ExpressionCommand("eyegif_ting", 0));
     }
 
@@ -224,6 +221,17 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
             addCommand(new ExpressionCommand("eyegif_fa_dai", 0));
         else
             addCommand(new ExpressionCommand("default_gif", 0));
+    }
+
+    /**
+     * 输入超时
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onInputTimeout(InputTimeoutEvent event) {
+        //当input 超时 让声音板休眠
+        soundInputDevice.sleep();
     }
 
     /**
