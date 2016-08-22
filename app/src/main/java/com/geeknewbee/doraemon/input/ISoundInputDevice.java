@@ -11,4 +11,5 @@ public interface ISoundInputDevice {
 
     void onWakeUp(int angle);
 
+    void start();
 }
