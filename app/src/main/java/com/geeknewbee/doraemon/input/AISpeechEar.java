@@ -99,18 +99,24 @@ public class AISpeechEar implements IEar {
             mASREngine.setUploadEnable(true);
             mASREngine.setUploadInterval(1000);
         }*/
-        mASREngine.setServer("ws://s.api.aispeech.com");// 设置服务器地址，默认不用设置
-        mASREngine.setRes("robot");// 设置请求的资源名
+        mASREngine.setServer("ws://s-test.api.aispeech.com:10000");// 设置服务器地址，默认不用设置   version 1:ws://s.api.aispeech.com:10000
+        mASREngine.setRes("robot");// 设置请求的资源名 version 1：robot；version 2：aihome
         mASREngine.setUseXbnfRec(true);// 设置是否启用基于语法的语义识别
-        mASREngine.setUsePinyin(false);
+        mASREngine.setUsePinyin(true);
         mASREngine.setUseForceout(false);
-        mASREngine.setAthThreshold(0.1f);//设置本地置信度阀值
+        mASREngine.setAthThreshold(0.6f);//设置本地置信度阀值
         mASREngine.setIsRelyOnLocalConf(false);//是否开启依据本地置信度优先输出,如需添加例外
+        mASREngine.setIsPreferCloud(true);//是否当云端结果有输出时，优先输出云端结果
 //        mASREngine.setLocalBetterDomains(new String[]{"aihomeopen", "aihomegoods", "aihomeplay", "aihomenum", "aihomenextup", "aihomehello"});//设置本地擅长的领域范围
         mASREngine.setLocalBetterDomains(new String[]{});//设置本地擅长的领域范围
         mASREngine.setWaitCloudTimeout(2000);// 设置等待云端识别结果超时时长
+        mASREngine.setCloudVadEnable(true);// 设置是否启用云端vad,默认开启
         mASREngine.setPauseTime(500);// 设置VAD右边界；VAD普及：静音抑制，或者说它会检测是否有声音
         mASREngine.setUseConf(true);// 设置是否开启置信度
+        mASREngine.setAecCfg(SpeechConstants.ace_cfg);
+        mASREngine.setConfigName(SpeechConstants.uca_config);
+        mASREngine.setUcaParamMode(1);
+        mASREngine.setEchoEnable(false);
         mASREngine.setNoSpeechTimeOut(0);// 设置无语音超时时长
         mASREngine.setMaxSpeechTimeS(0);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常
         mASREngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));// 设置设备Id
@@ -316,6 +322,11 @@ public class AISpeechEar implements IEar {
         }
 
         @Override
+        public void onDoa(String s, double v, double v1) {
+
+        }
+
+        @Override
         public void onError(AIError error) {
             setListerStatue(false);
             LogUtils.d(TAG, "识别发生错误:" + error.getErrId());
@@ -327,15 +338,15 @@ public class AISpeechEar implements IEar {
 //            LogUtils.d(TAG, "音频、音量发生改变，RmsDB = " + rmsdB);
         }
 
-        @Override
+        /*@Override
         public void onRecorderReleased() {
-            /*测试中发现有时候 onRecorderReleased 偶尔会onResults 完成后一段时间才回调。
+            *//*测试中发现有时候 onRecorderReleased 偶尔会onResults 完成后一段时间才回调。
             这样在调用startRecognition的时候，发现isListening还是true，造成了无法继续监听的严重bug。
              为了解决这个bug，利用是否开启监听标示needStartRecognitionFlag，每次startRecognition 并且 isListening是true的时候设置为true，
              当onRecorderReleased的时候判断如何needStartRecognitionFlag为true，还需要startRecognition
-             */
+             *//*
 
-            /*Log 日志  可遇不可求的bug
+            *//*Log 日志  可遇不可求的bug
             08-18 13:55:31.424 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: 请说话...
 08-18 13:55:34.070 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: 检测到说话
 08-18 13:55:36.017 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: {"version":"2.7.3","applicationId":"1462760478859598","recordId":"57b54dd33327935fc60005f6","result":{"post":{},"rec":"","wavetime":2080,"delayframe":11,"systime":9189,"vite_vad":1,"rectime":4594,"prutime":0,"version":"0.0.42.2016.2.18.10:26:04","delaytime":24,"sestime":4594,"res":"aifar.0.0.1","vadtime":2080,"eof":1},"luabin":"0.5.2","src":"native"}
@@ -344,11 +355,11 @@ public class AISpeechEar implements IEar {
 08-18 13:55:36.019 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: asr is listing
 08-18 13:55:36.019 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: onTranslateComplete
 08-18 13:55:36.115 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: 检测到录音机停止
-            */
+            *//*
             setListerStatue(false);
             if (needStartRecognitionFlag)
                 startRecognition();
             LogUtils.d(TAG, "检测到录音机停止");
-        }
+        }*/
     }
 }

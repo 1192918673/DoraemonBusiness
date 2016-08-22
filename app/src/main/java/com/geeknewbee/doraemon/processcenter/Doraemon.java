@@ -75,6 +75,13 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
+     * 启动唤醒
+     */
+    public void startWakeup() {
+        soundInputDevice.start();
+    }
+
+    /**
      * 开始自动声音识别 Automatic Speech Recognition
      */
     public void startASR() {

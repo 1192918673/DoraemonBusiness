@@ -19,7 +19,7 @@ import com.geeknewbee.doraemonsdk.utils.LogUtils;
  */
 public class AISpeechSoundInputDevice implements ISoundInputDevice {
 
-    public static final String TAG = AISpeechSoundInputDevice.class.getSimpleName();
+    public static final String TAG = AISpeechEar.TAG;
     private AILocalEddEngine mEngine;
     private boolean isWakeUp;
 
@@ -35,7 +35,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         mEngine.setAecCfg(SpeechConstants.ace_cfg); //
         mEngine.setDoaEnable(true); // 声源定位是否开启
         mEngine.init(App.mContext, new AISpeechListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
-        mEngine.setStopOnWakeupSuccess(false); // 设置当检测到唤醒词后自动停止唤醒引擎
+        mEngine.setStopOnWakeupSuccess(true); // 设置当检测到唤醒词后自动停止唤醒引擎
         mEngine.setWords(new String[]{"你好小乐"}); // 设置唤醒词为小乐，该唤醒词需要与唤醒资源对应
         mEngine.setDeviceId(Util.getIMEI(App.mContext));
     }
@@ -95,7 +95,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
 
         @Override
         public void onBufferReceived(byte[] buffer) {
-            LogUtils.d(TAG, "ReceivedData:" + buffer.toString());
+            // LogUtils.d(TAG, "ReceivedData:" + buffer.toString());
         }
 
         @Override
