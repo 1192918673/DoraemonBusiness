@@ -58,6 +58,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     public void stop() {
+        itts.stop();
         iMusicPlayer.stop();
         clearTasks();
     }

@@ -20,7 +20,7 @@ public class GetAnswerResponse {
 
     private String data;
     /**
-     * action : ["head_up","head_down"]
+     * action : ["action_head_up","head_down"]
      * expression : ["http://doraemon.microfastup.com/media/expression/photos/2016/07/18/c42d1184622e45a88fac3c9f1ba06788.jpg","http://doraemon.microfastup.com/media/expression/photos/2016/07/18/247988466a274471ae76bf35a1bdc1c0.jpg","http://doraemon.microfastup.com/media/expression/photos/2016/07/18/fa5205b7862d4ffba013bd076786cc68.jpg"]
      * interval : 100
      */

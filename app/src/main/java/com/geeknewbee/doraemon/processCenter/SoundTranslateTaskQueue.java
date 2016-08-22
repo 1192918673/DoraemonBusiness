@@ -8,6 +8,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
+import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
@@ -104,6 +105,11 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             commandList.add(new ExpressionCommand(localGifResource, 1));
 
         //现在的动作是固定的几个动作，以后改成服务器生成动作脚步，直接执行
+        if (data.getAction() != null && data.getAction().size() > 0) {
+            ActionSetCommand actionSetCommand = LocalSportActionManager.getInstance().getActionSetCommand(data.getAction());
+            if (actionSetCommand != null)
+                commandList.add(actionSetCommand);
+        }
         return commandList;
     }
 

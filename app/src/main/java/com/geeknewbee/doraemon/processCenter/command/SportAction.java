@@ -1,9 +1,9 @@
 package com.geeknewbee.doraemon.processcenter.command;
 
 /**
- * 舞蹈动作
+ * 运动动作
  */
-public class DanceAction {
+public class SportAction {
     /**
      * 头,手的命令
      */

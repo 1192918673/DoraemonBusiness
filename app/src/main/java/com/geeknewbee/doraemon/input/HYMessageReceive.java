@@ -95,6 +95,8 @@ public class HYMessageReceive implements IMessageReceive {
                     EMClient.getInstance().chatManager().addMessageListener(msgListener);
                     break;
                 case LOGIN_FAILED:// 登录失败
+                    hxUsername = PrefUtils.getString(App.mContext, Constants.KEY_HX_USERNAME, null);
+                    hxPassword = PrefUtils.getString(App.mContext, Constants.KEY_HX_USERPWD, null);
                     EMLogin(hxUsername, hxPassword);
                     break;
                 case STATE_CONNECTED:// 已连接
@@ -149,7 +151,7 @@ public class HYMessageReceive implements IMessageReceive {
         EMClient.getInstance().addConnectionListener(new MyEMConnectionListener());
 
         // 2.登录
-        if (!TextUtils.isEmpty(hxUsername) && !TextUtils.isEmpty(hxPassword) && !isLogined) {
+        if (!isLogined) {
             EMLogin(hxUsername, hxPassword);
         }
     }
@@ -163,11 +165,17 @@ public class HYMessageReceive implements IMessageReceive {
 
     /**
      * 环信登录
+     *
      * @param name
      * @param pwd
      */
     private void EMLogin(String name, String pwd) {
-        EMClient.getInstance().login(hxUsername, hxPassword, new EMCallBack() {
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(pwd)) {
+            mHandler.sendEmptyMessageDelayed(LOGIN_FAILED, 5000);
+            return;
+        }
+
+        EMClient.getInstance().login(name, pwd, new EMCallBack() {
             @Override
             public void onSuccess() {
                 LogUtils.d(TAG, "登陆聊天服务器成功！");

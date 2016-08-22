@@ -12,6 +12,7 @@ import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
+import com.geeknewbee.doraemon.processcenter.LocalSportActionManager;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.umeng.analytics.MobclickAgent;
 
@@ -70,6 +71,8 @@ public class MainActivity extends Activity {
     private void initData() {
         //当没有token的时候需要获取token
         DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
+        //初始化本地动作库
+        LocalSportActionManager.getInstance().initLocalAction();
     }
 
     @Override

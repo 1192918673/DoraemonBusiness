@@ -8,11 +8,11 @@ import com.geeknewbee.doraemon.output.action.IFoot;
 import com.geeknewbee.doraemon.output.action.LeXingFoot;
 import com.geeknewbee.doraemon.output.action.SDArmsAndHead;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
+import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.DanceAction;
-import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
+import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -26,7 +26,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private volatile static LimbsTaskQueue instance;
     private IArmsAndHead armsAndHead;
     private IFoot foot;
-    private boolean isStopDance = false;//跳舞中断标识
+    private boolean isStopAction = false;//跳舞中断标识
 
     private LimbsTaskQueue() {
         super();
@@ -53,9 +53,9 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     @Override
     public Boolean performTask(Command command) {
         switch (command.getType()) {
-            case DANCE:
-                isStopDance = false;
-                dance((DanceCommand) command);
+            case ACTIONSET:
+                isStopAction = false;
+                perform((ActionSetCommand) command);
                 break;
             case MECHANICAL_MOVEMENT:
                 return sendCommandContent(command.getContent());
@@ -67,32 +67,34 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         return true;
     }
 
-    private void dance(DanceCommand command) {
-        if (command.danceActions == null || command.danceActions.isEmpty())
+    private void perform(ActionSetCommand command) {
+        if (command.sportActions == null || command.sportActions.isEmpty())
             return;
 
-        for (DanceAction danceAction : command.danceActions) {
-            if (isStopDance)
+        for (SportAction sportAction : command.sportActions) {
+            if (isStopAction)
                 break;
 
-            if (!TextUtils.isEmpty(danceAction.expressionName))
-                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(danceAction.expressionName, 1));
+            if (!TextUtils.isEmpty(sportAction.expressionName))
+                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 1));
 
-            sendCommandContent(danceAction.topCommand);
+            sendCommandContent(sportAction.topCommand);
 //            try {
 //                Thread.sleep(50);
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-//            sendCommandContent(danceAction.footCommand);
-            sendLeXingFootCommand(danceAction.footCommand);
+//            sendCommandContent(sportAction.footCommand);
+            sendLeXingFootCommand(sportAction.footCommand);
 
             try {
-                Thread.sleep(danceAction.delayTime);
+                Thread.sleep(sportAction.delayTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+        foot.setSpeed(0, 0);//最后要停止运动
     }
 
     private void sendLeXingFootCommand(String footCommand) {
@@ -121,9 +123,10 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     /**
-     * 停止跳舞
+     * 停止任务
      */
-    public void stopDance() {
-        isStopDance = true;
+    public void stop() {
+        isStopAction = true;
+        clearTasks();
     }
 }

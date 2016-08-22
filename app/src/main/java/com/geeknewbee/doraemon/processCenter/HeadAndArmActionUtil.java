@@ -2,10 +2,17 @@ package com.geeknewbee.doraemon.processcenter;
 
 import android.text.TextUtils;
 
-import com.geeknewbee.doraemon.processcenter.command.DanceAction;
+import com.geeknewbee.doraemon.processcenter.command.SportAction;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +50,36 @@ public class HeadAndArmActionUtil {
     public static int MAX_HEAD_VERTICAL_ANGLE = 12;
     public static int MIN_HEAD_VERTICAL_ANGLE = -12;
 
-    public static DanceAction parseCommand(String line) {
+    public static List<SportAction> parseSportCommand(int rawId) {
+        if (rawId < 1)
+            return null;
+
+        InputStream in = BaseApplication.mContext.getResources().openRawResource(rawId);
+        InputStreamReader reader = new InputStreamReader(in);
+        List<SportAction> commands = new ArrayList<>();
+        try {
+            BufferedReader bufReader = new BufferedReader(reader);
+            String line;
+            SportAction sportAction;
+            while ((line = bufReader.readLine()) != null) {
+                sportAction = parseSportCommand(line);
+                if (sportAction != null)
+                    commands.add(sportAction);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return commands;
+    }
+
+    public static SportAction parseSportCommand(String line) {
         //必须是以"{" 开头 "}"结尾
         if (TextUtils.isEmpty(line) || !line.startsWith("{") || !line.endsWith("}"))
             return null;
@@ -52,7 +88,7 @@ public class HeadAndArmActionUtil {
         if (strings.length < 8)
             return null;
 
-        DanceAction danceAction = new DanceAction();
+        SportAction action = new SportAction();
 
         //0 头部水平旋转
         int headHorizontal = Integer.parseInt(strings[0].trim());
@@ -72,17 +108,17 @@ public class HeadAndArmActionUtil {
 
         //7 整个运动持续时间
         int time = Integer.parseInt(strings[7].trim());
-        danceAction.delayTime = time;
+        action.delayTime = time;
 
-        danceAction.topCommand = getTopCommand(leftUpAnDownAngle, rightUpAndDownAngle, rightAPAngle, leftAPAngle, headHorizontal, headVertical, time);
-        danceAction.footCommand = getFootCommandOfLeXing(footDirection);
+        action.topCommand = getTopCommand(leftUpAnDownAngle, rightUpAndDownAngle, rightAPAngle, leftAPAngle, headHorizontal, headVertical, time);
+        action.footCommand = getFootCommandOfLeXing(footDirection);
 
         //8 运动的表情
         if (strings.length == 9 && !TextUtils.isEmpty(strings[8].trim())) {
-            danceAction.expressionName = strings[8].trim();
+            action.expressionName = strings[8].trim();
         }
 
-        return danceAction;
+        return action;
     }
 
     /**
