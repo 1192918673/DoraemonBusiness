@@ -13,6 +13,14 @@ public class LeXingUtil {
     //逆时针
     public static final int DIRECTION_EASTERN = 5;
 
+    /**
+     * 获取线速度，角速度
+     *
+     * @param direction
+     * @param distance  距离 mm(毫米)
+     * @param duration  时间 ms(毫秒)
+     * @return
+     */
     public static int[] getSpeed(int direction, int distance, int duration) {
         int[] result = new int[2];
         int vSpeed = 0;
@@ -28,6 +36,16 @@ public class LeXingUtil {
         return result;
     }
 
+    /**
+     * 获取线速度，角速度
+     *
+     * @param direction
+     * @param clockDirection
+     * @param angle          角度  °(度)
+     * @param radius         半径  mm(毫米)
+     * @param duration       时间  ms(毫秒)
+     * @return
+     */
     public static int[] getSpeed(int direction, int clockDirection, int angle, int radius, int duration) {
         int[] result = new int[2];
         int vSpeed = 0, wSpeed = 0;
