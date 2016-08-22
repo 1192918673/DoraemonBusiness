@@ -21,15 +21,16 @@ public class LeXingUtil {
      * @param duration  时间 ms(毫秒)
      * @return
      */
-    public static int[] getSpeed(int direction, int distance, int duration) {
+    public static int[] getSpeed(Direction direction, int distance, int duration) {
         int[] result = new int[2];
         int vSpeed = 0;
-        if (DIRECTION_FORE == direction) {
-            vSpeed = (int) Math.abs((float) distance / duration);
-        } else if (DIRECTION_BACK == direction) {
-            vSpeed = (int) -Math.abs((float) distance / duration);
-        } else {
-            LogUtils.d("setWalkStraight", "Walking direction error...");
+        switch (direction) {
+            case FORE:
+                vSpeed = (int) Math.abs((float) distance / duration * 1000);
+                break;
+            case BACK:
+                vSpeed = (int) -Math.abs((float) distance / duration * 1000);
+                break;
         }
         result[0] = vSpeed;
         result[1] = 0;
@@ -46,30 +47,32 @@ public class LeXingUtil {
      * @param duration       时间  ms(毫秒)
      * @return
      */
-    public static int[] getSpeed(int direction, int clockDirection, int angle, int radius, int duration) {
+    public static int[] getSpeed(Direction direction, ClockDirection clockDirection, int angle, int radius, int duration) {
         int[] result = new int[2];
         int vSpeed = 0, wSpeed = 0;
         switch (direction) {
-            case DIRECTION_LEFT: // 往左转
-                if (DIRECTION_CLOCKWISE == clockDirection) { // 顺时针
-                    wSpeed = (int) Math.abs((float) angle / duration);
-                    vSpeed = -wSpeed * radius;
-                } else if (DIRECTION_EASTERN == clockDirection) { // 逆时针
-                    wSpeed = -(int) Math.abs((float) angle / duration);
-                    vSpeed = wSpeed * radius;
-                } else {
-                    LogUtils.d("setTurn", "Clock direction error...");
+            case LEFT: // 往左转
+                switch (clockDirection) {
+                    case CLOCKWISE:
+                        wSpeed = (int) Math.abs((float) angle / duration);
+                        vSpeed = -wSpeed * radius;
+                        break;
+                    case EASTERN:
+                        wSpeed = -(int) Math.abs((float) angle / duration);
+                        vSpeed = wSpeed * radius;
+                        break;
                 }
                 break;
-            case DIRECTION_RIGHT: // 往右转
-                if (DIRECTION_CLOCKWISE == clockDirection) { // 顺时针
-                    wSpeed = (int) Math.abs((float) angle / duration);
-                    vSpeed = wSpeed * radius;
-                } else if (DIRECTION_EASTERN == clockDirection) { // 逆时针
-                    wSpeed = -(int) Math.abs((float) angle / duration);
-                    vSpeed = -wSpeed * radius;
-                } else {
-                    LogUtils.d("setTurn", "Clock direction error...");
+            case RIGHT: // 往右转
+                switch (clockDirection) {
+                    case CLOCKWISE:
+                        wSpeed = (int) Math.abs((float) angle / duration);
+                        vSpeed = wSpeed * radius;
+                        break;
+                    case EASTERN:
+                        wSpeed = -(int) Math.abs((float) angle / duration);
+                        vSpeed = -wSpeed * radius;
+                        break;
                 }
                 break;
             default:
@@ -78,5 +81,13 @@ public class LeXingUtil {
         result[0] = vSpeed;
         result[1] = wSpeed;
         return result;
+    }
+
+    public static enum Direction {
+        FORE, BACK, LEFT, RIGHT
+    }
+
+    public static enum ClockDirection {
+        CLOCKWISE, EASTERN
     }
 }

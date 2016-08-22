@@ -42,7 +42,7 @@ public class LeXingFoot implements IFoot {
     }
 
     /**
-     * @param v 线速度 ms/s
+     * @param v 线速度 mm/s
      * @param w 角速度 毫弧/s
      * @return
      */
@@ -77,7 +77,7 @@ public class LeXingFoot implements IFoot {
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
     @Override
-    public synchronized int setWalkStraight(int direction, int distance, int duration) {
+    public synchronized int setWalkStraight(LeXingUtil.Direction direction, int distance, int duration) {
         checkDeviceChange();
 
         if (mNaviPack == null) {
@@ -116,7 +116,7 @@ public class LeXingFoot implements IFoot {
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
     @Override
-    public synchronized int setTurn(int direction, int clockDirection, int angle, int radius, int duration) {
+    public synchronized int setTurn(LeXingUtil.Direction direction, LeXingUtil.ClockDirection clockDirection, int angle, int radius, int duration) {
         checkDeviceChange();
 
         if (mNaviPack == null) {

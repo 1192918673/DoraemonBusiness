@@ -1,5 +1,7 @@
 package com.geeknewbee.doraemon.output.action;
 
+import com.geeknewbee.doraemon.processcenter.LeXingUtil;
+
 /**
  * 脚步运动接口
  */
@@ -20,7 +22,7 @@ public interface IFoot {
      */
     boolean setSpeed(int v, int w);
 
-    int setWalkStraight(int direction, int speed, int duration);
+    int setWalkStraight(LeXingUtil.Direction direction, int speed, int duration);
 
-    int setTurn(int direction, int clockDirection, int angle, int radius, int duration);
+    int setTurn(LeXingUtil.Direction direction, LeXingUtil.ClockDirection clockDirection, int angle, int radius, int duration);
 }
