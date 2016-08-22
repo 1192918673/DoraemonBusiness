@@ -71,7 +71,6 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         Doraemon.getInstance(App.mContext).startASR();
         //提示成功
         Doraemon.getInstance(App.mContext).addCommand(new Command(CommandType.PLAY_SOUND, "唤醒成功"));
-        //TODO 根据角度转向
         double turnAngle = 0;
         LeXingUtil.Direction direction;
         LeXingUtil.ClockDirection clockDirection;
@@ -86,6 +85,8 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         }
         int[] speed = LeXingUtil.getSpeed(direction, clockDirection, (int) turnAngle, 0, 2000);
         Doraemon.getInstance(App.mContext).addCommand(new LeXingCommand(speed[0], speed[1], 2000));
+        //TODO 设置角度
+//        mEngine.setDoaChannel(6);//每次都是头对着用户
     }
 
     private class AISpeechListenerImpl implements AILocalEddListener {
