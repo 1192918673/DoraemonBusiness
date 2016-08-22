@@ -15,6 +15,7 @@ import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
+import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.util.Arrays;
@@ -61,7 +62,8 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 return sendCommandContent(command.getContent());
             case LE_XING_FOOT:
                 LeXingCommand leXingCommand = (LeXingCommand) command;
-                return foot.setSpeed(leXingCommand.v, leXingCommand.w);
+//                return foot.setSpeed(leXingCommand.v, leXingCommand.w);
+                return sendLeXingFootCommandByLuGong(leXingCommand.v, leXingCommand.w);
         }
 
         return true;
@@ -85,7 +87,8 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 //                e.printStackTrace();
 //            }
 //            sendCommandContent(sportAction.footCommand);
-            sendLeXingFootCommand(sportAction.footCommand);
+//            sendLeXingFootCommand(sportAction.footCommand);
+            sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
 
             try {
                 Thread.sleep(sportAction.delayTime);
@@ -94,7 +97,8 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             }
         }
 
-        foot.setSpeed(0, 0);//最后要停止运动
+//        foot.setSpeed(0, 0);//最后要停止运动
+        sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
     }
 
     private void sendLeXingFootCommand(String footCommand) {
@@ -104,6 +108,32 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         String[] split = footCommand.split("|");
         if (split.length != 2) return;
         foot.setSpeed(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
+    }
+
+    /**
+     * 直接控制乐行有问题，现在采用暂时方案,先和路工的中控板通信，中控板再发命令到地盘msc
+     *
+     * @param footCommand
+     */
+    private boolean sendLeXingFootCommandByLuGong(String footCommand) {
+        if (TextUtils.isEmpty(footCommand))
+            return false;
+
+        String[] split = footCommand.split("|");
+        if (split.length != 2) return false;
+
+        return sendLeXingFootCommandByLuGong(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
+    }
+
+    private boolean sendLeXingFootCommandByLuGong(int v, int w) {
+        byte funcationCode = 0x03;
+
+        char[] charV = BytesUtils.int2bytes(v);
+        char[] charW = BytesUtils.int2bytes(w);
+
+        char[] contentChar = new char[]{charV[0], charV[1], charV[2], charV[3], charW[0], charW[1], charW[2], charW[3], 0x00, 0x00, 0x00};
+        boolean send = armsAndHead.send(funcationCode, contentChar);
+        return send;
     }
 
     private Boolean sendCommandContent(String s) {

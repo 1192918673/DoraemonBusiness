@@ -56,50 +56,50 @@ public class LocalSportActionManager extends Thread {
     public void run() {
         super.run();
         List<SportAction> actions;
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_head_up);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_head_up);
         localActionMap.put("head_up", actions);
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_head_down);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_head_down);
         localActionMap.put("head_down", actions);
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_head_front);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_head_front);
         localActionMap.put("head_front", actions);
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_r_arm_down);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_r_arm_down);
         localActionMap.put("r_arm_down", actions);
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_r_arm_up);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_r_arm_up);
         localActionMap.put("r_arm_up", actions);
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_r_arm_end);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_r_arm_end);
         localActionMap.put("r_arm_end", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_r_arm_front);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_r_arm_front);
         localActionMap.put("r_arm_front", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_l_arm_down);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_l_arm_down);
         localActionMap.put("l_arm_down", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_l_arm_up);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_l_arm_up);
         localActionMap.put("l_arm_up", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_l_arm_end);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_l_arm_end);
         localActionMap.put("l_arm_end", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_l_arm_front);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_l_arm_front);
         localActionMap.put("l_arm_front", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_head_right);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_head_right);
         localActionMap.put("head_right", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_head_left);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_head_left);
         localActionMap.put("head_left", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_foot_right);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_foot_right);
         localActionMap.put("right", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_foot_left);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_foot_left);
         localActionMap.put("left", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_foot_backward);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_foot_backward);
         localActionMap.put("backward", actions);
 
-        actions = HeadAndArmActionUtil.parseSportCommand(R.raw.action_foot_forward);
+        actions = SportActionUtil.parseSportCommand(R.raw.action_foot_forward);
         localActionMap.put("forward", actions);
     }
 }

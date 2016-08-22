@@ -37,6 +37,21 @@ public class BytesUtils {
     }
 
     /**
+     * int 转为char array
+     *
+     * @param num
+     * @return
+     */
+    public static char[] int2bytes(int num) {
+        char[] b = new char[4];
+        int mask = 0xff;
+        for (int i = 0; i < 4; i++) {
+            b[i] = (char) ((num >>> (24 - i * 8)) & mask);
+        }
+        return b;
+    }
+
+    /**
      * 根据 高，低 char 获取int value
      *
      * @param highChar

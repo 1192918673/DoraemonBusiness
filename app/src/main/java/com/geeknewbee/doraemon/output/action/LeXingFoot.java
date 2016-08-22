@@ -72,7 +72,7 @@ public class LeXingFoot implements IFoot {
      * 直线行走
      *
      * @param direction 方向：0 向前，1 向后
-     * @param distance  距离  cm
+     * @param distance  距离  mm
      * @param duration  时间  ms
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
@@ -110,8 +110,8 @@ public class LeXingFoot implements IFoot {
      *
      * @param direction      方向：0 左，1 右
      * @param clockDirection 方式：0 顺时针，1 逆时针
-     * @param angle          角度
-     * @param radius         半径 cm
+     * @param angle          角度  °度
+     * @param radius         半径 mm
      * @param duration       时间 ms
      * @return 返回值小于0，表示失败，等于0 表示成功
      */
