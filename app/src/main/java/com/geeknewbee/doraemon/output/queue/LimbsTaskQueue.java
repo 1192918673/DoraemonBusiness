@@ -62,12 +62,25 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 return sendCommandContent(command.getContent());
             case LE_XING_FOOT:
                 LeXingCommand leXingCommand = (LeXingCommand) command;
-//                return foot.setSpeed(leXingCommand.v, leXingCommand.w);
-                return sendLeXingFootCommandByLuGong(leXingCommand.v, leXingCommand.w);
+                perform(leXingCommand);
+                break;
         }
 
         return true;
     }
+
+    private void perform(LeXingCommand command) {
+        sendLeXingFootCommandByLuGong(command.v, command.w);
+        if (command.duration != 0) {
+            try {
+                Thread.sleep(command.duration);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
+        }
+    }
+
 
     private void perform(ActionSetCommand command) {
         if (command.sportActions == null || command.sportActions.isEmpty())
@@ -81,11 +94,11 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 1));
 
             sendCommandContent(sportAction.topCommand);
-//            try {
-//                Thread.sleep(50);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 //            sendCommandContent(sportAction.footCommand);
 //            sendLeXingFootCommand(sportAction.footCommand);
             sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
@@ -95,10 +108,9 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
 
-//        foot.setSpeed(0, 0);//最后要停止运动
-        sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
+            sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
+        }
     }
 
     private void sendLeXingFootCommand(String footCommand) {

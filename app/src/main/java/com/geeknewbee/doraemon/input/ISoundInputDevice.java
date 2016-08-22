@@ -9,7 +9,7 @@ public interface ISoundInputDevice {
 
     void setAngle(int angle);
 
-    void onWakeUp(int angle);
+    void onWakeUp(double angle);
 
     void start();
 }

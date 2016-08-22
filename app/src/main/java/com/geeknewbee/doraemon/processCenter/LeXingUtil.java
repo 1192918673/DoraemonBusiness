@@ -16,10 +16,10 @@ public class LeXingUtil {
         int vSpeed = 0;
         switch (direction) {
             case FORE:
-                vSpeed = (int) Math.abs((float) distance / duration * 1000);
+                vSpeed = (int) Math.abs((float) distance / duration * 1000); //（毫米/秒）
                 break;
             case BACK:
-                vSpeed = (int) -Math.abs((float) distance / duration * 1000);
+                vSpeed = (int) -Math.abs((float) distance / duration * 1000);//（毫米/秒）
                 break;
         }
         result[0] = vSpeed;
@@ -29,6 +29,8 @@ public class LeXingUtil {
 
     /**
      * 获取线速度，角速度
+     * 设线速度为 v （米/秒），角速度为 ω （弧度/秒）=  ωd（度/秒） ，周期 T（秒），回转半径 R（米），则有：
+     * v = R×ω = R×ωd×π/180
      *
      * @param direction
      * @param clockDirection
@@ -39,37 +41,39 @@ public class LeXingUtil {
      */
     public static int[] getSpeed(Direction direction, ClockDirection clockDirection, int angle, int radius, int duration) {
         int[] result = new int[2];
-        int vSpeed = 0, wSpeed = 0;
+        float vSpeed = 0, wSpeed = 0;
         switch (direction) {
             case LEFT: // 往左转
                 switch (clockDirection) {
                     case CLOCKWISE:
-                        wSpeed = (int) Math.abs((float) angle / duration);
-                        vSpeed = -wSpeed * radius;
+                        wSpeed = Math.abs((float) angle / duration * 1000); //(度/秒）
+                        vSpeed = (-wSpeed * ((float) radius / 1000)); //（米/秒）
                         break;
                     case EASTERN:
-                        wSpeed = -(int) Math.abs((float) angle / duration);
-                        vSpeed = wSpeed * radius;
+                        wSpeed = Math.abs((float) angle / duration * 1000);//(度/秒）
+                        vSpeed = (wSpeed * ((float) radius / 1000));//（米/秒）
                         break;
                 }
                 break;
             case RIGHT: // 往右转
                 switch (clockDirection) {
                     case CLOCKWISE:
-                        wSpeed = (int) Math.abs((float) angle / duration);
-                        vSpeed = wSpeed * radius;
+                        wSpeed = -Math.abs((float) angle / duration * 1000); //(度/秒）
+                        vSpeed = -(wSpeed * ((float) radius / 1000));//（米/秒）
                         break;
                     case EASTERN:
-                        wSpeed = -(int) Math.abs((float) angle / duration);
-                        vSpeed = -wSpeed * radius;
+                        wSpeed = -Math.abs((float) angle / duration * 1000);//(度/秒）
+                        vSpeed = (wSpeed * ((float) radius / 1000)); //（米/秒）
                         break;
                 }
                 break;
             default:
                 LogUtils.d("setTurn", "Turning direction error...");
         }
-        result[0] = vSpeed;
-        result[1] = wSpeed;
+        vSpeed = vSpeed * 1000;////（毫米/秒）
+        wSpeed = wSpeed * 1000; //(毫度/秒）
+        result[0] = (int) vSpeed;
+        result[1] = (int) wSpeed;
         return result;
     }
 

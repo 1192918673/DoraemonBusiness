@@ -10,8 +10,10 @@ import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
+import com.geeknewbee.doraemon.processcenter.LeXingUtil;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
+import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 /**
@@ -61,14 +63,29 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     }
 
     @Override
-    public synchronized void onWakeUp(int angle) {
+    public synchronized void onWakeUp(double angle) {
         //当唤醒的时候停止当前的动作
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
         //开启监听
         Doraemon.getInstance(App.mContext).startASR();
-        //TODO 根据角度转向
+        //提示成功
         Doraemon.getInstance(App.mContext).addCommand(new Command(CommandType.PLAY_SOUND, "唤醒成功"));
+        //TODO 根据角度转向
+        double turnAngle = 0;
+        LeXingUtil.Direction direction;
+        LeXingUtil.ClockDirection clockDirection;
+        if (angle > 180) {
+            turnAngle = 360 - angle;
+            direction = LeXingUtil.Direction.RIGHT;
+            clockDirection = LeXingUtil.ClockDirection.CLOCKWISE;
+        } else {
+            turnAngle = angle;
+            direction = LeXingUtil.Direction.LEFT;
+            clockDirection = LeXingUtil.ClockDirection.EASTERN;
+        }
+        int[] speed = LeXingUtil.getSpeed(direction, clockDirection, (int) turnAngle, 0, 2000);
+        Doraemon.getInstance(App.mContext).addCommand(new LeXingCommand(speed[0], speed[1], 2000));
     }
 
     private class AISpeechListenerImpl implements AILocalEddListener {
@@ -101,7 +118,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         @Override
         public void onDoa(String recordId, double phis, double angle) {
             LogUtils.d(TAG, "DoaSuccess recordId:" + recordId + ",phis:" + phis + ",angle:" + angle + "\n");
-            onWakeUp((int) angle);
+            onWakeUp(angle);
             // mEngine.start();//如果设置了doa enable为true，在这里start
         }
 
