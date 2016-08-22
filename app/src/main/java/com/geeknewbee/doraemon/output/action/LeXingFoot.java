@@ -44,6 +44,10 @@ public class LeXingFoot implements IFoot {
     @Override
     public synchronized boolean setSpeed(int v, int w) {
         checkDeviceChange();
+        if (mNaviPack == null) {
+            LogUtils.d("setWalkStraight", "The instance of NaviPack is null");
+            return false;
+        }
         return mNaviPack.setSpeed(handlerId, v, w) == 0;
     }
 
@@ -89,6 +93,10 @@ public class LeXingFoot implements IFoot {
     }
 
     private void stop() {
+        if (mNaviPack == null) {
+            LogUtils.d("setWalkStraight", "The instance of NaviPack is null");
+            return;
+        }
         mNaviPack.setSpeed(handlerId, 0, 0);
     }
 
