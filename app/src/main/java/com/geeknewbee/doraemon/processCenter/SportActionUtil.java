@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * 头和手动作解析
  */
-public class HeadAndArmActionUtil {
+public class SportActionUtil {
     public static final int FOOT_DIRECTION_UP = 1;
     public static final int FOOT_DIRECTION_DOWN = 2;
     public static final int FOOT_DIRECTION_RIGHT = 3;
