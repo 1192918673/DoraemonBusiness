@@ -3,16 +3,6 @@ package com.geeknewbee.doraemon.processcenter;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 public class LeXingUtil {
-    public static final int DIRECTION_FORE = 0;
-    public static final int DIRECTION_BACK = 1;
-    public static final int DIRECTION_LEFT = 2;
-    public static final int DIRECTION_RIGHT = 3;
-
-    //顺时针
-    public static final int DIRECTION_CLOCKWISE = 4;
-    //逆时针
-    public static final int DIRECTION_EASTERN = 5;
-
     /**
      * 获取线速度，角速度
      *
