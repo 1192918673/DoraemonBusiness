@@ -21,8 +21,8 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class MainActivity extends Activity {
     public GifImageView gifView;
-    private BluetoothServiceManager bluetoothServiceManager;
     public ImageView imageQR;
+    private BluetoothServiceManager bluetoothServiceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
         startBluetoothService();
         initData();
 //        test();
-        Doraemon.getInstance(getApplicationContext()).startASR();
+        Doraemon.getInstance(getApplicationContext()).startWakeup();
         Doraemon.getInstance(getApplicationContext()).startReceive();
     }
 
