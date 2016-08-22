@@ -276,16 +276,16 @@ public class SportActionUtil {
         int angle = 30;
         switch (footDirection) {
             case FOOT_DIRECTION_UP:
-                result = LeXingUtil.getSpeed(LeXingUtil.DIRECTION_FORE, distance, footDirection);
+                result = LeXingUtil.getSpeed(LeXingUtil.Direction.FORE, distance, footDirection);
                 break;
             case FOOT_DIRECTION_DOWN:
-                result = LeXingUtil.getSpeed(LeXingUtil.DIRECTION_BACK, distance, footDirection);
+                result = LeXingUtil.getSpeed(LeXingUtil.Direction.BACK, distance, footDirection);
                 break;
             case FOOT_DIRECTION_RIGHT:
-                result = LeXingUtil.getSpeed(LeXingUtil.DIRECTION_RIGHT, LeXingUtil.DIRECTION_CLOCKWISE, angle, 0, footDirection);
+                result = LeXingUtil.getSpeed(LeXingUtil.Direction.RIGHT, LeXingUtil.ClockDirection.CLOCKWISE, angle, 0, footDirection);
                 break;
             case FOOT_DIRECTION_LEFT:
-                result = LeXingUtil.getSpeed(LeXingUtil.DIRECTION_LEFT, LeXingUtil.DIRECTION_EASTERN, angle, 0, footDirection);
+                result = LeXingUtil.getSpeed(LeXingUtil.Direction.LEFT, LeXingUtil.ClockDirection.EASTERN, angle, 0, footDirection);
                 break;
         }
         return String.format("%d|%d", result[0], result[0]);
