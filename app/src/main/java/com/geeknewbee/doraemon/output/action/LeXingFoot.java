@@ -41,6 +41,11 @@ public class LeXingFoot implements IFoot {
         return result;
     }
 
+    /**
+     * @param v 线速度 ms/s
+     * @param w 角速度 毫弧/s
+     * @return
+     */
     @Override
     public synchronized boolean setSpeed(int v, int w) {
         checkDeviceChange();
