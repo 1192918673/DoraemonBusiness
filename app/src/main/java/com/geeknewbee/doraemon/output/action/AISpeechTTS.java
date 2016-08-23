@@ -32,6 +32,7 @@ public class AISpeechTTS implements ITTS {
     }
 
     private AILocalTTSEngine init() {
+        LogUtils.d(TAG, "startInit...");
         if (mTTSEngine != null) {
             return mTTSEngine;
         }
@@ -45,6 +46,7 @@ public class AISpeechTTS implements ITTS {
         mTTSEngine.setRightMargin(25);
         mTTSEngine.setSpeechRate(0.9f);// 设置语速 取值范围0-10，1为正常语速，10为最快，0为最慢
         mTTSEngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));// 设置设备Id
+        LogUtils.d(TAG, "endInit...");
         return mTTSEngine;
     }
 

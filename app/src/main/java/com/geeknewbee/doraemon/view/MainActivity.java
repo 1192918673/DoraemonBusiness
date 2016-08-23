@@ -6,6 +6,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
@@ -14,6 +15,8 @@ import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.LocalSportActionManager;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
+import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.umeng.analytics.MobclickAgent;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -73,6 +76,12 @@ public class MainActivity extends Activity {
         DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
         //初始化本地动作库
         LocalSportActionManager.getInstance().initLocalAction();
+        //开机提示：是否联网
+        if (DeviceUtil.isNetworkConnected(getApplicationContext())) {
+            Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("呼叫你好小乐，唤醒我", SoundCommand.InputSource.TIPS));
+        } else {
+            Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("网络未连接，请先连接网络", SoundCommand.InputSource.TIPS));
+        }
     }
 
     @Override
