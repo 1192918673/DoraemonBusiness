@@ -161,7 +161,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTTSComplete(TTSCompleteEvent event) {
         //完成后开启语音监听,当在有播放媒体的时候不需要的时候，这里需要处理
-        startASR();
+        switchListener(SoundMonitorType.ASR);
     }
 
     /**
@@ -172,7 +172,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayMusicComplete(MusicCompleteEvent event) {
         //完成后开启语音监听
-        startASR();
+        switchListener(SoundMonitorType.ASR);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
