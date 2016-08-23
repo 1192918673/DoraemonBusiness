@@ -3,6 +3,8 @@ package com.geeknewbee.doraemon.output.queue;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.action.IArmsAndHead;
 import com.geeknewbee.doraemon.output.action.IFoot;
 import com.geeknewbee.doraemon.output.action.LeXingFoot;
@@ -17,6 +19,8 @@ import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Arrays;
 
@@ -53,6 +57,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     @Override
     public Boolean performTask(Command command) {
+        EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
         switch (command.getType()) {
             case ACTIONSET:
                 isStopAction = false;

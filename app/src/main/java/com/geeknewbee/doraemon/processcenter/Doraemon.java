@@ -6,7 +6,7 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
-import com.geeknewbee.doraemon.entity.event.InputTimeoutEvent;
+import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
@@ -274,14 +274,14 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
 
 
     /**
-     * 输入超时
+     * 切换监听类型
      *
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onInputTimeout(InputTimeoutEvent event) {
+    public void onSwitchMonitorType(SwitchMonitorEvent event) {
         //当input 超时 让声音板休眠 并开启声音监听
-        switchListener(SoundMonitorType.EDD);
+        switchListener(event.type);
     }
 
     private void switchListener(SoundMonitorType type) {

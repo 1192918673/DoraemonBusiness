@@ -1,5 +1,7 @@
 package com.geeknewbee.doraemon.output.queue;
 
+import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.action.AISpeechTTS;
 import com.geeknewbee.doraemon.output.action.IMusicPlayer;
 import com.geeknewbee.doraemon.output.action.ITTS;
@@ -7,6 +9,8 @@ import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
 import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 声音 task queue
@@ -35,6 +39,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     @Override
     public Boolean performTask(Command input) {
+        EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
         switch (input.getType()) {
             case PLAY_SOUND:
                 itts.talk(input.getContent());
