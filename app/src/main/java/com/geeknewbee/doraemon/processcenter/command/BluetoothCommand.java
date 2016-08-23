@@ -113,7 +113,7 @@ public class BluetoothCommand {
             }
 
             if (footCommand != null)
-                result.add(new LeXingCommand(footCommand.v, footCommand.w));
+                result.add(new LeXingCommand(footCommand.v, footCommand.w, footCommand.duration));
             return result;
         }
     }
@@ -127,5 +127,10 @@ public class BluetoothCommand {
          * 角速度
          */
         public int w;
+
+        /**
+         * 持续时间 ms
+         */
+        public int duration = 0;
     }
 }
