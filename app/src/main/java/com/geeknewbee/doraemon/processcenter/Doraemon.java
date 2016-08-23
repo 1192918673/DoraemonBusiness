@@ -196,17 +196,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
-     * 无语音超时计时开始
-     *
-     * @param event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onReadyForSpeech(ReadyForSpeechEvent event) {
-        //开启声音输入超时监听
-        inputTimeOutMonitorTask.startMonitor();
-    }
-
-    /**
      * 收到后台推送的消息
      *
      * @param commands
@@ -217,18 +206,18 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
-     * 开始声音监听
+     * ASR监听请说话：无语音超时计时开始
      *
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void startASREvent(StartASREvent event) {
-        //完成后开启语音监听
-        startASR();
+    public void onReadyForSpeech(ReadyForSpeechEvent event) {
+        //开启声音输入超时监听
+        inputTimeOutMonitorTask.startMonitor();
     }
 
     /*
-     * 开始说话
+     * ASR监听到开始说话：无语音超时计时开始
      *
      * @param event
      */
@@ -241,7 +230,18 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
-     * 开始处理语音的内容
+     * 开启ASR事件：开始声音监听
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void startASREvent(StartASREvent event) {
+        //完成后开启语音监听
+        startASR();
+    }
+
+    /**
+     * ASR开始解析声音事件：显示不同表情
      *
      * @param event
      */
@@ -253,7 +253,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
-     * 声音输入解析完成
+     * ASR解析声音完成事件：显示不同表情
      *
      * @param event
      */
@@ -268,7 +268,11 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
             addCommand(new ExpressionCommand("default_gif", 0));
     }
 
-
+    /**
+     * 唤醒成功：停止所有任务、TTS提示语、旋转、开启ASR监听
+     *
+     * @param event
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWakeup(WakeupSuccessEvent event) {
         //当唤醒的时候停止当前的动作
