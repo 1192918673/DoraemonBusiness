@@ -3,6 +3,7 @@ package com.geeknewbee.doraemon.output.queue;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.action.IArmsAndHead;
@@ -86,12 +87,15 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             }
             sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
         }
+        notifyComplete();
     }
 
 
     private void perform(ActionSetCommand command) {
-        if (command.sportActions == null || command.sportActions.isEmpty())
+        if (command.sportActions == null || command.sportActions.isEmpty()) {
+            notifyComplete();
             return;
+        }
 
         for (SportAction sportAction : command.sportActions) {
             if (isStopAction)
@@ -118,6 +122,12 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
             sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
         }
+
+        notifyComplete();
+    }
+
+    private void notifyComplete() {
+        EventBus.getDefault().post(new LimbActionCompleteEvent());
     }
 
     private void sendLeXingFootCommand(String footCommand) {
@@ -156,13 +166,17 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     private Boolean sendCommandContent(String s) {
-        if (TextUtils.isEmpty(s))
+        if (TextUtils.isEmpty(s)) {
+            notifyComplete();
             return false;
+        }
 
         char[] chars = s.toCharArray();
         byte funcationCode = (byte) chars[0];
         char[] contentChar = Arrays.copyOfRange(chars, 1, chars.length);
         boolean send = armsAndHead.send(funcationCode, contentChar);
+
+        notifyComplete();
         return send;
     }
 

@@ -6,6 +6,7 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
+import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
@@ -171,6 +172,17 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayMusicComplete(MusicCompleteEvent event) {
+        //完成后开启语音监听
+        switchListener(SoundMonitorType.ASR);
+    }
+
+    /**
+     * 肢体运动完成
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLimbActionComplete(LimbActionCompleteEvent event) {
         //完成后开启语音监听
         switchListener(SoundMonitorType.ASR);
     }
