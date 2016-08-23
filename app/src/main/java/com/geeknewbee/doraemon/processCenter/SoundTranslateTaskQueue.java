@@ -115,7 +115,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
      */
     private List<Command> localPerform(SoundTranslateInput soundTranslateInput) {
         String input = soundTranslateInput.input;
-        if (TextUtils.equals(soundTranslateInput.action, "播放音乐")) {
+        if (TextUtils.equals(soundTranslateInput.action, "播放音乐") || TextUtils.equals(soundTranslateInput.musicName, "一首歌")) {
             if (TextUtils.isEmpty(soundTranslateInput.starName) && TextUtils.isEmpty(soundTranslateInput.musicName)) {
                 int i = new Random().nextInt(Constants.musics.size());
                 soundTranslateInput.starName = Constants.musics.get(i).get("starName");
@@ -130,11 +130,11 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
         if (input.contains("自我介绍")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand("《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》", SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
         if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
-            return Arrays.asList(new Command(CommandType.PLAY_JOKE));
+            return Arrays.asList(new SoundCommand("好的", SoundCommand.InputSource.TIPS), new Command(CommandType.PLAY_JOKE));
         }
         if (input.contains("温度")) {
             List<Command> commands = new ArrayList<>();

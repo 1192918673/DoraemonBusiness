@@ -49,11 +49,9 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             case PLAY_MUSIC:
                 itts.talk("正在搜索音乐", SoundCommand.InputSource.TIPS);
                 iMusicPlayer.play(input.getContent());
-                EventManager.sendStartAsrEvent();
                 break;
             case PLAY_JOKE:
                 iMusicPlayer.joke();
-                EventManager.sendStartAsrEvent();
                 break;
         }
         return true;

@@ -38,7 +38,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-
 /**
  * 哆啦A梦 单利模式
  */
@@ -60,7 +59,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         brain = new Brain();
         soundInputDevice = new AISpeechSoundInputDevice();
         inputTimeOutMonitorTask = new InputTimeoutMonitorTask(context);
-//        inputTimeOutMonitorTask.start();  //TODO 这里还没有连接语音输入板 暂时不起用超时的逻辑
         EventBus.getDefault().register(this);
     }
 
@@ -85,11 +83,18 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
-     * 启动唤醒
+     * 启动唤醒  Waiting For Wakeup
      */
     public void startWakeup() {
         soundInputDevice.start();
         addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
+    }
+
+    /**
+     * 停止唤醒
+     */
+    private void stopWakeUp() {
+        soundInputDevice.stop();
     }
 
     /**
@@ -169,7 +174,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
-     * 当 音乐播放完成(包括 音乐，笑话)
+     * 当音乐播放完成(包括 音乐，笑话)
      *
      * @param event
      */
@@ -190,10 +195,25 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         switchListener(SoundMonitorType.ASR);
     }
 
+    /**
+     * 无语音超时计时开始
+     *
+     * @param event
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReadyForSpeech(ReadyForSpeechEvent event) {
         //开启声音输入超时监听
         inputTimeOutMonitorTask.startMonitor();
+    }
+
+    /**
+     * 收到后台推送的消息
+     *
+     * @param commands
+     */
+    @Override
+    public void onReceivedMessage(List<Command> commands) {
+        addCommand(commands);
     }
 
     /**
@@ -205,16 +225,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     public void startASREvent(StartASREvent event) {
         //完成后开启语音监听
         startASR();
-    }
-
-    /**
-     * 收到后台推送的消息
-     *
-     * @param commands
-     */
-    @Override
-    public void onReceivedMessage(List<Command> commands) {
-        addCommand(commands);
     }
 
     /*
@@ -311,10 +321,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
                 startWakeup();
                 break;
         }
-    }
-
-    private void stopWakeUp() {
-        soundInputDevice.stop();
     }
 
     /**

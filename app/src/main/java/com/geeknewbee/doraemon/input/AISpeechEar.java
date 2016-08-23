@@ -13,12 +13,14 @@ import com.aispeech.export.engines.AIMixASREngine;
 import com.aispeech.export.listeners.AIASRListener;
 import com.aispeech.export.listeners.AILocalGrammarListener;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
 import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.GrammarHelper;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.geeknewbee.doraemonsdk.utils.NetworkUtil;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -268,6 +270,7 @@ public class AISpeechEar implements IEar {
         @Override
         public void onReadyForSpeech() {
             LogUtils.d(TAG, "请说话...");
+            EventBus.getDefault().post(new ReadyForSpeechEvent());
         }
 
         @Override

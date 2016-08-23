@@ -108,4 +108,8 @@ public class Constants {
     };
 
     public static final List<Map<String, String>> musics = Arrays.asList(map1, map2, map3, map4, map5, map6, map7, map8, map9, map10);
+
+    // 本地语义对应的回答
+    public static final String SELF_INTRODUCTION = "《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》";
+
 }
