@@ -8,20 +8,24 @@ import com.aispeech.common.Util;
 import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
-import com.geeknewbee.doraemon.processcenter.EventManager;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 思必驰 实现 mouth
  */
 public class AISpeechTTS implements ITTS {
 
-    private String TAG = AISpeechTTS.class.getSimpleName();
+    private String TAG = AISpeechEar.class.getSimpleName();
     private AILocalTTSEngine mTTSEngine;
     //是否正在讲话
     private boolean isSpeaking;
+    private SoundCommand.InputSource inputSource;
 
     public AISpeechTTS() {
         init();
@@ -45,7 +49,8 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
-    public synchronized boolean talk(String text) {
+    public synchronized boolean talk(String text, SoundCommand.InputSource inputSource) {
+        this.inputSource = inputSource;
         if (TextUtils.isEmpty(text)) {
             notifyComplete();
             return true;
@@ -70,6 +75,11 @@ public class AISpeechTTS implements ITTS {
     @Override
     public boolean isSpeaking() {
         return isSpeaking;
+    }
+
+    private void notifyComplete() {
+        isSpeaking = false;
+        EventBus.getDefault().post(new TTSCompleteEvent(inputSource));
     }
 
     private class AILocalTTSListenerImpl implements AITTSListener {
@@ -104,10 +114,5 @@ public class AISpeechTTS implements ITTS {
             notifyComplete();
             LogUtils.d(TAG, "检测到错误：" + error.toString());
         }
-    }
-
-    private void notifyComplete() {
-        isSpeaking = false;
-        EventManager.sendTTSCompleteEvent();
     }
 }

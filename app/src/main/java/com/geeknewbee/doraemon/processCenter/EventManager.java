@@ -18,10 +18,6 @@ public class EventManager {
         EventBus.getDefault().post(new StartASREvent());
     }
 
-    public static void sendTTSCompleteEvent() {
-        EventBus.getDefault().post(new TTSCompleteEvent());
-    }
-
     public static void sendMusicCompleteEvent() {
         EventBus.getDefault().post(new MusicCompleteEvent());
     }

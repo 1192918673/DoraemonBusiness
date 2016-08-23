@@ -8,6 +8,7 @@ import com.geeknewbee.doraemon.output.action.ITTS;
 import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
 import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,10 +43,11 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
         switch (input.getType()) {
             case PLAY_SOUND:
-                itts.talk(input.getContent());
+                SoundCommand soundCommand = (SoundCommand) input;
+                itts.talk(soundCommand.getContent(), soundCommand.inputSource);
                 break;
             case PLAY_MUSIC:
-                itts.talk("正在搜索音乐");
+                itts.talk("正在搜索音乐", SoundCommand.InputSource.TIPS);
                 iMusicPlayer.play(input.getContent());
                 EventManager.sendStartAsrEvent();
                 break;

@@ -57,7 +57,7 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(sound)) {
-            commands.add(new Command(CommandType.PLAY_SOUND, sound));
+            commands.add(new SoundCommand(sound, SoundCommand.InputSource.TIPS));
         }
 
         if (limbCommand != null) {

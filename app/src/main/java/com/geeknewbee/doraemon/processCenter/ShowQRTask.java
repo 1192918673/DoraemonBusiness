@@ -8,6 +8,7 @@ import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.entity.GetMembersCountResponse;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
@@ -36,7 +37,7 @@ public class ShowQRTask extends Thread {
 
             String token = DoraemonInfoManager.getInstance(context).getToken();
             if (DeviceUtil.isNetworkConnected(context) && !TextUtils.isEmpty(token)) {
-                Doraemon.getInstance(context).addCommand(new Command(CommandType.PLAY_SOUND, "网络已连接"));
+                Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
                 if (TextUtils.isEmpty(token)) return;
                 Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
                 ApiService service = retrofit.create(ApiService.class);

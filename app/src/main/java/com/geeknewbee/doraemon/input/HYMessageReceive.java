@@ -9,6 +9,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.EMCallBack;
@@ -25,6 +26,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -207,7 +209,9 @@ public class HYMessageReceive implements IMessageReceive {
                 int type = pushData.getInt("type");
                 if (type == 1) {// 文字透传
                     String readData = pushData.getString("data");
-                    messageListener.onReceivedMessage(Arrays.asList(new Command(CommandType.PLAY_SOUND, "定时提醒：" + readData)));
+                    List<Command> commands = new ArrayList<>();
+                    commands.add(new SoundCommand("定时提醒：" + readData, SoundCommand.InputSource.TIPS));
+                    messageListener.onReceivedMessage(commands);
                 } else if (type == 2) {// 改变声音大小命令
                     int vol = pushData.getInt("data");// 音量大小百分比，取值范围为 0-100
                     messageListener.onReceivedMessage(Arrays.asList(new Command(CommandType.SETTING_VOLUME, vol + "")));

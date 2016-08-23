@@ -111,7 +111,7 @@ public class AISpeechEar implements IEar {
         mASREngine.setLocalBetterDomains(new String[]{});//设置本地擅长的领域范围
         mASREngine.setWaitCloudTimeout(2000);// 设置等待云端识别结果超时时长
         mASREngine.setCloudVadEnable(true);// 设置是否启用云端vad,默认开启
-        mASREngine.setPauseTime(500);// 设置VAD右边界；VAD普及：静音抑制，或者说它会检测是否有声音
+        mASREngine.setPauseTime(300);// 设置VAD右边界；VAD普及：静音抑制，或者说它会检测是否有声音
         mASREngine.setUseConf(true);// 设置是否开启置信度
         mASREngine.setAecCfg(SpeechConstants.ace_cfg);
         mASREngine.setConfigName(SpeechConstants.uca_config);
@@ -180,8 +180,9 @@ public class AISpeechEar implements IEar {
 
     @Override
     public synchronized void stopRecognition() {
+        setListerStatue(false);
         if (mASREngine != null) {
-            setListerStatue(false);
+            mASREngine.cancel();
             mASREngine.stopRecording();
             LogUtils.d(TAG, "stopRecording");
         } else

@@ -7,11 +7,11 @@ import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
-import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
@@ -80,15 +80,18 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (TextUtils.isEmpty(input.asrOutput)) {
             EventManager.sendStartAsrEvent();
             return null;
-        } else
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, input.asrOutput));
+        } else {
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand(input.asrOutput, SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
+        }
     }
 
     private List<Command> getCommands(GetAnswerResponse data) {
         //语音回复
         List<Command> commandList = new ArrayList<>();
         if (!TextUtils.isEmpty(data.getAnswer()))
-            commandList.add(new Command(CommandType.PLAY_SOUND, data.getAnswer()));
+            commandList.add(new SoundCommand(data.getAnswer(), SoundCommand.InputSource.SOUND_TRANSLATE));
 
         //本地的GIF 图像
         String localGifResource = data.getLocal_resource();
@@ -121,22 +124,32 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             return Arrays.asList(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
         }
         if (input.contains("你好")) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "你好"));
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand("你好", SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
         }
         if (input.contains("自我介绍")) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》"));
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand("《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》", SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
         }
         if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
             return Arrays.asList(new Command(CommandType.PLAY_JOKE));
         }
         if (input.contains("温度")) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内温度是" + SensorUtil.getInstance().temperture + "度"));
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand("现在室内温度是" + SensorUtil.getInstance().temperture + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
         }
         if (input.contains("湿度") || input.contains("适度") || input.contains("十度")) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内湿度是" + SensorUtil.getInstance().humidity + "度"));
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand("现在室内湿度是" + SensorUtil.getInstance().humidity + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
         }
         if (input.indexOf("光强度") != -1) {
-            return Arrays.asList(new Command(CommandType.PLAY_SOUND, "现在室内光强度是" + SensorUtil.getInstance().light + "度"));
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand("现在室内光强度是" + SensorUtil.getInstance().light + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
         }
         if (input.indexOf("向前走") != -1 || input.indexOf("前走") != -1 || input.indexOf("前进") != -1) {
 

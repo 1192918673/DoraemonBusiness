@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.view.MainActivity;
 import com.geeknewbee.doraemon.zxing.Encoder;
@@ -41,7 +42,7 @@ public class FaceManager {
                     if (Doraemon.getInstance(App.mContext).isListening())
                         displayGif("eyegif_fa_dai", 0);
                     else
-                        displayGif("default_gif", 0);
+                        displayGif(Constants.DEFAULT_GIF, 0);
                 } else
                     displayGif(lastName, --loopNumber);
             }
