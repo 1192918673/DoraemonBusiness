@@ -48,6 +48,11 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         LogUtils.d(TAG, "WakeupEngine start...");
     }
 
+    @Override
+    public void stop() {
+        LogUtils.d(TAG, "WakeupEngine stop!!!");
+    }
+
     /**
      * 停止监听输入
      */
