@@ -2,7 +2,8 @@ package com.geeknewbee.doraemon.processcenter;
 
 import android.content.Context;
 
-import com.geeknewbee.doraemon.entity.event.InputTimeoutEvent;
+import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.input.SoundMonitorType;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -14,31 +15,33 @@ import java.util.Date;
  */
 public class InputTimeoutMonitorTask extends Thread {
     //超时时间
-    public static final int OUT_TIME = 1000 * 30;
+    public static final int OUT_TIME = 1000 * 10;
     private Context context;
     //上次输入时间
-    private long lastInputTime;
+    private long begintTime;
 
     //是否正在运行
     private boolean isRunning = false;
+    private boolean isMonitor;
 
     public InputTimeoutMonitorTask(Context context) {
         this.context = context;
-        lastInputTime = new Date().getTime();
+        begintTime = new Date().getTime();
     }
 
-    public synchronized void setInputFlag() {
-        lastInputTime = new Date().getTime();
+    private synchronized long getBeginTime() {
+        return begintTime;
     }
 
-    private synchronized long getLastTime() {
-        return lastInputTime;
+    public synchronized void startMonitor() {
+        if (!isRunning)
+            start();
+        begintTime = new Date().getTime();
+        isMonitor = true;
     }
 
-    public void startMonitor() {
-        if (isRunning)
-            return;
-        start();
+    public synchronized void stopMonitor() {
+        isMonitor = false;
     }
 
     @Override
@@ -46,10 +49,13 @@ public class InputTimeoutMonitorTask extends Thread {
         super.run();
         isRunning = true;
         while (true) {
-            Date now = new Date();
-            if (now.getTime() - getLastTime() > OUT_TIME) {
-                //当超过规定的时间要通知停止监听
-                EventBus.getDefault().post(new InputTimeoutEvent());
+            if (isMonitor) {
+                Date now = new Date();
+                if (now.getTime() - getBeginTime() > OUT_TIME) {
+                    //当超过规定的时间要通知停止监听
+                    isMonitor = false;
+                    EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+                }
             }
             try {
                 Thread.sleep(1000);

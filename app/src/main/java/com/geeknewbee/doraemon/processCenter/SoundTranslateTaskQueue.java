@@ -53,22 +53,13 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
     @Override
     public List<Command> performTask(SoundTranslateInput input) {
-        // 1.当MouthQueue 正在播放多媒体的时候 只识别 停的指令, 其他的命令则重新开启ASR
-        if (MouthTaskQueue.getInstance().isPlayMedia()) {
-            if (input.input.contains(Constants.STOP_FLAG))
-                return Arrays.asList(new Command(CommandType.STOP));
-
-            EventManager.sendStartAsrEvent();
-            return null;
-        }
-
-        // 2.当没有解析到声音的时候不做任何输出,重新开启ASR
+        // 1.当没有解析到声音的时候不做任何输出,重新开启ASR
         if (TextUtils.isEmpty(input.input)) {
             EventManager.sendStartAsrEvent();
             return null;
         }
 
-        // 3.先过滤本地命令
+        // 2.先过滤本地命令
         List<Command> localResponse = localPerform(input);
         if (localResponse != null) return localResponse;
 
