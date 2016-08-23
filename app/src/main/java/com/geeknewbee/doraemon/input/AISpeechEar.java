@@ -335,31 +335,7 @@ public class AISpeechEar implements IEar {
 
         @Override
         public void onRmsChanged(float rmsdB) {
-//            LogUtils.d(TAG, "音频、音量发生改变，RmsDB = " + rmsdB);
+            // LogUtils.d(TAG, "音频、音量发生改变，RmsDB = " + rmsdB);
         }
-
-        /*@Override
-        public void onRecorderReleased() {
-            *//*测试中发现有时候 onRecorderReleased 偶尔会onResults 完成后一段时间才回调。
-            这样在调用startRecognition的时候，发现isListening还是true，造成了无法继续监听的严重bug。
-             为了解决这个bug，利用是否开启监听标示needStartRecognitionFlag，每次startRecognition 并且 isListening是true的时候设置为true，
-             当onRecorderReleased的时候判断如何needStartRecognitionFlag为true，还需要startRecognition
-             *//*
-
-            *//*Log 日志  可遇不可求的bug
-            08-18 13:55:31.424 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: 请说话...
-08-18 13:55:34.070 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: 检测到说话
-08-18 13:55:36.017 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: {"version":"2.7.3","applicationId":"1462760478859598","recordId":"57b54dd33327935fc60005f6","result":{"post":{},"rec":"","wavetime":2080,"delayframe":11,"systime":9189,"vite_vad":1,"rectime":4594,"prutime":0,"version":"0.0.42.2016.2.18.10:26:04","delaytime":24,"sestime":4594,"res":"aifar.0.0.1","vadtime":2080,"eof":1},"luabin":"0.5.2","src":"native"}
-08-18 13:55:36.018 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: :null:::
-08-18 13:55:36.018 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: translateSound
-08-18 13:55:36.019 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: asr is listing
-08-18 13:55:36.019 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: onTranslateComplete
-08-18 13:55:36.115 24518-24518/com.geeknewbee.doraemon D/AISpeechEar: 检测到录音机停止
-            *//*
-            setListerStatue(false);
-            if (needStartRecognitionFlag)
-                startRecognition();
-            LogUtils.d(TAG, "检测到录音机停止");
-        }*/
     }
 }

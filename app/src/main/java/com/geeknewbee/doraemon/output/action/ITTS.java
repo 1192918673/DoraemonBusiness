@@ -5,10 +5,10 @@ package com.geeknewbee.doraemon.output.action;
  * 用于发音
  */
 public interface ITTS {
-    boolean talk(String param);
-
-    boolean stop();
 
     boolean isSpeaking();
 
+    boolean talk(String param);
+
+    boolean stop();
 }

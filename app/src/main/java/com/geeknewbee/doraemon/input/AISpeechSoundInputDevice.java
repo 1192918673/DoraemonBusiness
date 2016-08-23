@@ -7,6 +7,7 @@ import com.aispeech.export.engines.AILocalEddEngine;
 import com.aispeech.export.listeners.AILocalEddListener;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.entity.event.WakeupSuccessEvent;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
@@ -15,6 +16,8 @@ import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * 思必驰声音输入板
@@ -44,22 +47,14 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
 
     @Override
     public void start() {
-        mEngine.start(); // 全程启动唤醒引擎
+        mEngine.start();
         LogUtils.d(TAG, "WakeupEngine start...");
     }
 
     @Override
     public void stop() {
+        mEngine.stop();
         LogUtils.d(TAG, "WakeupEngine stop!!!");
-    }
-
-    /**
-     * 停止监听输入
-     */
-    @Override
-    public void sleep() {
-        //这里就是停止语音监听 唤醒的引擎一直开着
-        Doraemon.getInstance(App.mContext).stopASR();
     }
 
     @Override
@@ -69,29 +64,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
 
     @Override
     public synchronized void onWakeUp(double angle) {
-        //当唤醒的时候停止当前的动作
-        MouthTaskQueue.getInstance().stop();
-        LimbsTaskQueue.getInstance().stop();
-        //开启监听
-        Doraemon.getInstance(App.mContext).startASR();
-        //提示成功
-        Doraemon.getInstance(App.mContext).addCommand(new Command(CommandType.PLAY_SOUND, "唤醒成功"));
-        double turnAngle = 0;
-        LeXingUtil.Direction direction;
-        LeXingUtil.ClockDirection clockDirection;
-        if (angle > 180) {
-            turnAngle = 360 - angle;
-            direction = LeXingUtil.Direction.RIGHT;
-            clockDirection = LeXingUtil.ClockDirection.CLOCKWISE;
-        } else {
-            turnAngle = angle;
-            direction = LeXingUtil.Direction.LEFT;
-            clockDirection = LeXingUtil.ClockDirection.EASTERN;
-        }
-        int[] speed = LeXingUtil.getSpeed(direction, clockDirection, (int) turnAngle, 0, 2000);
-        Doraemon.getInstance(App.mContext).addCommand(new LeXingCommand(speed[0], speed[1], 2000));
-        //TODO 设置角度
-//        mEngine.setDoaChannel(6);//每次都是头对着用户
+        EventBus.getDefault().post(new WakeupSuccessEvent(angle));
     }
 
     private class AISpeechListenerImpl implements AILocalEddListener {

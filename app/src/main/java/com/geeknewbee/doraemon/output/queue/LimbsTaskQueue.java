@@ -59,8 +59,10 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 perform((ActionSetCommand) command);
                 break;
             case MECHANICAL_MOVEMENT:
+                isStopAction = false;
                 return sendCommandContent(command.getContent());
             case LE_XING_FOOT:
+                isStopAction = false;
                 LeXingCommand leXingCommand = (LeXingCommand) command;
                 perform(leXingCommand);
                 break;

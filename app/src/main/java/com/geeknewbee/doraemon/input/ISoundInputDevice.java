@@ -1,7 +1,8 @@
 package com.geeknewbee.doraemon.input;
 
 /**
- * 声音输入控制硬件
+ * 耳朵
+ * 用于接受唤醒词
  */
 public interface ISoundInputDevice {
 
@@ -14,8 +15,6 @@ public interface ISoundInputDevice {
      * 关闭唤醒监听
      */
     void stop();
-
-    void sleep();
 
     void setAngle(int angle);
 

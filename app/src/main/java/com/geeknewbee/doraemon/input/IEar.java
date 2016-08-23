@@ -5,6 +5,9 @@ package com.geeknewbee.doraemon.input;
  * 用于识别语音
  **/
 public interface IEar {
+
+    boolean isListening();
+
     /**
      * 开始语音识别
      */
@@ -21,8 +24,6 @@ public interface IEar {
      * @param listener
      */
     void setASRListener(ASRListener listener);
-
-    boolean isListening();
 
     interface ASRListener {
         void onASRResult(String input, String asrOutput, String action, String starName, String musicName);
