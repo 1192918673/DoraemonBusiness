@@ -2,9 +2,7 @@ package com.geeknewbee.doraemon.processcenter;
 
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
-import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
-import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
@@ -13,8 +11,6 @@ import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -59,6 +55,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case STOP:
                 MouthTaskQueue.getInstance().stop();
+                LimbsTaskQueue.getInstance().stop();
                 break;
             case WIFI_MESSAGE:// 设置连接WIFI
                 WifiCommand wifiCommand = (WifiCommand) command;
