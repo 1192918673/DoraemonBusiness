@@ -46,12 +46,13 @@ public class BluetoothServiceManager {
                 int state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
                 switch (state) {
                     case BluetoothAdapter.STATE_ON:
-                        setupBluetoothServer();
+                        startServer();
                         break;
                     case BluetoothAdapter.STATE_OFF:
                         if (mChatService != null) {
                             mChatService.stop();
                         }
+                        stopAdvertise();
                         break;
                 }
             }
@@ -142,13 +143,17 @@ public class BluetoothServiceManager {
             mBluetoothAdapter.enable();
             // Otherwise, setup the chat session
         } else {
-            if (mChatService == null) {
-                setupBluetoothServer();
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                startAdvertise();
+            startServer();
         }
+    }
+
+    private void startServer() {
+        if (mChatService == null) {
+            startBluetoothServer();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            startAdvertise();
     }
 
     public void onDestroy() {
@@ -165,9 +170,9 @@ public class BluetoothServiceManager {
     }
 
     /**
-     * 开启蓝牙2.0 sever
+     * 开启经典蓝牙 sever
      */
-    private void setupBluetoothServer() {
+    private void startBluetoothServer() {
         if (mChatService == null)
             mChatService = new BluetoothChatService(context, mHandler);
         if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
