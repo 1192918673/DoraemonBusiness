@@ -46,7 +46,7 @@ public class LeXingUtil {
             case LEFT: // 往左转
                 switch (clockDirection) {
                     case CLOCKWISE:
-                        wSpeed = Math.abs((float) angle / duration * 1000); //(度/秒）
+                        wSpeed = -Math.abs((float) angle / duration * 1000); //(度/秒）
                         vSpeed = (-wSpeed * ((float) radius / 1000)); //（米/秒）
                         break;
                     case EASTERN:
@@ -62,7 +62,7 @@ public class LeXingUtil {
                         vSpeed = -(wSpeed * ((float) radius / 1000));//（米/秒）
                         break;
                     case EASTERN:
-                        wSpeed = -Math.abs((float) angle / duration * 1000);//(度/秒）
+                        wSpeed = Math.abs((float) angle / duration * 1000);//(度/秒）
                         vSpeed = (wSpeed * ((float) radius / 1000)); //（米/秒）
                         break;
                 }
