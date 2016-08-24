@@ -91,7 +91,7 @@ public class BluetoothCommand {
             commands.add(new ActionSetCommand(sportActions));
         }
 
-        if (TextUtils.isEmpty(action)) {
+        if (!TextUtils.isEmpty(action)) {
             //原有的手机发送的命令
             switch (action) {
                 case "intro_self":
