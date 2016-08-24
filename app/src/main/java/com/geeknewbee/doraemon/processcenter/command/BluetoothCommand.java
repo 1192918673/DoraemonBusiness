@@ -3,8 +3,10 @@ package com.geeknewbee.doraemon.processcenter.command;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.processcenter.LocalSportActionManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,6 +48,12 @@ public class BluetoothCommand {
     private List<SportAction> sportActions;
 
     /**
+     * action:原来版本APP发送的命令
+     */
+    public String action;
+
+
+    /**
      * 根据蓝牙指令获取对应的Command
      *
      * @return
@@ -81,6 +89,25 @@ public class BluetoothCommand {
 
         if (sportActions != null && !sportActions.isEmpty()) {
             commands.add(new ActionSetCommand(sportActions));
+        }
+
+        if (TextUtils.isEmpty(action)) {
+            //原有的手机发送的命令
+            switch (action) {
+                case "intro_self":
+                    commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.SOUND_TRANSLATE));
+                    break;
+                case "dance":
+                    break;
+                case "movie":
+                    break;
+                case "stop":
+                    commands.add(new Command(CommandType.STOP));
+                    break;
+                default:
+                    commands.add(LocalSportActionManager.getInstance().getActionSetCommand(Arrays.asList(action)));
+                    break;
+            }
         }
 
         return commands;
