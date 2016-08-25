@@ -88,12 +88,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private void perform(LeXingCommand command) {
         sendLeXingFootCommandByLuGong(command.v, command.w);
         if (command.duration != 0) {
-            try {
-                Thread.sleep(command.duration);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
+            stopFootLuGong(command.duration);
         }
         notifyComplete();
     }
@@ -122,16 +117,21 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 //            sendLeXingFootCommand(sportAction.footCommand);
             sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
 
-            try {
-                Thread.sleep(sportAction.delayTime);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
+            stopFootLuGong(sportAction.delayTime);
         }
 
         notifyComplete();
+    }
+
+    private void stopFootLuGong(int delayTime) {
+        try {
+            Thread.sleep(delayTime);
+            sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
+            Thread.sleep(30);
+            sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void notifyComplete() {
