@@ -1,7 +1,10 @@
 package com.geeknewbee.doraemon.output.action;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.EventManager;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
@@ -126,7 +129,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                     albumId.add(album.getId());
                     sb.append(album.getId() + "$$" + album.getAlbumTitle() + ",");
                 }
-                LogUtils.d("分类、标签名下的专辑列表", list.size() + "$$" + sb.toString());
+                LogUtils.d(Constants.TAG_MUSIC, "分类、标签名下的专辑列表：" + list.size() + "$$" + sb.toString());
             }
 
             @Override
@@ -154,7 +157,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
             @Override
             public void onSuccess(SearchTrackList searchTrackList) {
-                LogUtils.d(Constants.TAG_MUSIC, "搜索声音数量" + searchTrackList.getTracks().size() + "");
+                LogUtils.d(Constants.TAG_MUSIC, "搜索声音数量：" + searchTrackList.getTracks().size() + "");
                 //LogUtils.d("搜索声音", searchTrackList.getTracks().get(0).toString());
                 if (searchTrackList.getTracks() != null && searchTrackList.getTracks().size() > 0) {
                     tracks.clear();
@@ -162,6 +165,8 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                     mPlayerManager.clearPlayCache();
                     mPlayerManager.playList(tracks, 0);
                 } else {
+                    // 此处说完话后要开启ASR，为解决音乐任务先于“正在搜索音乐...”的TIPS结束后，处于谁也没有启动ASR的死角
+                    Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("没有搜索到音乐", SoundCommand.InputSource.SOUND_TRANSLATE));
                     notifyComplete();
                 }
             }
@@ -207,7 +212,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                 for (Track track : list) {
                     sb.append(track.getDataId() + "**" + track.getTrackTitle() + ",");
                 }
-                LogUtils.d("专辑ID下的专辑列表", list.size() + "**" + sb.toString());
+                LogUtils.d(Constants.TAG_MUSIC, "专辑ID下的专辑列表：" + list.size() + "**" + sb.toString());
 
                 Random random = new Random(0);
                 int i = random.nextInt(list.size());
@@ -219,7 +224,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
             @Override
             public void onError(int i, String s) {
-                LogUtils.d(Constants.TAG_MUSIC, "专辑ID下的专辑列表" + "获取失败:" + s);
+                LogUtils.d(Constants.TAG_MUSIC, "专辑ID下的专辑列表，获取失败:" + s);
                 notifyComplete();
             }
         });
@@ -232,6 +237,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     @Override
     public boolean stop() {
+        LogUtils.d(Constants.TAG_MUSIC, "Music Stop...");
         if (mPlayerManager != null) {
             mPlayerManager.stop();
         }

@@ -1,5 +1,6 @@
 package com.geeknewbee.doraemon.input;
 
+import android.os.Environment;
 import android.text.TextUtils;
 
 import com.aispeech.AIError;
@@ -104,9 +105,10 @@ public class AISpeechEar implements IEar {
         mASREngine.setServer("ws://s-test.api.aispeech.com:10000");// 设置服务器地址，默认不用设置   version 1:ws://s.api.aispeech.com:10000
         mASREngine.setRes("robot");// 设置请求的资源名 version 1：robot；version 2：aihome
         mASREngine.setUseXbnfRec(true);// 设置是否启用基于语法的语义识别
-        mASREngine.setUsePinyin(true);
+        mASREngine.setUsePinyin(false);
         mASREngine.setUseForceout(false);
-        mASREngine.setAthThreshold(0.6f);//设置本地置信度阀值
+        mASREngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());//设置回消音频文件存放路径
+        mASREngine.setAthThreshold(1.0f);//设置本地置信度阀值
         mASREngine.setIsRelyOnLocalConf(false);//是否开启依据本地置信度优先输出,如需添加例外
         mASREngine.setIsPreferCloud(true);//是否当云端结果有输出时，优先输出云端结果
 //        mASREngine.setLocalBetterDomains(new String[]{"aihomeopen", "aihomegoods", "aihomeplay", "aihomenum", "aihomenextup", "aihomehello"});//设置本地擅长的领域范围

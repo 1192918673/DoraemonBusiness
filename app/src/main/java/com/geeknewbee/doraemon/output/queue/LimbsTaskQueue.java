@@ -33,6 +33,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private IArmsAndHead armsAndHead;
     private IFoot foot;
     private boolean isStopAction = false;//跳舞中断标识
+    private boolean isBusy = false;
 
     private LimbsTaskQueue() {
         super();
@@ -62,15 +63,21 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         switch (command.getType()) {
             case ACTIONSET:
                 isStopAction = false;
+                isBusy = true;
                 perform((ActionSetCommand) command);
+                isBusy = false;
                 break;
             case MECHANICAL_MOVEMENT:
                 isStopAction = false;
-                return sendCommandContent(command.getContent());
+                isBusy = true;
+                sendCommandContent(command.getContent());
+                isBusy = false;
             case LE_XING_FOOT:
                 isStopAction = false;
+                isBusy = true;
                 LeXingCommand leXingCommand = (LeXingCommand) command;
                 perform(leXingCommand);
+                isBusy = false;
                 break;
         }
 
@@ -191,5 +198,9 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     public void stop() {
         isStopAction = true;
         clearTasks();
+    }
+
+    public synchronized boolean isBusy() {
+        return isBusy;
     }
 }
