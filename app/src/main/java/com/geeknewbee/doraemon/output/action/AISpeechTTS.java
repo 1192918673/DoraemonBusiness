@@ -59,8 +59,9 @@ public class AISpeechTTS implements ITTS {
         }
 
         if (mTTSEngine != null) {
+            if (isSpeaking())
+                mTTSEngine.stop();
             isSpeaking = true;
-            mTTSEngine.stop();
             mTTSEngine.speak(text, "1024");
         }
         return true;
@@ -98,7 +99,7 @@ public class AISpeechTTS implements ITTS {
 
         @Override
         public void onReady(String utteranceId) {
-            LogUtils.d(AISpeechEar.TAG, "tts onReady");
+            LogUtils.d(TAG, "tts onReady");
         }
 
         @Override
@@ -109,13 +110,13 @@ public class AISpeechTTS implements ITTS {
         @Override
         public void onCompletion(String utteranceId) {
             notifyComplete();
-            LogUtils.d(AISpeechEar.TAG, "tts onCompletion");
+            LogUtils.d(TAG, "tts onCompletion");
         }
 
         @Override
         public void onError(String utteranceId, AIError error) {
             notifyComplete();
-            LogUtils.d(TAG, "检测到错误：" + error.toString());
+            LogUtils.d(TAG, "TTS Error：" + error.toString());
         }
     }
 }
