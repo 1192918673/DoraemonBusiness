@@ -2,13 +2,16 @@ package com.geeknewbee.doraemon.view;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
@@ -19,6 +22,10 @@ import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.umeng.analytics.MobclickAgent;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import pl.droidsonroids.gif.GifImageView;
 
 
@@ -26,6 +33,7 @@ public class MainActivity extends Activity {
     public GifImageView gifView;
     public ImageView imageQR;
     private BluetoothServiceManager bluetoothServiceManager;
+    private TextView result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +41,7 @@ public class MainActivity extends Activity {
         initView();
         startBluetoothService();
         initData();
+        EventBus.getDefault().register(this);
 //        test();
         Doraemon.getInstance(getApplicationContext()).startWakeup();
         Doraemon.getInstance(getApplicationContext()).startReceive();
@@ -45,6 +54,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         imageQR = (ImageView) findViewById(R.id.iv_qr);
+        result = (TextView) findViewById(R.id.tv_result);
 
         initFaceView();
     }
@@ -82,6 +92,12 @@ public class MainActivity extends Activity {
         } else {
             Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("网络未连接，请先连接网络", SoundCommand.InputSource.TIPS));
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayMusicComplete(ReceiveASRResultEvent event) {
+        //收到ASR的识别结果
+        result.setText(event.input);
     }
 
     @Override
