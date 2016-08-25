@@ -121,8 +121,8 @@ public class FaceManager {
                             .setBackgroundColor(0xFFFFFF)
                             .setCodeColor(0xFF000000)
                             .setOutputBitmapPadding(0)
-                            .setOutputBitmapWidth(DeviceUtil.dip2px(App.mContext, 100))
-                            .setOutputBitmapHeight(DeviceUtil.dip2px(App.mContext, 100))
+                            .setOutputBitmapWidth(DeviceUtil.dip2px(App.mContext, 70))
+                            .setOutputBitmapHeight(DeviceUtil.dip2px(App.mContext, 70))
                             .build().encode(content);
                 } catch (Exception e) {
                     return null;
@@ -133,14 +133,14 @@ public class FaceManager {
             protected void onPostExecute(Bitmap bitmap) {
                 if (bitmap == null) return;
                 faceActivity.imageQR.setImageBitmap(bitmap);
-                faceActivity.imageQR.setVisibility(View.VISIBLE);
+                faceActivity.llQR.setVisibility(View.VISIBLE);
                 faceActivity.gifView.setVisibility(View.INVISIBLE);
             }
         }.execute();
     }
 
     public void hideQR() {
-        faceActivity.imageQR.setVisibility(View.INVISIBLE);
+        faceActivity.llQR.setVisibility(View.INVISIBLE);
         faceActivity.gifView.setVisibility(View.VISIBLE);
     }
 }
