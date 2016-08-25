@@ -31,7 +31,8 @@ public class LocalSportActionManager extends Thread {
      * 初始化本地动作库
      */
     public void initLocalAction() {
-        start();
+        if (!isAlive())
+            start();
     }
 
     /**

@@ -32,6 +32,7 @@ import pl.droidsonroids.gif.GifImageView;
 public class MainActivity extends Activity {
     public GifImageView gifView;
     public ImageView imageQR;
+    public View llQR;
     private BluetoothServiceManager bluetoothServiceManager;
     private TextView result;
 
@@ -56,6 +57,7 @@ public class MainActivity extends Activity {
 
         imageQR = (ImageView) findViewById(R.id.iv_qr);
         result = (TextView) findViewById(R.id.tv_result);
+        llQR = findViewById(R.id.ll_qr);
 
         initFaceView();
     }
