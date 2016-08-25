@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
+import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.output.BluetoothTalkTask;
@@ -152,8 +153,10 @@ public class BluetoothServiceManager {
             startBluetoothServer();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            startAdvertise();
+        if (BuildConfig.NEED_START_BLE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                startAdvertise();
+        }
     }
 
     public void onDestroy() {

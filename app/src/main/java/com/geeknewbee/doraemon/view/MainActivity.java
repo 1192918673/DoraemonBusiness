@@ -6,7 +6,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
@@ -34,7 +34,8 @@ public class MainActivity extends Activity {
         startBluetoothService();
         initData();
 //        test();
-        Doraemon.getInstance(getApplicationContext()).startWakeup();
+        if (BuildConfig.HAVE_SPEECH_DEVCE)
+            Doraemon.getInstance(getApplicationContext()).startWakeup();
         Doraemon.getInstance(getApplicationContext()).startReceive();
     }
 
