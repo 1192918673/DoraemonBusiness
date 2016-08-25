@@ -105,7 +105,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     public void startASR() {
         ear.setASRListener(this);
         ear.startRecognition();
-        addCommand(new ExpressionCommand("eyegif_fa_dai", 0));
+        addCommand(new ExpressionCommand(Constants.LISTENNING_GIF, 0));
     }
 
     /**
@@ -284,11 +284,11 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     public void onTranslateSoundComplete(TranslateSoundCompleteEvent event) {
         //声音输入解析完成 显示默认Gif
         LogUtils.d(AISpeechEar.TAG, "onTranslateSoundComplete");
-        addCommand(new ExpressionCommand("default_gif", 0));
+        addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
         if (isListening())
-            addCommand(new ExpressionCommand("eyegif_fa_dai", 0));
+            addCommand(new ExpressionCommand(Constants.LISTENNING_GIF, 0));
         else
-            addCommand(new ExpressionCommand("default_gif", 0));
+            addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
     }
 
     /**

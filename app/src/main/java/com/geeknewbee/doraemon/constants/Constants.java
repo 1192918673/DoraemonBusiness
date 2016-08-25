@@ -33,8 +33,9 @@ public class Constants {
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
     public static final String DEFAULT_GIF = "default_gif";
-    public static final String STOP_FLAG = "停";
+    public static final String LISTENNING_GIF = "eyegif_fa_dai";
 
+    public static final String STOP_FLAG = "停";
     public static final String COMMAND_ROBOT_PREFIX = "COMMAND_ROBOT";
     public static final String COMMAND_ROBOT_SUFFIX = "COMMAND_ROBOT_SUFFIX";
     public static final String MOJI_WEATHER_API_TOKEN = "c4adee396b1260222696";
@@ -43,8 +44,8 @@ public class Constants {
     //SharedPreferences
     public static final String KEY_TOKEN = "key_token";
     public static final String KEY_HX_USERNAME = "key_hx_username";
-    public static final String KEY_HX_USERPWD = "key_hx_user_pwd";
 
+    public static final String KEY_HX_USERPWD = "key_hx_user_pwd";
     // 有限歌曲随机库
     public static final Map<String, String> map1 = new HashMap<String, String>() {
         {
@@ -100,6 +101,7 @@ public class Constants {
             put("musicName", "花火");
         }
     };
+
     public static final Map<String, String> map10 = new HashMap<String, String>() {
         {
             put("starName", "张学友");
@@ -111,6 +113,5 @@ public class Constants {
 
     // 本地语义对应的回答
     public static final String SELF_INTRODUCTION = "《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》";
-
     public static final String TANG_SHI = "《登鹳雀楼》白日依山尽，黄河入海流。欲穷千里目，更上一层楼。";
 }
