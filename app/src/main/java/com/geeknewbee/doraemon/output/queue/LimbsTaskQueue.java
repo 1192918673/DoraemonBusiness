@@ -72,6 +72,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 isBusy = true;
                 sendCommandContent(command.getContent());
                 isBusy = false;
+                break;
             case LE_XING_FOOT:
                 isStopAction = false;
                 isBusy = true;
