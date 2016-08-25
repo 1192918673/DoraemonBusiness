@@ -6,7 +6,6 @@ import com.geeknewbee.doraemon.output.action.AISpeechTTS;
 import com.geeknewbee.doraemon.output.action.IMusicPlayer;
 import com.geeknewbee.doraemon.output.action.ITTS;
 import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
-import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
@@ -68,7 +67,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         clearTasks();
     }
 
-    public synchronized boolean isPlayMedia() {
-        return iMusicPlayer.isPlaying();
+    public synchronized boolean isBusy() {
+        return itts.isSpeaking() || iMusicPlayer.isPlaying();
     }
 }

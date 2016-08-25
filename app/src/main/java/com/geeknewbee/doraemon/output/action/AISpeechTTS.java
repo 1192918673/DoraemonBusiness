@@ -60,6 +60,7 @@ public class AISpeechTTS implements ITTS {
 
         if (mTTSEngine != null) {
             isSpeaking = true;
+            mTTSEngine.stop();
             mTTSEngine.speak(text, "1024");
         }
         return true;

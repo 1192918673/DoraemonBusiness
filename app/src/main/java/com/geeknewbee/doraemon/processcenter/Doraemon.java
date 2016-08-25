@@ -10,6 +10,7 @@ import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
+import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
@@ -150,6 +151,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
          * 否则需要通过后台服务器进行解析
          */
         LogUtils.d(AISpeechEar.TAG, input + ":" + asrOutput + ":" + action + ":" + starName + ":" + musicName);
+        EventBus.getDefault().post(new ReceiveASRResultEvent(input));
         brain.translateSound(new SoundTranslateInput(input, asrOutput, action, starName, musicName));
     }
 
@@ -169,7 +171,11 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTTSComplete(TTSCompleteEvent event) {
         //完成后开启语音监听,当在有播放媒体的时候不需要的时候，这里需要处理
-        if (event.inputSource == SoundCommand.InputSource.SOUND_TRANSLATE)
+        if (isOutputBusy())
+            return;
+
+        if (event.inputSource == SoundCommand.InputSource.SOUND_TRANSLATE ||
+                event.inputSource == SoundCommand.InputSource.WAKE_UP)
             switchListener(SoundMonitorType.ASR);
     }
 
@@ -181,6 +187,9 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayMusicComplete(MusicCompleteEvent event) {
         //完成后开启语音监听
+        if (isOutputBusy())
+            return;
+
         switchListener(SoundMonitorType.ASR);
     }
 
@@ -192,7 +201,19 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLimbActionComplete(LimbActionCompleteEvent event) {
         //完成后开启语音监听
+        if (isOutputBusy())
+            return;
+
         switchListener(SoundMonitorType.ASR);
+    }
+
+    /**
+     * 是否正在有输出动作
+     *
+     * @return
+     */
+    private boolean isOutputBusy() {
+        return MouthTaskQueue.getInstance().isBusy() || LimbsTaskQueue.getInstance().isBusy();
     }
 
     /**
@@ -278,8 +299,8 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         //当唤醒的时候停止当前的动作
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
-        //提示成功
-        addCommand(new SoundCommand("唤醒成功", SoundCommand.InputSource.TIPS));
+        //提示成功 TTS完成后自动打开ASR 这里的类型必须是WAKE_UP
+        addCommand(new SoundCommand("唤醒成功", SoundCommand.InputSource.WAKE_UP));
         //根据声音定位转向
         double turnAngle = 0;
         LeXingUtil.Direction direction;
@@ -297,9 +318,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         Doraemon.getInstance(App.mContext).addCommand(new LeXingCommand(speed[0], speed[1], 2000));
         //TODO 设置角度
 //        mEngine.setDoaChannel(6);//每次都是头对着用户
-
-        //开启监听
-        startASR();
     }
 
 

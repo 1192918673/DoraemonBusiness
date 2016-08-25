@@ -1,5 +1,7 @@
 package com.geeknewbee.doraemon.input;
 
+import android.os.Environment;
+
 import com.aispeech.AIError;
 import com.aispeech.common.AIConstant;
 import com.aispeech.common.Util;
@@ -35,6 +37,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     private void init() {
         AIConstant.setUseSpi(true);
         mEngine = AILocalEddEngine.createInstance(); //创建实例
+        mEngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());//设置回消音频文件存放路径
         mEngine.setResBin(SpeechConstants.wakeup_dnn_res);
         mEngine.setDoaCfg(SpeechConstants.uca_config); // 设置声源定位配置文件？
         mEngine.setAecCfg(SpeechConstants.ace_cfg); //

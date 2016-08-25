@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifview"
         android:layout_width="match_parent"
@@ -20,9 +19,13 @@
         android:background="#eeeeee"
         android:scaleType="center"
         android:visibility="invisible" />
-    <!--<Button-->
-    <!--android:id="@+id/bt_test"-->
-    <!--android:layout_width="200dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="test" />-->
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 </RelativeLayout>

@@ -1,5 +1,9 @@
 package com.geeknewbee.doraemon.input;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -7,10 +11,12 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
+import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.PrefUtils;
+import com.geeknewbee.doraemon.view.VideoTalkActivity;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConnectionListener;
@@ -125,6 +131,22 @@ public class HYMessageReceive implements IMessageReceive {
             }
         }
     };
+    // 接受视频呼叫的广播接受者
+    private BroadcastReceiver emIncomingCallReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // 拨打方username
+            String from = intent.getStringExtra("from");
+            // call type
+            String type = intent.getStringExtra("type");
+            // 跳转到通话页面
+            Intent intent1 = new Intent(App.mContext, VideoTalkActivity.class);
+            intent1.putExtra("from", from);
+            App.mContext.startActivity(intent1);
+            // TODO 发送切换成EDD监听 是否再停用EDD监听？视频挂断在启动监听
+            EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+        }
+    };
 
     private HYMessageReceive() {
         EventBus.getDefault().register(this);
@@ -228,6 +250,14 @@ public class HYMessageReceive implements IMessageReceive {
     @Override
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
+    }
+
+    /**
+     * 环信视频通话逻辑 初始化操作
+     */
+    private void EMInit() {
+        IntentFilter callFilter = new IntentFilter(EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
+        App.mContext.registerReceiver(emIncomingCallReceiver, callFilter);
     }
 
     /**
