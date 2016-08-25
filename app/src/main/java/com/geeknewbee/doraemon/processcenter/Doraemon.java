@@ -3,6 +3,7 @@ package com.geeknewbee.doraemon.processcenter;
 import android.content.Context;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
@@ -258,7 +259,8 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void startASREvent(StartASREvent event) {
         //完成后开启语音监听
-        startASR();
+        if (BuildConfig.HAVE_SPEECH_DEVCE)
+            startASR();
     }
 
     /**
@@ -335,12 +337,16 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     private void switchListener(SoundMonitorType type) {
         switch (type) {
             case ASR:
-                stopWakeUp();
-                startASR();
+                if (BuildConfig.HAVE_SPEECH_DEVCE) {
+                    stopWakeUp();
+                    startASR();
+                }
                 break;
             case EDD:
-                stopASR();
-                startWakeup();
+                if (BuildConfig.HAVE_SPEECH_DEVCE) {
+                    stopASR();
+                    startWakeup();
+                }
                 break;
         }
     }
