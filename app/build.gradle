@@ -28,7 +28,7 @@ android {
         ndk { abiFilters 'armeabi-v7a' }
         resConfigs "zh"
         buildConfigField "boolean", "NEED_DEBUG", "false"
-        buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "true"
+        buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "false"
         buildConfigField "boolean", "NEED_START_BLE", "true"
     }
 
