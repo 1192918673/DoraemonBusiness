@@ -41,16 +41,16 @@ public class LeXingUtil {
      */
     public static int[] getSpeed(Direction direction, ClockDirection clockDirection, int angle, int radius, int duration) {
         int[] result = new int[2];
-        float vSpeed = 0, wSpeed = 0;
+        double vSpeed = 0, wSpeed = 0;
         switch (direction) {
             case LEFT: // 往左转
                 switch (clockDirection) {
                     case CLOCKWISE:
-                        wSpeed = -Math.abs((float) angle / duration * 1000); //(度/秒）
+                        wSpeed = -Math.abs((double) angle / 180 * Math.PI * 1000 / duration * 1000); //(豪弧/秒）
                         vSpeed = (-wSpeed * ((float) radius / 1000)); //（米/秒）
                         break;
                     case EASTERN:
-                        wSpeed = Math.abs((float) angle / duration * 1000);//(度/秒）
+                        wSpeed = Math.abs((double) angle / 180 * Math.PI * 1000 / duration * 1000);//(豪弧/秒）
                         vSpeed = (wSpeed * ((float) radius / 1000));//（米/秒）
                         break;
                 }
@@ -58,11 +58,11 @@ public class LeXingUtil {
             case RIGHT: // 往右转
                 switch (clockDirection) {
                     case CLOCKWISE:
-                        wSpeed = -Math.abs((float) angle / duration * 1000); //(度/秒）
+                        wSpeed = -Math.abs((double) angle / 180 * Math.PI * 1000 / duration * 1000); //(豪弧/秒）
                         vSpeed = -(wSpeed * ((float) radius / 1000));//（米/秒）
                         break;
                     case EASTERN:
-                        wSpeed = Math.abs((float) angle / duration * 1000);//(度/秒）
+                        wSpeed = Math.abs((double) angle / 180 * Math.PI * 1000 / duration * 1000);//(豪弧/秒）
                         vSpeed = (wSpeed * ((float) radius / 1000)); //（米/秒）
                         break;
                 }
@@ -70,8 +70,6 @@ public class LeXingUtil {
             default:
                 LogUtils.d("setTurn", "Turning direction error...");
         }
-        vSpeed = vSpeed * 1000;////（毫米/秒）
-        wSpeed = wSpeed * 1000; //(毫度/秒）
         result[0] = (int) vSpeed;
         result[1] = (int) wSpeed;
         return result;
