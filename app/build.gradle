@@ -6,7 +6,7 @@ ext {
     TestVersionCode = 1000001
     Version = '1.0.0'
     VersionCode = 10000
-    DevURLDOMAIN = '"http://doraemon.microfastup.com"'
+    DevURLDOMAIN = '"http://doraemon.babadeyan.com/"'
     BetaURLDOMAIN = '"https://ol.api.xhkhealth.com"'
     OnlineURLDOMAIN = '"https://ol.api.xhkhealth.com"'
 
