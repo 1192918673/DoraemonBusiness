@@ -148,7 +148,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
             return Arrays.asList(new SoundCommand("好的", SoundCommand.InputSource.TIPS), new Command(CommandType.PLAY_JOKE));
         }
-        if (input.indexOf("背首诗") != -1) {
+        if (input.contains("背首诗")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.TANG_SHI, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
