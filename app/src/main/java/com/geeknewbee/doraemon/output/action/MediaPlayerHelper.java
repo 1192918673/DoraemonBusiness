@@ -8,13 +8,16 @@ import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.IOException;
-
 public class MediaPlayerHelper {
 
     private MediaPlayer mediaPlayer;
 
     public void start(Context context, int rawId) {
+        if (rawId <= 0) {
+            notifyComplete();
+            return;
+        }
+
         mediaPlayer = MediaPlayer.create(context, rawId);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override

@@ -39,6 +39,11 @@ public class BluetoothCommand {
     public String danceName;
 
     /**
+     * 舞蹈对应音乐资源名字
+     */
+    public String danceMusicName;
+
+    /**
      * WIFI信息
      */
     private WifiInfo wifiInfo;
@@ -80,7 +85,7 @@ public class BluetoothCommand {
 
         if (!TextUtils.isEmpty(musicName)) {
             if (musicName.equalsIgnoreCase(Constants.STOP_FLAG))
-                commands.add(new Command(CommandType.PLAY_MUSIC.STOP, musicName));
+                commands.add(new Command(CommandType.STOP, musicName));
             else
                 commands.add(new Command(CommandType.PLAY_MUSIC, musicName));
         }
@@ -98,18 +103,21 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(danceName)) {
-            //这里先都放小苹果 TODO
-            commands.add(new LocalResourceCommand(R.raw.little_apple));
-            commands.add(LocalSportActionManager.getInstance().getActionSetCommand(Arrays.asList(danceName)));
+            if (LocalSportActionManager.getInstance().containsAction(danceName)) {
+                commands.add(new LocalResourceCommand(danceMusicName));
+                commands.add(LocalSportActionManager.getInstance().getActionSetCommand(danceName));
+            }
         }
 
         if (!TextUtils.isEmpty(action)) {
-            //原有的手机发送的命令
+            //原有的外包手机控制端直接发送的命令字
             switch (action) {
                 case "intro_self":
                     commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.SOUND_TRANSLATE));
                     break;
                 case "dance":
+                    commands.add(new LocalResourceCommand(R.raw.little_apple));
+                    commands.add(LocalSportActionManager.getInstance().getActionSetCommand(LocalSportActionManager.XIAO_PING_GUO));
                     break;
                 case "movie":
                     break;
