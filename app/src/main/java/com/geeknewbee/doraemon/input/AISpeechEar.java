@@ -107,7 +107,8 @@ public class AISpeechEar implements IEar {
         mASREngine.setUseXbnfRec(true);// 设置是否启用基于语法的语义识别
         mASREngine.setUsePinyin(false);
         mASREngine.setUseForceout(false);
-        mASREngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());//设置回消音频文件存放路径
+        //mASREngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());//设置回消音频文件存放路径
+        //mASREngine.setEchoEnable(true);
         mASREngine.setAthThreshold(1.0f);//设置本地置信度阀值
         mASREngine.setIsRelyOnLocalConf(false);//是否开启依据本地置信度优先输出,如需添加例外
         mASREngine.setIsPreferCloud(true);//是否当云端结果有输出时，优先输出云端结果
@@ -120,7 +121,6 @@ public class AISpeechEar implements IEar {
         mASREngine.setAecCfg(SpeechConstants.ace_cfg);
         mASREngine.setConfigName(SpeechConstants.uca_config);
         mASREngine.setUcaParamMode(1);
-        mASREngine.setEchoEnable(false);
         mASREngine.setNoSpeechTimeOut(0);// 设置无语音超时时长
         mASREngine.setMaxSpeechTimeS(0);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常
         mASREngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));// 设置设备Id

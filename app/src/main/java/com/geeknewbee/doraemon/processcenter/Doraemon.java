@@ -44,6 +44,7 @@ import java.util.List;
  * 哆啦A梦 单利模式
  */
 public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageReceive.MessageListener {
+    public static final boolean DEBUG_SHOW_ASR_RESULT = true;
     private volatile static Doraemon instance;
     private final Context context;
     private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
@@ -152,7 +153,8 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
          * 否则需要通过后台服务器进行解析
          */
         LogUtils.d(AISpeechEar.TAG, input + ":" + asrOutput + ":" + action + ":" + starName + ":" + musicName);
-        EventBus.getDefault().post(new ReceiveASRResultEvent(input));
+        if (DEBUG_SHOW_ASR_RESULT)
+            EventBus.getDefault().post(new ReceiveASRResultEvent(input));
         brain.translateSound(new SoundTranslateInput(input, asrOutput, action, starName, musicName));
     }
 
