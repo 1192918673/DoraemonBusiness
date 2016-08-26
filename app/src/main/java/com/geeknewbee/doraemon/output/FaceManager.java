@@ -2,6 +2,8 @@ package com.geeknewbee.doraemon.output;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 
 import com.geeknewbee.doraemon.App;
@@ -22,6 +24,7 @@ import pl.droidsonroids.gif.GifDrawable;
  * 处理表情
  */
 public class FaceManager {
+    private static final int HIDE_QR = 0;
     private static volatile FaceManager instance;
 
     public MainActivity faceActivity;
@@ -31,6 +34,19 @@ public class FaceManager {
     private String lastName;
     private int loopNumber;
     private int currentLoop;
+    private Handler mHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case HIDE_QR: // 隐藏二维码
+                    faceActivity.llQR.setVisibility(View.INVISIBLE);
+                    faceActivity.gifView.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }
+    };
 
 
     private FaceManager() {
@@ -140,7 +156,6 @@ public class FaceManager {
     }
 
     public void hideQR() {
-        faceActivity.llQR.setVisibility(View.INVISIBLE);
-        faceActivity.gifView.setVisibility(View.VISIBLE);
+        mHandler.sendEmptyMessage(HIDE_QR);
     }
 }
