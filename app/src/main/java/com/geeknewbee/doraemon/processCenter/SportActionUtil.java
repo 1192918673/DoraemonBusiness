@@ -111,7 +111,7 @@ public class SportActionUtil {
         action.delayTime = time;
 
         action.topCommand = getTopCommand(leftUpAnDownAngle, rightUpAndDownAngle, rightAPAngle, leftAPAngle, headHorizontal, headVertical, time);
-        action.footCommand = getFootCommandOfLeXing(footDirection);
+        action.footCommand = getFootCommandOfLeXing(footDirection, time);
 
         //8 运动的表情
         if (strings.length == 9 && !TextUtils.isEmpty(strings[8].trim())) {
@@ -265,29 +265,30 @@ public class SportActionUtil {
      * 乐行的脚步命令
      *
      * @param footDirection
+     * @param time
      * @return
      */
-    private static String getFootCommandOfLeXing(int footDirection) {
+    public static String getFootCommandOfLeXing(int footDirection, int time) {
         if (footDirection == 0)
             return "";
 
         int[] result = new int[2];
-        int distance = 100;
+        int distance = 350;
         int angle = 30;
         switch (footDirection) {
             case FOOT_DIRECTION_UP:
-                result = LeXingUtil.getSpeed(LeXingUtil.Direction.FORE, distance, footDirection);
+                result = LeXingUtil.getSpeed(LeXingUtil.Direction.FORE, distance, time);
                 break;
             case FOOT_DIRECTION_DOWN:
-                result = LeXingUtil.getSpeed(LeXingUtil.Direction.BACK, distance, footDirection);
+                result = LeXingUtil.getSpeed(LeXingUtil.Direction.BACK, distance, time);
                 break;
             case FOOT_DIRECTION_RIGHT:
-                result = LeXingUtil.getSpeed(LeXingUtil.Direction.RIGHT, LeXingUtil.ClockDirection.CLOCKWISE, angle, 0, footDirection);
+                result = LeXingUtil.getSpeed(LeXingUtil.Direction.RIGHT, LeXingUtil.ClockDirection.CLOCKWISE, angle, 0, time);
                 break;
             case FOOT_DIRECTION_LEFT:
-                result = LeXingUtil.getSpeed(LeXingUtil.Direction.LEFT, LeXingUtil.ClockDirection.EASTERN, angle, 0, footDirection);
+                result = LeXingUtil.getSpeed(LeXingUtil.Direction.LEFT, LeXingUtil.ClockDirection.EASTERN, angle, 0, time);
                 break;
         }
-        return String.format("%d|%d", result[0], result[0]);
+        return String.format("%d|%d", result[0], result[1]);
     }
 }

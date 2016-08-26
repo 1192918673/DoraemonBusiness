@@ -2,6 +2,7 @@ package com.geeknewbee.doraemon.processcenter.command;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.processcenter.LocalSportActionManager;
 
@@ -31,6 +32,11 @@ public class BluetoothCommand {
      * 歌曲名称
      */
     private String musicName;
+
+    /**
+     * 舞蹈
+     */
+    public String danceName;
 
     /**
      * WIFI信息
@@ -89,6 +95,12 @@ public class BluetoothCommand {
 
         if (sportActions != null && !sportActions.isEmpty()) {
             commands.add(new ActionSetCommand(sportActions));
+        }
+
+        if (!TextUtils.isEmpty(danceName)) {
+            //这里先都放小苹果 TODO
+            commands.add(new LocalResourceCommand(R.raw.little_apple));
+            commands.add(LocalSportActionManager.getInstance().getActionSetCommand(Arrays.asList(danceName)));
         }
 
         if (!TextUtils.isEmpty(action)) {

@@ -8,4 +8,6 @@ public interface IArmsAndHead {
     boolean init();
 
     boolean send(byte limbFunctions, char[] buf);
+
+    void reset();
 }
