@@ -3,6 +3,7 @@ package com.geeknewbee.doraemon.output.queue;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.DanceMusicStopEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
@@ -22,6 +23,8 @@ import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Arrays;
 
@@ -44,6 +47,8 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         foot = new LeXingFoot();
         boolean initFoot = foot.init();
         LogUtils.d(Constants.TAG_COMMAND, "init foot:" + initFoot);
+
+        EventBus.getDefault().register(this);
     }
 
     public static LimbsTaskQueue getInstance() {
@@ -101,15 +106,18 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         }
 
         for (SportAction sportAction : command.sportActions) {
-            if (isStopAction)
+            if (isStopAction) {
+                armsAndHead.reset();
+                stopFootLuGong(0);
                 break;
+            }
 
             if (!TextUtils.isEmpty(sportAction.expressionName))
                 Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 1));
 
             sendCommandContent(sportAction.topCommand);
             try {
-                Thread.sleep(50);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -127,7 +135,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         try {
             Thread.sleep(delayTime);
             sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
-            Thread.sleep(30);
+            Thread.sleep(20);
             sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -142,7 +150,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         if (TextUtils.isEmpty(footCommand))
             return;
 
-        String[] split = footCommand.split("|");
+        String[] split = footCommand.split("\\|");
         if (split.length != 2) return;
         foot.setSpeed(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
     }
@@ -156,7 +164,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         if (TextUtils.isEmpty(footCommand))
             return false;
 
-        String[] split = footCommand.split("|");
+        String[] split = footCommand.split("\\|");
         if (split.length != 2) return false;
 
         return sendLeXingFootCommandByLuGong(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
@@ -203,5 +211,11 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     public synchronized boolean isBusy() {
         return isBusy;
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onDanceMusicStop(DanceMusicStopEvent event) {
+        //当跳舞的音乐停止 则停止动作
+        isStopAction = true;
     }
 }

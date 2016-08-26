@@ -1,5 +1,7 @@
 package com.geeknewbee.doraemon.processcenter;
 
+import android.text.TextUtils;
+
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
@@ -13,6 +15,7 @@ import java.util.Map;
  * 以后可以让服务器直接发送约定好的命令，直接执行
  */
 public class LocalSportActionManager extends Thread {
+    public static final String XIAO_PING_GUO = "xiao_ping_guo";
     private static LocalSportActionManager instance;
     private Map<String, List<SportAction>> localActionMap;
 
@@ -51,6 +54,27 @@ public class LocalSportActionManager extends Thread {
             }
         }
         return command;
+    }
+
+    public ActionSetCommand getActionSetCommand(String actionName) {
+        if (TextUtils.isEmpty(actionName))
+            return null;
+        ActionSetCommand command = new ActionSetCommand();
+        command.addSportAction(localActionMap.get(actionName));
+        return command;
+    }
+
+    /**
+     * 本地是否有对应的动作
+     *
+     * @param actionName 动作名
+     * @return
+     */
+    public boolean containsAction(String actionName) {
+        if (TextUtils.isEmpty(actionName))
+            return false;
+
+        return localActionMap.containsKey(actionName);
     }
 
     @Override
@@ -102,5 +126,9 @@ public class LocalSportActionManager extends Thread {
 
         actions = SportActionUtil.parseSportCommand(R.raw.action_foot_forward);
         localActionMap.put("forward", actions);
+
+        final OldSportActionUtil oldSportActionUtil = new OldSportActionUtil();
+        actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_scripts);
+        localActionMap.put(XIAO_PING_GUO, actions);
     }
 }

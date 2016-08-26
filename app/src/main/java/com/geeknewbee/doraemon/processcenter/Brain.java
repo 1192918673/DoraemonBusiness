@@ -76,6 +76,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case BIND_ACCOUNT_SUCCESS:
                 FaceManager.getInstance().hideQR();
                 break;
+            case PLAY_LOCAL_RESOURCE:
+                MouthTaskQueue.getInstance().addTask(command);
+                break;
         }
     }
 
