@@ -38,27 +38,6 @@ public class BluetoothServiceManager {
     private Doraemon doraemon;
     private Context context;
     private BluetoothChatService mChatService;
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
-                switch (state) {
-                    case BluetoothAdapter.STATE_ON:
-                        startServer();
-                        break;
-                    case BluetoothAdapter.STATE_OFF:
-                        if (mChatService != null) {
-                            mChatService.stop();
-                        }
-                        stopAdvertise();
-                        break;
-                }
-            }
-        }
-    };
     private BlockingQueue<byte[]> audioData = new LinkedBlockingQueue<byte[]>();
     private BluetoothTalkTask talkTask;
     private final Handler mHandler = new Handler() {
@@ -112,6 +91,43 @@ public class BluetoothServiceManager {
     private BluetoothGattServer mGattServer;
     private BluetoothLeAdvertiser mBTAdvertiser;
     private ImmediateAlertService ias;
+    private AdvertiseCallback mAdvCallback = new AdvertiseCallback() {
+        public void onStartSuccess(android.bluetooth.le.AdvertiseSettings settingsInEffect) {
+            if (settingsInEffect != null) {
+                LogUtils.d(ImmediateAlertService.TAG, "onStartSuccess TxPowerLv="
+                        + settingsInEffect.getTxPowerLevel()
+                        + " mode=" + settingsInEffect.getMode()
+                        + " timeout=" + settingsInEffect.getTimeout());
+            } else {
+                LogUtils.d(ImmediateAlertService.TAG, "onStartSuccess, settingInEffect is null");
+            }
+        }
+
+        public void onStartFailure(int errorCode) {
+            LogUtils.d(ImmediateAlertService.TAG, "onStartFailure errorCode=" + errorCode);
+        }
+    };
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
+                switch (state) {
+                    case BluetoothAdapter.STATE_ON:
+                        startServer();
+                        break;
+                    case BluetoothAdapter.STATE_OFF:
+                        if (mChatService != null) {
+                            mChatService.stop();
+                        }
+                        stopAdvertise();
+                        break;
+                }
+            }
+        }
+    };
 
     private BluetoothServiceManager(Context context) {
         this.context = context;
@@ -232,22 +248,7 @@ public class BluetoothServiceManager {
         if (ias != null) {
             ias.sendNotification(event.isSuccess ? "1" : "0");
         }
+        mChatService.write(event.isSuccess ? "1".getBytes() : "0".getBytes());
+        LogUtils.d("WifiSetComplete", mChatService == null ? "mChatService:Null" : "mChatService:Not Null");
     }
-
-    private AdvertiseCallback mAdvCallback = new AdvertiseCallback() {
-        public void onStartSuccess(android.bluetooth.le.AdvertiseSettings settingsInEffect) {
-            if (settingsInEffect != null) {
-                LogUtils.d(ImmediateAlertService.TAG, "onStartSuccess TxPowerLv="
-                        + settingsInEffect.getTxPowerLevel()
-                        + " mode=" + settingsInEffect.getMode()
-                        + " timeout=" + settingsInEffect.getTimeout());
-            } else {
-                LogUtils.d(ImmediateAlertService.TAG, "onStartSuccess, settingInEffect is null");
-            }
-        }
-
-        public void onStartFailure(int errorCode) {
-            LogUtils.d(ImmediateAlertService.TAG, "onStartFailure errorCode=" + errorCode);
-        }
-    };
 }

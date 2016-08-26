@@ -157,6 +157,15 @@ public class BluetoothChatService {
         setState(STATE_CONNECTED);
     }
 
+    public synchronized void write(byte[] buffer) {
+        if (mState == STATE_CONNECTED && connectedThreadList.size() > 0) {
+            for (int i = 0; i < connectedThreadList.size(); i++) {
+                ConnectedThread connectedThread = connectedThreadList.get(i);
+                connectedThread.write(buffer);
+            }
+        }
+    }
+
     /**
      * Stop all threads
      */

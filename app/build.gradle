@@ -30,6 +30,7 @@ android {
         buildConfigField "boolean", "NEED_DEBUG", "false"
         buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "false"
         buildConfigField "boolean", "NEED_START_BLE", "false"
+        buildConfigField "boolean", "SHOW_ASR_RESULT", "true"
     }
 
     sourceSets {
