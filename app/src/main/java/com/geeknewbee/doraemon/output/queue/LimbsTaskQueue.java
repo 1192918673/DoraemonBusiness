@@ -70,20 +70,17 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 isStopAction = false;
                 isBusy = true;
                 perform((ActionSetCommand) command);
-                isBusy = false;
                 break;
             case MECHANICAL_MOVEMENT:
                 isStopAction = false;
                 isBusy = true;
                 sendCommandContent(command.getContent());
-                isBusy = false;
                 break;
             case LE_XING_FOOT:
                 isStopAction = false;
                 isBusy = true;
                 LeXingCommand leXingCommand = (LeXingCommand) command;
                 perform(leXingCommand);
-                isBusy = false;
                 break;
         }
 
@@ -143,6 +140,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     private void notifyComplete() {
+        isBusy = false;
         EventBus.getDefault().post(new LimbActionCompleteEvent());
     }
 

@@ -44,20 +44,25 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     @Override
     public Boolean performTask(Command input) {
-        EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
         switch (input.getType()) {
             case PLAY_SOUND:
                 SoundCommand soundCommand = (SoundCommand) input;
+                if (soundCommand.inputSource != SoundCommand.InputSource.START_WAKE_UP)
+                    EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+
                 itts.talk(soundCommand.getContent(), soundCommand.inputSource);
                 break;
             case PLAY_MUSIC:
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 itts.talk("正在搜索音乐", SoundCommand.InputSource.TIPS);
                 iMusicPlayer.play(input.getContent());
                 break;
             case PLAY_JOKE:
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 iMusicPlayer.joke();
                 break;
             case PLAY_LOCAL_RESOURCE:
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 LocalResourceCommand resourceCommand = (LocalResourceCommand) input;
                 mediaPlayerHelper.start(App.mContext, resourceCommand.resourceID);
                 break;

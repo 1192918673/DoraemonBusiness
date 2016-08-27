@@ -1,0 +1,3 @@
+$SEMANTIC_OUTPUT = ();
+
+( \<s\> ($SEMANTIC_OUTPUT) \<\/s\> )

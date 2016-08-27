@@ -172,12 +172,19 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTTSComplete(TTSCompleteEvent event) {
+        //现在唤醒是在提示唤醒词后才开启唤醒
+        if (event.inputSource == SoundCommand.InputSource.START_WAKE_UP) {
+            if (BuildConfig.HAVE_SPEECH_DEVCE)
+                Doraemon.getInstance(context).startWakeup();
+            return;
+        }
+
         //完成后开启语音监听,当在有播放媒体的时候不需要的时候，这里需要处理
         if (isOutputBusy())
             return;
 
         if (event.inputSource == SoundCommand.InputSource.SOUND_TRANSLATE ||
-                event.inputSource == SoundCommand.InputSource.WAKE_UP)
+                event.inputSource == SoundCommand.InputSource.AFTER_WAKE_UP)
             switchListener(SoundMonitorType.ASR);
     }
 
@@ -303,7 +310,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
         //提示成功 TTS完成后自动打开ASR 这里的类型必须是WAKE_UP
-        addCommand(new SoundCommand("唤醒成功", SoundCommand.InputSource.WAKE_UP));
+        addCommand(new SoundCommand("唤醒成功", SoundCommand.InputSource.AFTER_WAKE_UP));
         //根据声音定位转向
         double turnAngle = 0;
         LeXingUtil.Direction direction;

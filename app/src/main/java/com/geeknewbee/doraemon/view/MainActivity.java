@@ -8,7 +8,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
@@ -45,8 +44,6 @@ public class MainActivity extends Activity {
         initData();
         EventBus.getDefault().register(this);
 //        test();
-        if (BuildConfig.HAVE_SPEECH_DEVCE)
-            Doraemon.getInstance(getApplicationContext()).startWakeup();
         Doraemon.getInstance(getApplicationContext()).startReceive();
     }
 
@@ -92,9 +89,9 @@ public class MainActivity extends Activity {
         LocalSportActionManager.getInstance().initLocalAction();
         //开机提示：是否联网
         if (DeviceUtil.isNetworkConnected(getApplicationContext())) {
-            Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("呼叫你好小乐，唤醒我", SoundCommand.InputSource.TIPS));
+            Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("呼叫你好小乐，唤醒我", SoundCommand.InputSource.START_WAKE_UP));
         } else {
-            Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("网络未连接，请先连接网络", SoundCommand.InputSource.TIPS));
+            Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("网络未连接，请先连接网络", SoundCommand.InputSource.START_WAKE_UP));
         }
     }
 

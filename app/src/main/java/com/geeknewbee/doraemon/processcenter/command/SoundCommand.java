@@ -13,7 +13,8 @@ public class SoundCommand extends Command {
 
 
     public static enum InputSource {
-        //播放声音的来源 SOUND_TRANSLATE：解析音频，TTS后需要开启ARS  TIPS：播放些提示类的声音，播放完成不需要开启ASR  WAKE_UP:唤醒专用
-        SOUND_TRANSLATE, TIPS, WAKE_UP
+        //播放声音的来源 SOUND_TRANSLATE：解析音频，TTS后需要开启ARS  TIPS：播放些提示类的声音，播放完成不需要开启ASR
+        // AFTER_WAKE_UP:唤醒成功后提醒专用  START_WAKE_UP:App开启后提醒语句，完成后才开启唤醒(否则存在被自己的声音唤醒的情况)
+        SOUND_TRANSLATE, TIPS, AFTER_WAKE_UP, START_WAKE_UP
     }
 }
