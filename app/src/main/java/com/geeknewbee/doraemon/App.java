@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.multidex.MultiDex;
+
 import com.facebook.stetho.Stetho;
 import com.geeknewbee.doraemon.database.DaoMaster;
 import com.geeknewbee.doraemon.database.DaoSession;
 import com.geeknewbee.doraemon.database.upgrade.MyOpenHelper;
 import com.geeknewbee.doraemon.input.AISpeechAuth;
+import com.geeknewbee.doraemon.security.DefaultExceptionHandler;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.chat.EMClient;
@@ -33,6 +35,8 @@ public class App extends BaseApplication {
         setupDatabase();
         initHuanXinSDK();
         LogUtils.LOG_DEBUG = BuildConfig.NEED_DEBUG;
+
+        Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(this));
 
         //方便调试
         if (BuildConfig.NEED_DEBUG)

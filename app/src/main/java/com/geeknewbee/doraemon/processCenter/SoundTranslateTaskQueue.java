@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
+import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
@@ -13,6 +14,7 @@ import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
+import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
 import com.geeknewbee.doraemon.webservice.ApiService;
@@ -146,7 +148,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
             return Arrays.asList(new SoundCommand("好的", SoundCommand.InputSource.TIPS), new Command(CommandType.PLAY_JOKE));
         }
-        if (input.indexOf("背首诗") != -1) {
+        if (input.contains("背首诗")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.TANG_SHI, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
@@ -161,28 +163,41 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             commands.add(new SoundCommand("现在室内湿度是" + SensorUtil.getInstance().humidity + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
-        if (input.indexOf("光强度") != -1) {
+        if (input.contains("光强度")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand("现在室内光强度是" + SensorUtil.getInstance().light + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
-        if (input.indexOf("向前走") != -1 || input.indexOf("前走") != -1 || input.indexOf("前进") != -1) {
-
+        if (input.contains("向前走") || input.contains("前走") || input.contains("前进")) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(LocalSportActionManager.getInstance().getActionSetCommand("forward"));
+            return commands;
         }
-        if (input.indexOf("向后走") != -1 || input.indexOf("后走") != -1 || input.indexOf("后退") != -1) {
-
+        if (input.contains("向后走") || input.contains("后走") || input.contains("后退")) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(LocalSportActionManager.getInstance().getActionSetCommand("backward"));
+            return commands;
         }
-        if (input.indexOf("左转") != -1 || input.indexOf("往左转") != -1 || input.indexOf("向左转") != -1 || input.indexOf("向左") != -1) {
-
+        if (input.contains("左转") || input.contains("往左转") || input.contains("向左转") || input.contains("向左")) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(LocalSportActionManager.getInstance().getActionSetCommand("left"));
+            return commands;
         }
-        if (input.indexOf("右转") != -1 || input.indexOf("往右转") != -1 || input.indexOf("向右转") != -1 || input.indexOf("向右") != -1) {
-
+        if (input.contains("右转") || input.contains("往右转") || input.contains("向右转") || input.contains("向右")) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(LocalSportActionManager.getInstance().getActionSetCommand("right"));
+            return commands;
         }
-        if (input.indexOf("举手") != -1 || input.indexOf("伸胳膊") != -1 || input.indexOf("抬头") != -1) {
-
+        if (input.contains("举手") || input.contains("伸胳膊") || input.contains("抬头")) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(LocalSportActionManager.getInstance().getActionSetCommand(Arrays.asList("l_arm_up", "r_arm_up")));
+            return commands;
         }
-        if (input.indexOf("跳小苹果") != -1 || input.indexOf("跳个小苹果") != -1 || input.indexOf("跳个舞") != -1) {
-
+        if (input.contains("跳小苹果") || input.contains("跳个小苹果") || input.contains("跳个舞")) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(new LocalResourceCommand(R.raw.little_apple));
+            commands.add(LocalSportActionManager.getInstance().getActionSetCommand(LocalSportActionManager.XIAO_PING_GUO));
+            return commands;
         }
         return null;
     }

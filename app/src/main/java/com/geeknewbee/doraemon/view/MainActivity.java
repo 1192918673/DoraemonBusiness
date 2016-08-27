@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.CrashEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
@@ -105,6 +106,17 @@ public class MainActivity extends Activity {
         result.setText(event.input);
     }
 
+    /**
+     * 当app crash 的时候
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCrash(CrashEvent event) {
+        destroy();
+        finish();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -120,7 +132,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        bluetoothServiceManager.onDestroy();
-        bluetoothServiceManager = null;
+        destroy();
+    }
+
+    private void destroy() {
+        if (bluetoothServiceManager != null) {
+            bluetoothServiceManager.onDestroy();
+            bluetoothServiceManager = null;
+        }
     }
 }
