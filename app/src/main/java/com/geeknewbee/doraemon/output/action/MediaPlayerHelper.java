@@ -50,6 +50,11 @@ public class MediaPlayerHelper {
     }
 
     public boolean isPlaying() {
-        return mediaPlayer != null && mediaPlayer.isPlaying();
+        try {
+            return mediaPlayer != null && mediaPlayer.isPlaying();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
