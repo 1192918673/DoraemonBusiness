@@ -19,7 +19,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
 
     public static final String TAG = AISpeechEar.TAG;
     private AILocalEddEngine mEngine;
-    private boolean isWakeUp;
+    private boolean isRunning;
 
     public AISpeechSoundInputDevice() {
         init();
@@ -40,14 +40,21 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     }
 
     @Override
-    public void start() {
-        mEngine.start();
-        LogUtils.d(TAG, "WakeupEngine start...");
+    public synchronized void start() {
+        if (!isRunning) {
+            mEngine.start();
+            isRunning = true;
+            LogUtils.d(TAG, "WakeupEngine start...");
+        } else {
+            LogUtils.d(TAG, "WakeupEngine had run.");
+        }
     }
 
     @Override
-    public void stop() {
-        mEngine.stop();
+    public synchronized void stop() {
+        if (isRunning)
+            mEngine.stop();
+        isRunning = false;
         LogUtils.d(TAG, "WakeupEngine stop!!!");
     }
 
