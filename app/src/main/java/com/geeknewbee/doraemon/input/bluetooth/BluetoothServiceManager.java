@@ -13,11 +13,13 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.output.BluetoothTalkTask;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
+import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
@@ -250,5 +252,8 @@ public class BluetoothServiceManager {
         }
         mChatService.write(event.isSuccess ? "1".getBytes() : "0".getBytes());
         LogUtils.d("WifiSetComplete", mChatService == null ? "mChatService:Null" : "mChatService:Not Null");
+
+        if (event.isSuccess)
+            DoraemonInfoManager.getInstance(App.mContext).uploadSsid(event.SSID);
     }
 }

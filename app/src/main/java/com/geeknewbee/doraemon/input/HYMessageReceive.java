@@ -139,8 +139,10 @@ public class HYMessageReceive implements IMessageReceive {
             String from = intent.getStringExtra("from");
             // call type
             String type = intent.getStringExtra("type");
+            LogUtils.d(TAG, "收到来自" + from + "的视频呼叫");
             // 跳转到通话页面
             Intent intent1 = new Intent(App.mContext, VideoTalkActivity.class);
+            intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent1.putExtra("from", from);
             App.mContext.startActivity(intent1);
             // TODO 发送切换成EDD监听 是否再停用EDD监听？视频挂断在启动监听
@@ -178,6 +180,9 @@ public class HYMessageReceive implements IMessageReceive {
         if (!isLogined) {
             EMLogin(hxUsername, hxPassword);
         }
+
+        // 3.视频通话广播注册
+        EMInit();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -232,10 +237,11 @@ public class HYMessageReceive implements IMessageReceive {
                 if (type == 1) {// 文字透传
                     String readData = pushData.getString("data");
                     List<Command> commands = new ArrayList<>();
-                    commands.add(new SoundCommand("定时提醒：" + readData, SoundCommand.InputSource.TIPS));
+                    commands.add(new SoundCommand(readData, SoundCommand.InputSource.TIPS));
                     messageListener.onReceivedMessage(commands);
                 } else if (type == 2) {// 改变声音大小命令
                     int vol = pushData.getInt("data");// 音量大小百分比，取值范围为 0-100
+                    LogUtils.d(TAG, "声音大小：" + vol);
                     messageListener.onReceivedMessage(Arrays.asList(new Command(CommandType.SETTING_VOLUME, vol + "")));
                 } else if (type == 3) {// 播放电影{"type":3,"data":"XMTYwODE0MjIxMg=="}
                 } else if (type == 4) {// 透传动作控制

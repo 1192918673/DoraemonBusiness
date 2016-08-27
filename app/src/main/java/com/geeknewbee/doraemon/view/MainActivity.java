@@ -93,6 +93,8 @@ public class MainActivity extends Activity {
         } else {
             Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("网络未连接，请先连接网络", SoundCommand.InputSource.START_WAKE_UP));
         }
+        //开机提示：版本检测
+        DoraemonInfoManager.getInstance(getApplicationContext()).uploadVersionCode();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

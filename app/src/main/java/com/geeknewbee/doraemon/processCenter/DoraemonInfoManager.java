@@ -1,11 +1,16 @@
 package com.geeknewbee.doraemon.processcenter;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
+import com.geeknewbee.doraemon.entity.ResponseAppVersion;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.RetrofitCallBack;
@@ -23,6 +28,8 @@ import retrofit2.Retrofit;
 public class DoraemonInfoManager {
     private volatile static DoraemonInfoManager instance;
     private Context context;
+    private String appVersionName = "";
+    private int appVersionCode = 1;
 
     private DoraemonInfoManager(Context context) {
         this.context = context;
@@ -93,6 +100,78 @@ public class DoraemonInfoManager {
             @Override
             public void onFailure(String error) {
                 LogUtils.d(Constants.HTTP_TAG, "upload battery error :" + error);
+            }
+        });
+    }
+
+    /**
+     * 上传最新版本号
+     */
+    public void uploadVersionCode() {
+        if (TextUtils.isEmpty(getToken())) return;
+        Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
+        ApiService service = retrofit.create(ApiService.class);
+
+        PackageManager manager = App.mContext.getPackageManager();
+        try {
+            PackageInfo pkgInfo = manager.getPackageInfo(App.mContext.getPackageName(), 0);
+            appVersionName = pkgInfo.versionName; // 版本名
+            appVersionCode = pkgInfo.versionCode; // 版本号
+            LogUtils.d(Constants.HTTP_TAG, "VersionName:" + appVersionName + "VersionCode:" + appVersionCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtils.d(Constants.HTTP_TAG, "Get Version Code Or Verson Name Exception...");
+        }
+
+        RetrofitHelper.sendRequest(service.uploadVersionName(getToken(), appVersionName), new RetrofitCallBack<Object>() {
+
+            @Override
+            public void onSuccess(Object response) {
+                LogUtils.d(Constants.HTTP_TAG, "upload VERSION CODE success");
+            }
+
+            @Override
+            public void onFailure(String error) {
+                LogUtils.d(Constants.HTTP_TAG, "upload VERSION CODE error:" + error);
+            }
+        });
+
+        RetrofitHelper.sendRequest(service.checkVersionCode(), new RetrofitCallBack<ResponseAppVersion>() {
+            @Override
+            public void onSuccess(ResponseAppVersion responseAppVersion) {
+                if (appVersionCode < responseAppVersion.getLast_version_code()) {
+                    // TODO 需要下载安装 最新App
+                    Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("当前诶皮皮不是最新版本，请更新", SoundCommand.InputSource.TIPS));
+                }
+                LogUtils.d(Constants.HTTP_TAG, "check update success");
+            }
+
+            @Override
+            public void onFailure(String error) {
+                LogUtils.d(Constants.HTTP_TAG, "check update success" + error);
+            }
+        });
+    }
+
+    /**
+     * 上传 SSID
+     *
+     * @param ssid
+     */
+    public void uploadSsid(String ssid) {
+        if (TextUtils.isEmpty(getToken())) return;
+        Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
+        ApiService service = retrofit.create(ApiService.class);
+
+        RetrofitHelper.sendRequest(service.uploadSsid(getToken(), ssid), new RetrofitCallBack<Object>() {
+            @Override
+            public void onSuccess(Object response) {
+                LogUtils.d(Constants.HTTP_TAG, "upload SSID success");
+            }
+
+            @Override
+            public void onFailure(String error) {
+                LogUtils.d(Constants.HTTP_TAG, "upload SSID error" + error);
             }
         });
     }
