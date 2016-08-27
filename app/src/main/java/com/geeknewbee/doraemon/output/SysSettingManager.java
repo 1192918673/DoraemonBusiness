@@ -17,6 +17,8 @@ import org.greenrobot.eventbus.EventBus;
  */
 public class SysSettingManager {
 
+    public static final String TAG = SysSettingManager.class.getSimpleName();
+
     public static boolean connectWiFi(String ssid, String pwd, int type) {
         boolean result = false;
         WifiManager wm = (WifiManager) BaseApplication.mContext.getSystemService(Context.WIFI_SERVICE);
@@ -75,7 +77,7 @@ public class SysSettingManager {
             if (result) new ShowQRTask().start();
         }
 
-        EventBus.getDefault().post(new SetWifiCompleteEvent(result));
+        EventBus.getDefault().post(new SetWifiCompleteEvent(result, ssid));
         return result;
     }
 
@@ -89,7 +91,8 @@ public class SysSettingManager {
         int streamMaxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         int currentVol = (int) (Integer.parseInt(volPercent) / 100.0 * streamMaxVolume);
         am.setStreamVolume(AudioManager.STREAM_MUSIC, currentVol, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-        LogUtils.d("MAX", streamMaxVolume + "");
-        LogUtils.d("VOLUME", volPercent);
+        LogUtils.d(TAG, "VOLUME：" + volPercent);
+        LogUtils.d(TAG, "CURRENTVOL：" + currentVol);
+        LogUtils.d(TAG, "MAX：" + streamMaxVolume);
     }
 }

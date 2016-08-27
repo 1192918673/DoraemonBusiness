@@ -45,7 +45,7 @@ public class ShowQRTask extends Thread {
 
             String token = DoraemonInfoManager.getInstance(context).getToken();
             if (DeviceUtil.isNetworkConnected(context) && !TextUtils.isEmpty(token)) {
-                Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
+                // Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
                 if (TextUtils.isEmpty(token)) return;
                 Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
                 ApiService service = retrofit.create(ApiService.class);
@@ -54,19 +54,19 @@ public class ShowQRTask extends Thread {
                     if (response.isSuccessful() && response.body().isSuccess()) {
                         if (status == SHOW_QR) {
                             if (response.body().getData().count == 0) {
-                                LogUtils.d(TAG, "显示二维码");
+                                LogUtils.d(TAG, "显示二维码，绑定用户数：" + response.body().getData().count);
                                 Doraemon.getInstance(context).addCommand(new Command(CommandType.SHOW_QR, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context)));
                                 status = HIDE_QR;
                                 index = 0;
                             } else {
-                                LogUtils.d(TAG, "二次绑定不用显示二维码");
+                                LogUtils.d(TAG, "二次绑定不用显示二维码，绑定用户数：" + response.body().getData().count);
                                 return;
                             }
                         }
                         if (status == HIDE_QR) {
-                            LogUtils.d(TAG, "应该隐藏了，还未隐藏" + response.body().getData().count);
+                            LogUtils.d(TAG, "应该隐藏了，还未隐藏，绑定用户数：" + response.body().getData().count);
                             if (response.body().getData().count > 0) {
-                                LogUtils.d(TAG, "二维码已经隐藏" + response.body().getData().count);
+                                LogUtils.d(TAG, "二维码已经隐藏，" + response.body().getData().count);
                                 Doraemon.getInstance(context).addCommand(new Command(CommandType.BIND_ACCOUNT_SUCCESS));
                                 status = INIT_STATUS;
                                 return;
