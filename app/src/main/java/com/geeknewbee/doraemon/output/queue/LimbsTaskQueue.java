@@ -74,7 +74,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             case MECHANICAL_MOVEMENT:
                 isStopAction = false;
                 isBusy = true;
-                sendCommandContent(command.getContent());
+                perform(command.getContent());
                 break;
             case LE_XING_FOOT:
                 isStopAction = false;
@@ -179,9 +179,13 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         return send;
     }
 
+    private void perform(String s) {
+        sendCommandContent(s);
+        notifyComplete();
+    }
+
     private Boolean sendCommandContent(String s) {
         if (TextUtils.isEmpty(s)) {
-            notifyComplete();
             return false;
         }
 
@@ -190,7 +194,6 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         char[] contentChar = Arrays.copyOfRange(chars, 1, chars.length);
         boolean send = armsAndHead.send(funcationCode, contentChar);
 
-        notifyComplete();
         return send;
     }
 

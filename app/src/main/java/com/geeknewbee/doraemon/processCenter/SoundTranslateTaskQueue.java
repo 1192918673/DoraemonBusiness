@@ -121,7 +121,9 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
      */
     private List<Command> localPerform(SoundTranslateInput soundTranslateInput) {
         String input = soundTranslateInput.input;
-        if (TextUtils.equals(soundTranslateInput.action, "播放音乐") || TextUtils.equals(soundTranslateInput.musicName, "一首歌")) {
+        if (TextUtils.equals(soundTranslateInput.action, "播放音乐")
+                || TextUtils.equals(soundTranslateInput.action, "音乐")
+                || TextUtils.equals(soundTranslateInput.musicName, "一首歌")) {
             if (TextUtils.isEmpty(soundTranslateInput.starName) && TextUtils.isEmpty(soundTranslateInput.musicName)) {
                 int i = new Random().nextInt(Constants.musics.size());
                 soundTranslateInput.starName = Constants.musics.get(i).get("starName");
@@ -193,7 +195,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             commands.add(LocalSportActionManager.getInstance().getActionSetCommand(Arrays.asList("l_arm_up", "r_arm_up")));
             return commands;
         }
-        if (input.contains("跳小苹果") || input.contains("跳个小苹果") || input.contains("跳个舞")) {
+        if (input.contains("跳") && (input.contains("舞") || input.contains("苹果"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(new LocalResourceCommand(R.raw.little_apple));
             commands.add(LocalSportActionManager.getInstance().getActionSetCommand(LocalSportActionManager.XIAO_PING_GUO));

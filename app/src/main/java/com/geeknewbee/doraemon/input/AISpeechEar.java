@@ -175,6 +175,7 @@ public class AISpeechEar implements IEar {
 //            }
 //        }
 
+
         AIConstant.setUseSpi(true);
         mASREngine = AIMixASREngine.createInstance();
         mASREngine.setResBin(SpeechConstants.ebnfr_res);
@@ -184,12 +185,12 @@ public class AISpeechEar implements IEar {
         mASREngine.setServer("ws://s-test.api.aispeech.com:10000");
         mASREngine.setRes("aihome");
         mASREngine.setUseXbnfRec(true);
-        mASREngine.setUsePinyin(false);
+        mASREngine.setUsePinyin(true);
         mASREngine.setUseForceout(false);
         mASREngine.setAthThreshold(0.6f);
         mASREngine.setIsRelyOnLocalConf(true);
         mASREngine.setIsPreferCloud(true);
-        mASREngine.setWaitCloudTimeout(2000);
+        mASREngine.setWaitCloudTimeout(5000);
         mASREngine.setPauseTime(500);
         mASREngine.setUseConf(true);
         mASREngine.setNoSpeechTimeOut(0);

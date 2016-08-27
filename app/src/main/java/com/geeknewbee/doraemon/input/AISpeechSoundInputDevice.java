@@ -1,7 +1,5 @@
 package com.geeknewbee.doraemon.input;
 
-import android.os.Environment;
-
 import com.aispeech.AIError;
 import com.aispeech.common.AIConstant;
 import com.aispeech.common.Util;
@@ -10,13 +8,6 @@ import com.aispeech.export.listeners.AILocalEddListener;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.event.WakeupSuccessEvent;
-import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
-import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
-import com.geeknewbee.doraemon.processcenter.Doraemon;
-import com.geeknewbee.doraemon.processcenter.LeXingUtil;
-import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.CommandType;
-import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -37,7 +28,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     private void init() {
         AIConstant.setUseSpi(true);
         mEngine = AILocalEddEngine.createInstance(); //创建实例
-        mEngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());//设置回消音频文件存放路径
+//        mEngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());//设置回消音频文件存放路径
         mEngine.setResBin(SpeechConstants.wakeup_dnn_res);
         mEngine.setDoaCfg(SpeechConstants.uca_config); // 设置声源定位配置文件？
         mEngine.setAecCfg(SpeechConstants.ace_cfg); //
