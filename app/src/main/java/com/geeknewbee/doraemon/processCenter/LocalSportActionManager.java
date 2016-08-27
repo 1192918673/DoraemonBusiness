@@ -18,6 +18,7 @@ public class LocalSportActionManager extends Thread {
     public static final String XIAO_PING_GUO = "xiao_ping_guo";
     private static LocalSportActionManager instance;
     private Map<String, List<SportAction>> localActionMap;
+    private boolean isRunning = false;
 
     private LocalSportActionManager() {
         localActionMap = new HashMap<>();
@@ -34,7 +35,7 @@ public class LocalSportActionManager extends Thread {
      * 初始化本地动作库
      */
     public void initLocalAction() {
-        if (!isAlive())
+        if (!isRunning)
             start();
     }
 
@@ -79,6 +80,7 @@ public class LocalSportActionManager extends Thread {
 
     @Override
     public void run() {
+        isRunning=true;
         super.run();
         List<SportAction> actions;
         actions = SportActionUtil.parseSportCommand(R.raw.action_head_up);
@@ -130,5 +132,6 @@ public class LocalSportActionManager extends Thread {
         final OldSportActionUtil oldSportActionUtil = new OldSportActionUtil();
         actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_scripts);
         localActionMap.put(XIAO_PING_GUO, actions);
+        isRunning=false;
     }
 }
