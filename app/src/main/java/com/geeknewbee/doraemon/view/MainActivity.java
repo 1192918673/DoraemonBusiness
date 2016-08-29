@@ -1,6 +1,7 @@
 package com.geeknewbee.doraemon.view;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -31,7 +32,8 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class MainActivity extends Activity {
     public GifImageView gifView;
-    public ImageView imageQR;
+    private ImageView imageQRLeft;
+    private ImageView imageQRRight;
     public View llQR;
     private BluetoothServiceManager bluetoothServiceManager;
     private TextView result;
@@ -53,7 +55,8 @@ public class MainActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
-        imageQR = (ImageView) findViewById(R.id.iv_qr);
+        imageQRLeft = (ImageView) findViewById(R.id.iv_left_qr);
+        imageQRRight = (ImageView) findViewById(R.id.iv_right_qr);
         result = (TextView) findViewById(R.id.tv_result);
         llQR = findViewById(R.id.ll_qr);
 
@@ -95,6 +98,11 @@ public class MainActivity extends Activity {
         }
         //开机提示：版本检测
         DoraemonInfoManager.getInstance(getApplicationContext()).uploadVersionCode();
+    }
+
+    public void setQR(Bitmap bitmap) {
+        imageQRLeft.setImageBitmap(bitmap);
+        imageQRRight.setImageBitmap(bitmap);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

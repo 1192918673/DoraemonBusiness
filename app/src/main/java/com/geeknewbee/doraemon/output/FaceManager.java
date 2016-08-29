@@ -148,7 +148,7 @@ public class FaceManager {
             @Override
             protected void onPostExecute(Bitmap bitmap) {
                 if (bitmap == null) return;
-                faceActivity.imageQR.setImageBitmap(bitmap);
+                faceActivity.setQR(bitmap);
                 faceActivity.llQR.setVisibility(View.VISIBLE);
                 faceActivity.gifView.setVisibility(View.INVISIBLE);
             }
