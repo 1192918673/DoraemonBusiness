@@ -121,16 +121,6 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
      */
     private List<Command> localPerform(SoundTranslateInput soundTranslateInput) {
         String input = soundTranslateInput.input;
-        if (TextUtils.equals(soundTranslateInput.action, "播放音乐")
-                || TextUtils.equals(soundTranslateInput.action, "音乐")
-                || TextUtils.equals(soundTranslateInput.musicName, "一首歌")) {
-            if (TextUtils.isEmpty(soundTranslateInput.starName) && TextUtils.isEmpty(soundTranslateInput.musicName)) {
-                int i = new Random().nextInt(Constants.musics.size());
-                soundTranslateInput.starName = Constants.musics.get(i).get("starName");
-                soundTranslateInput.musicName = Constants.musics.get(i).get("musicName");
-            }
-            return Arrays.asList(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
-        }
         if (input.contains("睡觉") || input.contains("休息") || input.contains("再见") || input.contains("拜拜")) {
             EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
             List<Command> commands = new ArrayList<>();
@@ -150,7 +140,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
             return Arrays.asList(new SoundCommand("好的", SoundCommand.InputSource.TIPS), new Command(CommandType.PLAY_JOKE));
         }
-        if (input.contains("背首诗")) {
+        if (input.contains("背") && input.contains("诗")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.TANG_SHI, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
@@ -165,27 +155,27 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             commands.add(new SoundCommand("现在室内湿度是" + SensorUtil.getInstance().humidity + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
-        if (input.contains("光强度")) {
+        if (input.contains("光") && input.contains("强度")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand("现在室内光强度是" + SensorUtil.getInstance().light + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
-        if (input.contains("向前走") || input.contains("前走") || input.contains("前进")) {
+        if (input.contains("前") && (input.contains("进") || input.contains("向") || input.contains("走"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalSportActionManager.getInstance().getActionSetCommand("forward"));
             return commands;
         }
-        if (input.contains("向后走") || input.contains("后走") || input.contains("后退")) {
+        if (input.contains("后") && (input.contains("退") || input.contains("向") || input.contains("走"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalSportActionManager.getInstance().getActionSetCommand("backward"));
             return commands;
         }
-        if (input.contains("左转") || input.contains("往左转") || input.contains("向左转") || input.contains("向左")) {
+        if (input.contains("左") && (input.contains("转") || input.contains("向"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalSportActionManager.getInstance().getActionSetCommand("left"));
             return commands;
         }
-        if (input.contains("右转") || input.contains("往右转") || input.contains("向右转") || input.contains("向右")) {
+        if (input.contains("右") && (input.contains("转") || input.contains("向"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalSportActionManager.getInstance().getActionSetCommand("right"));
             return commands;
@@ -200,6 +190,17 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             commands.add(new LocalResourceCommand(R.raw.little_apple));
             commands.add(LocalSportActionManager.getInstance().getActionSetCommand(LocalSportActionManager.XIAO_PING_GUO));
             return commands;
+        }
+
+        if (TextUtils.equals(soundTranslateInput.action, "播放音乐")
+                || TextUtils.equals(soundTranslateInput.action, "音乐")
+                || TextUtils.equals(soundTranslateInput.musicName, "一首歌")) {
+            if (TextUtils.isEmpty(soundTranslateInput.starName) && TextUtils.isEmpty(soundTranslateInput.musicName)) {
+                int i = new Random().nextInt(Constants.musics.size());
+                soundTranslateInput.starName = Constants.musics.get(i).get("starName");
+                soundTranslateInput.musicName = Constants.musics.get(i).get("musicName");
+            }
+            return Arrays.asList(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
         }
         return null;
     }
