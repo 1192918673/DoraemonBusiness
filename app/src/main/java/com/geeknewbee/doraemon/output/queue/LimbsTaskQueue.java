@@ -110,7 +110,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             }
 
             if (!TextUtils.isEmpty(sportAction.expressionName))
-                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 1));
+                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 3));
 
             sendCommandContent(sportAction.topCommand);
             try {
