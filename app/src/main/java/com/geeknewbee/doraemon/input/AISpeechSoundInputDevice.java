@@ -43,11 +43,11 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     public synchronized void start() {
         if (!isRunning) {
             mEngine.start();
-            isRunning = true;
             LogUtils.d(TAG, "WakeupEngine start...");
         } else {
             LogUtils.d(TAG, "WakeupEngine had run.");
         }
+        isRunning = true;
     }
 
     @Override

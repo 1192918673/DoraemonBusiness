@@ -214,7 +214,6 @@ public class AISpeechEar implements IEar {
                 needStartRecognitionFlag = true;
                 return;
             }
-            setListerStatue(true);
             needStartRecognitionFlag = false;
             mASREngine.start();
             LogUtils.d(TAG, "startRecognition");
@@ -222,17 +221,19 @@ public class AISpeechEar implements IEar {
             needStartRecognitionFlag = true;
             LogUtils.d(TAG, "startRecognition null");
         }
+
+        setListerStatue(true);
     }
 
     @Override
     public synchronized void stopRecognition() {
-        setListerStatue(false);
-        if (mASREngine != null) {
-            mASREngine.cancel();
+        if (mASREngine != null && isListening()) {
             mASREngine.stopRecording();
             LogUtils.d(TAG, "stopRecording");
         } else
             LogUtils.d(TAG, "stopRecognition null");
+
+        setListerStatue(false);
     }
 
     @Override
