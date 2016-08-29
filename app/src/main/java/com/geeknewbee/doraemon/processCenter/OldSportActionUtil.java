@@ -10,26 +10,17 @@ import java.util.List;
  * 以前外包做的中控板的动作脚步解析,由于和现在有的协议已经动作范围不同，这里进行了转换
  */
 public class OldSportActionUtil {
-    String[] eyeDrawables = new String[]
-            {
-                    "eye_hua",
-                    "eye_pingguo",
-                    "eye_bianyan",
-                    "eye_taiyang",
-                    "eye_xingxing",
-                    "eye_yanhua"
-            };
-    HashMap<Character, String> eyeMaps = new HashMap<>(eyeDrawables.length);
+    HashMap<Character, String> eyeMaps = new HashMap<>();
 
     public OldSportActionUtil() {
         //初始化跳舞时对应的表情
-        eyeMaps.put('h', "gan_ga");
-        eyeMaps.put('p', "ke_lian_meng");
-        eyeMaps.put('t', "se");
-        eyeMaps.put('i', "yi_wen");
-        eyeMaps.put('x', "yun");
-        eyeMaps.put('y', "hai_xiu");
-        eyeMaps.put('b', "ku");
+        eyeMaps.put('h', "eye_hua");
+        eyeMaps.put('p', "eye_pingguo");
+        eyeMaps.put('t', "eye_taiyang");
+        eyeMaps.put('i', "eye_xin");
+        eyeMaps.put('x', "eye_xingxing");
+        eyeMaps.put('y', "eye_yanhua");
+        eyeMaps.put('b', "eye_bianyan");
     }
 
     public List<SportAction> parseOldActionScript(char[][] dance_scripts) {
