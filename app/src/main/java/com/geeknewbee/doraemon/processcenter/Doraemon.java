@@ -247,7 +247,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /*
-     * ASR监听到开始说话：无语音超时计时开始
+     * ASR监听到开始说话：无语音超时计时结束
      *
      * @param event
      */
@@ -300,7 +300,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     }
 
     /**
-     * 唤醒成功：停止所有任务、TTS提示语、旋转、开启ASR监听
+     * 唤醒成功：停止所有任务、TTS提示语(开启ASR监听)、旋转
      *
      * @param event
      */

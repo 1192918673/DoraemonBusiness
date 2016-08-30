@@ -129,7 +129,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                     albumId.add(album.getId());
                     sb.append(album.getId() + "$$" + album.getAlbumTitle() + ",");
                 }
-                LogUtils.d(Constants.TAG_MUSIC, "分类、标签名下的专辑列表：" + list.size() + "$$" + sb.toString());
+                LogUtils.d(Constants.TAG_MUSIC, "初始化：分类(娱乐)、标签名(冷笑话)下的专辑列表：" + list.size() + "$$" + sb.toString());
             }
 
             @Override
