@@ -112,8 +112,8 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
      * 停止自动语音识别
      */
     public void stopASR() {
-        ear.setASRListener(null);
         ear.stopRecognition();
+        ear.setASRListener(null);
     }
 
     /**
@@ -342,17 +342,27 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         switchListener(event.type);
     }
 
-    private void switchListener(SoundMonitorType type) {
+    private synchronized void switchListener(SoundMonitorType type) {
         switch (type) {
             case ASR:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     stopWakeUp();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     startASR();
                 }
                 break;
             case EDD:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     stopASR();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     startWakeup();
                 }
                 break;

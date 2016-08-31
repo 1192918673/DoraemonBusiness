@@ -228,6 +228,7 @@ public class AISpeechEar implements IEar {
     @Override
     public synchronized void stopRecognition() {
         if (mASREngine != null && isListening()) {
+            mASREngine.cancel();
             mASREngine.stopRecording();
             LogUtils.d(TAG, "stopRecording");
         } else
@@ -362,7 +363,8 @@ public class AISpeechEar implements IEar {
                 }
             }
 
-            asrListener.onASRResult(originSoundString, outputString, action, star_name, music_name);
+            if (asrListener != null)
+                asrListener.onASRResult(originSoundString, outputString, action, star_name, music_name);
         }
 
         @Override
