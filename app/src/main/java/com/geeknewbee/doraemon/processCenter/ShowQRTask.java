@@ -27,6 +27,7 @@ import retrofit2.Retrofit;
 public class ShowQRTask extends Thread {
     private static final int INIT_STATUS = 0, SHOW_QR = 1, HIDE_QR = 2;
     private static final String TAG = ShowQRTask.class.getSimpleName();
+    private static boolean TTS_TIPS_FLAG;
     private int number = 40;
     private int status = INIT_STATUS;
 
@@ -34,6 +35,7 @@ public class ShowQRTask extends Thread {
     public void run() {
         super.run();
         int index = 0;
+        TTS_TIPS_FLAG = true;
         status = SHOW_QR;
         Context context = App.mContext;
         while (true) {
@@ -45,7 +47,10 @@ public class ShowQRTask extends Thread {
 
             String token = DoraemonInfoManager.getInstance(context).getToken();
             if (DeviceUtil.isNetworkConnected(context) && !TextUtils.isEmpty(token)) {
-                // Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
+                if (TTS_TIPS_FLAG) { // 解决配网成功等待扫码时，不断循环多次播报“网络已连接”
+                    Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
+                    TTS_TIPS_FLAG = false;
+                }
                 if (TextUtils.isEmpty(token)) return;
                 Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
                 ApiService service = retrofit.create(ApiService.class);
