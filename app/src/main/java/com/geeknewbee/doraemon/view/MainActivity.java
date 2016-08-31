@@ -98,6 +98,9 @@ public class MainActivity extends Activity {
         }
         //开机提示：版本检测
         DoraemonInfoManager.getInstance(getApplicationContext()).uploadVersionCode();
+
+        //当WIFI没打开则则要打开WIFI
+        DeviceUtil.openWifi(getApplication());
     }
 
     public void setQR(Bitmap bitmap) {
