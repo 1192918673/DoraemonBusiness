@@ -15,6 +15,18 @@ import java.util.List;
  */
 public class BluetoothCommand {
     /**
+     * 舞蹈
+     */
+    public String danceName;
+    /**
+     * 舞蹈对应音乐资源名字
+     */
+    public String danceMusicName;
+    /**
+     * action:原来版本APP发送的命令
+     */
+    public String action;
+    /**
      * 表情名字
      */
     private String faceName;
@@ -22,47 +34,26 @@ public class BluetoothCommand {
      * 声音
      */
     private String sound;
-
     /**
      * 肢体运动命令
      */
     private LimbCommand limbCommand;
-
     /**
      * 歌曲名称
      */
     private String musicName;
-
-    /**
-     * 舞蹈
-     */
-    public String danceName;
-
-    /**
-     * 舞蹈对应音乐资源名字
-     */
-    public String danceMusicName;
-
     /**
      * WIFI信息
      */
     private WifiInfo wifiInfo;
-
     /**
      * Volume值
      */
     private String volume;
-
     /**
      * 跳舞动作
      */
     private List<SportAction> sportActions;
-
-    /**
-     * action:原来版本APP发送的命令
-     */
-    public String action;
-
 
     /**
      * 根据蓝牙指令获取对应的Command
@@ -145,7 +136,6 @@ public class BluetoothCommand {
          */
         private List<String> limbData;
 
-
         /**
          * 脚步动作
          */
@@ -163,21 +153,21 @@ public class BluetoothCommand {
                 result.add(new LeXingCommand(footCommand.v, footCommand.w, footCommand.duration));
             return result;
         }
-    }
 
-    private static class FootCommand {
-        /**
-         * 线速度
-         */
-        public int v;
-        /**
-         * 角速度
-         */
-        public int w;
+        private static class FootCommand {
+            /**
+             * 线速度
+             */
+            public int v;
+            /**
+             * 角速度
+             */
+            public int w;
 
-        /**
-         * 持续时间 ms
-         */
-        public int duration = 0;
+            /**
+             * 持续时间 ms
+             */
+            public int duration = 0;
+        }
     }
 }
