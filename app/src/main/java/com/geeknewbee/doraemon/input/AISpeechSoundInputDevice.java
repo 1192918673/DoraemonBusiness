@@ -40,6 +40,12 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     }
 
     @Override
+    public boolean reInit() {
+        mEngine.init(App.mContext, new AISpeechListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
+        return true;
+    }
+
+    @Override
     public synchronized void start() {
         if (!isRunning) {
             mEngine.start();

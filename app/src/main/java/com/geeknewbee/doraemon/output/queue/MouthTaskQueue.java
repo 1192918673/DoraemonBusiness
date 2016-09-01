@@ -42,6 +42,10 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         return instance;
     }
 
+    public void reInit() {
+        itts.reInit();
+    }
+
     @Override
     public Boolean performTask(Command input) {
         switch (input.getType()) {

@@ -219,7 +219,7 @@ public class AISpeechEar implements IEar {
             LogUtils.d(TAG, "startRecognition");
         } else {
             needStartRecognitionFlag = true;
-            LogUtils.d(TAG, "startRecognition null");
+            LogUtils.d(TAG, "startRecognition");
         }
 
         setListerStatue(true);
@@ -232,7 +232,7 @@ public class AISpeechEar implements IEar {
             mASREngine.stopRecording();
             LogUtils.d(TAG, "stopRecording");
         } else
-            LogUtils.d(TAG, "stopRecognition null");
+            LogUtils.d(TAG, "stopRecognition");
 
         setListerStatue(false);
     }
@@ -258,6 +258,12 @@ public class AISpeechEar implements IEar {
             e.printStackTrace();
         }
         return "";
+    }
+
+    @Override
+    public boolean reInit() {
+        init();
+        return true;
     }
 
     @Override

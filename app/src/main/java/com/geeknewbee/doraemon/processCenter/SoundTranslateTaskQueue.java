@@ -84,8 +84,9 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
         // 5.如果以上都不能寻找到答案的时候。当思必驰有回复用思必驰的结果，思必驰没有则直接重新开启声音监听
         if (TextUtils.isEmpty(input.asrOutput)) {
-            EventManager.sendStartAsrEvent();
-            return null;
+            List<Command> commands = new ArrayList<>();
+            commands.add(LocalSportActionManager.getInstance().getActionSetCommand(LocalSportActionManager.NO_ANSWER));
+            return commands;
         } else {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(input.asrOutput, SoundCommand.InputSource.SOUND_TRANSLATE));
@@ -192,9 +193,10 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             return commands;
         }
 
-        if (TextUtils.equals(soundTranslateInput.action, "播放音乐")
+        if ((TextUtils.equals(soundTranslateInput.action, "播放音乐")
                 || TextUtils.equals(soundTranslateInput.action, "音乐")
-                || TextUtils.equals(soundTranslateInput.musicName, "一首歌")) {
+                || TextUtils.equals(soundTranslateInput.musicName, "一首歌"))
+                && (input.contains("唱") || input.contains("来"))) {
             if (TextUtils.isEmpty(soundTranslateInput.starName) && TextUtils.isEmpty(soundTranslateInput.musicName)) {
                 int i = new Random().nextInt(Constants.musics.size());
                 soundTranslateInput.starName = Constants.musics.get(i).get("starName");

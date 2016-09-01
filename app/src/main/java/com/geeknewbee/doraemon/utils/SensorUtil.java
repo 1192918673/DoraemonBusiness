@@ -26,17 +26,25 @@ public class SensorUtil {
 
         @Override
         public void onSensorChanged(SensorEvent event) {
-            // 1.获取温度值
             float[] values = event.values;
-            temperture = (int) values[0];
-
-            // 2.获取湿度值
-            float humidityValue = values[0];
-            BigDecimal bd = new BigDecimal(humidityValue);
-            humidity = bd.setScale(2, BigDecimal.ROUND_HALF_UP).intValue();
-
-            // 3.获取亮度值
-            light = bd.setScale(2, BigDecimal.ROUND_HALF_UP).intValue();
+            switch (event.sensor.getType()) {
+                case Sensor.TYPE_TEMPERATURE:
+                    // 1.获取温度值
+                    temperture = (int) values[0];
+                    break;
+                case Sensor.TYPE_RELATIVE_HUMIDITY:
+                    // 2.获取湿度值
+                    float humidityValue = values[0];
+                    BigDecimal bd = new BigDecimal(humidityValue);
+                    humidity = bd.setScale(2, BigDecimal.ROUND_HALF_UP).intValue();
+                    break;
+                case Sensor.TYPE_LIGHT:
+                    // 3.获取亮度值
+                    float lightValue = values[0];
+                    BigDecimal bd2 = new BigDecimal(lightValue);
+                    light = bd2.setScale(2, BigDecimal.ROUND_HALF_UP).intValue();
+                    break;
+            }
         }
 
         @Override
@@ -45,7 +53,6 @@ public class SensorUtil {
     };
 
     private SensorUtil() {
-        initSensor();
     }
 
     public static SensorUtil getInstance() {
@@ -68,6 +75,7 @@ public class SensorUtil {
         // 3.亮度传感器
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         //TODO 判断传感器是否存在
+
         // 1.注册温度监听
         sensorManager.registerListener(mSensorEventListener, tempertureSensor, SensorManager.SENSOR_DELAY_NORMAL);
         // 2.注册湿度监听

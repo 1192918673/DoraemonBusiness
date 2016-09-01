@@ -8,6 +8,7 @@ import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
  */
 public interface ITTS {
 
+    boolean reInit();
     boolean isSpeaking();
 
     boolean talk(String param, SoundCommand.InputSource inputSource);

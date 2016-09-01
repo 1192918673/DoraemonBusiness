@@ -6,6 +6,8 @@ package com.geeknewbee.doraemon.input;
  */
 public interface ISoundInputDevice {
 
+    boolean reInit();
+
     /**
      * 开启唤醒监听
      */

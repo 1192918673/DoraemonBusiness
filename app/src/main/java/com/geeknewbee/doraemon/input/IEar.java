@@ -6,6 +6,8 @@ package com.geeknewbee.doraemon.input;
  **/
 public interface IEar {
 
+    boolean reInit();
+
     boolean isListening();
 
     /**

@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public class LocalSportActionManager extends Thread {
     public static final String XIAO_PING_GUO = "xiao_ping_guo";
+    public static final String NO_ANSWER = "no_answer";
     private volatile static LocalSportActionManager instance;
     private Map<String, List<SportAction>> localActionMap;
     private boolean isRunning = false;
@@ -131,6 +132,9 @@ public class LocalSportActionManager extends Thread {
 
         actions = SportActionUtil.parseSportCommand(R.raw.action_foot_forward);
         localActionMap.put("forward", actions);
+
+        actions = SportActionUtil.parseSportCommand(R.raw.action_no_answer);
+        localActionMap.put(NO_ANSWER, actions);
 
         final OldSportActionUtil oldSportActionUtil = new OldSportActionUtil();
         actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_scripts);

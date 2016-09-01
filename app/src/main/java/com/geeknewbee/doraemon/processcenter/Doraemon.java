@@ -10,6 +10,7 @@ import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
+import com.geeknewbee.doraemon.entity.event.NetWorkStateChangeEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
@@ -17,6 +18,7 @@ import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.WakeupSuccessEvent;
+import com.geeknewbee.doraemon.input.AISpeechAuth;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.AISpeechSoundInputDevice;
 import com.geeknewbee.doraemon.input.HYMessageReceive;
@@ -47,6 +49,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     private volatile static Doraemon instance;
     private final Context context;
     private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
+    private final AISpeechAuth speechAuth;
     private IEar ear;
     private IEye eye;
     private IMessageReceive receive;
@@ -55,6 +58,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
 
     private Doraemon(Context context) {
         this.context = context;
+        speechAuth = new AISpeechAuth();
         ear = new AISpeechEar();
         eye = new ReadSenseEye();
         receive = HYMessageReceive.getInstance();
@@ -73,6 +77,17 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
             }
         }
         return instance;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void reAuthAndInit(NetWorkStateChangeEvent event) {
+        if (!event.isConnected || speechAuth.isAuthed())
+            return;
+
+        speechAuth.auth();
+        ear.reInit();
+        soundInputDevice.reInit();
+        MouthTaskQueue.getInstance().reInit();
     }
 
     /**

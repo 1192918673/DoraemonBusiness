@@ -13,8 +13,14 @@ import java.io.FileNotFoundException;
  */
 public class AISpeechAuth {
 
+    private AIAuthEngine mAuthEngine;
+
+    public AISpeechAuth() {
+        // 创建实例
+        mAuthEngine = AIAuthEngine.getInstance(BaseApplication.mContext);
+    }
+
     public boolean auth() {
-        AIAuthEngine mAuthEngine = AIAuthEngine.getInstance(BaseApplication.mContext);// 创建实例
         try {
             mAuthEngine.init(SpeechConstants.APPKEY, SpeechConstants.SECRETKEY, SpeechConstants.APP_CONSTANT);// 初始化
         } catch (FileNotFoundException e1) {
@@ -35,9 +41,14 @@ public class AISpeechAuth {
         });
 
         if (mAuthEngine.isAuthed()) {
+            LogUtils.d(AISpeechEar.TAG, "已经注册");
             return true;
         } else {
             return mAuthEngine.doAuth();// 认证
         }
+    }
+
+    public boolean isAuthed() {
+        return mAuthEngine != null && mAuthEngine.isAuthed();
     }
 }

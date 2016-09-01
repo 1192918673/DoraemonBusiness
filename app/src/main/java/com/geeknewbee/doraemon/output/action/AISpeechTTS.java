@@ -77,6 +77,12 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
+    public boolean reInit() {
+        mTTSEngine.init(BaseApplication.mContext, new AILocalTTSListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
+        return true;
+    }
+
+    @Override
     public boolean isSpeaking() {
         return isSpeaking;
     }

@@ -20,6 +20,7 @@ import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.LocalSportActionManager;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
+import com.geeknewbee.doraemon.utils.SensorUtil;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.umeng.analytics.MobclickAgent;
 
@@ -101,6 +102,9 @@ public class MainActivity extends Activity {
 
         //当WIFI没打开则则要打开WIFI
         DeviceUtil.openWifi(getApplication());
+
+        //注册传感器检测
+        SensorUtil.getInstance().initSensor();
     }
 
     public void setQR(Bitmap bitmap) {
