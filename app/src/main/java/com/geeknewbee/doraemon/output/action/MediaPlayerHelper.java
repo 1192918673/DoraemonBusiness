@@ -43,7 +43,7 @@ public class MediaPlayerHelper {
     }
 
     public void stop() {
-        if (mediaPlayer != null) {
+        if (mediaPlayer != null && isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
