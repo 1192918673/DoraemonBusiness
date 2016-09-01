@@ -108,7 +108,7 @@ public class DeviceUtil {
     public static void openWifi(Context context) {
         try {
             WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            if (wifiMgr.isWifiEnabled())
+            if (!wifiMgr.isWifiEnabled())
                 wifiMgr.setWifiEnabled(true);
         } catch (Exception e) {
             e.printStackTrace();
