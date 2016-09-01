@@ -102,7 +102,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 启动唤醒  Waiting For Wakeup
      */
-    public void startWakeup() {
+    public synchronized void startWakeup() {
         soundInputDevice.start();
         addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
     }
@@ -110,14 +110,14 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 停止唤醒
      */
-    private void stopWakeUp() {
+    private synchronized void stopWakeUp() {
         soundInputDevice.stop();
     }
 
     /**
      * 开始自动声音识别 Automatic Speech Recognition
      */
-    public void startASR() {
+    public synchronized void startASR() {
         ear.setASRListener(this);
         ear.startRecognition();
         addCommand(new ExpressionCommand(Constants.LISTENNING_GIF, 0));
@@ -126,7 +126,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 停止自动语音识别
      */
-    public void stopASR() {
+    public synchronized void stopASR() {
         ear.stopRecognition();
         ear.setASRListener(null);
     }
