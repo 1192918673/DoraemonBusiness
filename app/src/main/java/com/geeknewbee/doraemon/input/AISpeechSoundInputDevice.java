@@ -47,20 +47,20 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
 
     @Override
     public synchronized void start() {
-        if (!isRunning) {
+//        if (!isRunning) {
             mEngine.start();
             LogUtils.d(TAG, "WakeupEngine start...");
-        } else {
-            LogUtils.d(TAG, "WakeupEngine had run.");
-        }
-        isRunning = true;
+//        } else {
+//            LogUtils.d(TAG, "WakeupEngine had run.");
+//        }
+//        isRunning = true;
     }
 
     @Override
     public synchronized void stop() {
-        if (isRunning)
+//        if (isRunning)
             mEngine.stop();
-        isRunning = false;
+//        isRunning = false;
         LogUtils.d(TAG, "WakeupEngine stop!!!");
     }
 
