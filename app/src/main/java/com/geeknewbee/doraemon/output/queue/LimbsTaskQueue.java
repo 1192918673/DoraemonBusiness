@@ -136,6 +136,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             sendLeXingFootCommandByLuGong(0, 0);//最后要停止运动
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.interrupted();
         }
     }
 
