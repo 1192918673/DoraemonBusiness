@@ -1,7 +1,7 @@
-package com.imscv.NaviPackSdk.regParam;
+package com.imscv.navipacksdk.regparam;
 
 /**
- * 算法状态寄存器 通过 {@link com.imscv.NaviPackSdk.NaviPackSdk#getStatus}来填充数据
+ * 算法状态寄存器 通过 {@link com.imscv.navipacksdk.NaviPackSdk#getStatus}来填充数据
  */
 public class AlgStatusReg {
 

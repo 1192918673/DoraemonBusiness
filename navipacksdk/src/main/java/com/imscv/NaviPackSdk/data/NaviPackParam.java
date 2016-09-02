@@ -1,4 +1,4 @@
-package com.imscv.NaviPackSdk.data;
+package com.imscv.navipacksdk.data;
 
 /**
  * 此类记录了算法板子的一些参数 暂时未使用

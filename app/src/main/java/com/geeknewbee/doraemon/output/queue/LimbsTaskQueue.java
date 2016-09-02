@@ -37,9 +37,11 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private IFoot foot;
     private boolean isStopAction = false;//跳舞中断标识
     private boolean isBusy = false;
-    private boolean isUseLeXing = false;//是否使用乐行
+    private boolean isUseLeXing = true;//是否使用乐行
 
     private LimbsTaskQueue() {
+
+
         super();
         armsAndHead = new SDArmsAndHead();
         boolean init = armsAndHead.init();

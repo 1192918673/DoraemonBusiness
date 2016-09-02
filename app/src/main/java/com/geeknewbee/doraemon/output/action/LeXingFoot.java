@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.processcenter.LeXingUtil;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-import com.imscv.NaviPackSdk.NaviPackSdk;
+import com.imscv.navipacksdk.NaviPackSdk;
 
 import java.io.File;
 

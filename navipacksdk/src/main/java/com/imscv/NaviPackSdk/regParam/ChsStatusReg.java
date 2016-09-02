@@ -1,4 +1,4 @@
-package com.imscv.NaviPackSdk.regParam;
+package com.imscv.navipacksdk.regparam;
 
 /**
  * 底盘状态寄存器 包含底盘状态寄存器的所有信息 暂时未开放使用

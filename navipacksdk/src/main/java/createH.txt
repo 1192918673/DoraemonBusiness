@@ -1,1 +1,0 @@
-javah -d . com.imscv.NaviPackSdk.NaviPackSdk

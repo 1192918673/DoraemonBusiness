@@ -1,4 +1,4 @@
-package com.imscv.NaviPackSdk.data;
+package com.imscv.navipacksdk.data;
 
 /**
  * Created by dell on 2016/7/21.

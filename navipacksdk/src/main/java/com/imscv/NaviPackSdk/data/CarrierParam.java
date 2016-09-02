@@ -1,4 +1,4 @@
-package com.imscv.NaviPackSdk.data;
+package com.imscv.navipacksdk.data;
 
 /**
  * 此类暂时不开放

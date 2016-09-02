@@ -1,4 +1,4 @@
-package com.imscv.NaviPackSdk.regParam;
+package com.imscv.navipacksdk.regparam;
 
 /**
  * 控制寄存器组 暂时未开放使用

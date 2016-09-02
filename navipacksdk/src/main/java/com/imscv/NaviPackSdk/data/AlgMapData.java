@@ -1,4 +1,4 @@
-package com.imscv.NaviPackSdk.data;
+package com.imscv.navipacksdk.data;
 
 import android.graphics.Bitmap;
 
@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  */
 public class AlgMapData {
     /**
-     * 图像的最大内存
+     * 图像的最大内存ja
      */
     public static final int MAX_MAP_SIZE = 800 * 800;
 
@@ -54,7 +54,6 @@ public class AlgMapData {
 
     /**
      * 通过map数据获取一幅单通道的地图
-     *
      * @return 地图bitmap
      */
     public Bitmap getBitmap() {
