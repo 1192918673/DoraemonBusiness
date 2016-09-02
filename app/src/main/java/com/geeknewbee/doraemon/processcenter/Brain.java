@@ -79,6 +79,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case PLAY_LOCAL_RESOURCE:
                 MouthTaskQueue.getInstance().addTask(command);
                 break;
+            case BLUETOOTH_CONTROL_FOOT:
+                LimbsTaskQueue.getInstance().addTask(command);
+                break;
         }
     }
 

@@ -13,6 +13,7 @@ import com.geeknewbee.doraemon.output.action.LeXingFoot;
 import com.geeknewbee.doraemon.output.action.SDArmsAndHead;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
+import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
@@ -37,11 +38,9 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private IFoot foot;
     private boolean isStopAction = false;//跳舞中断标识
     private boolean isBusy = false;
-    private boolean isUseLeXing = true;//是否使用乐行
+    private boolean isUseLeXing = false;//是否使用乐行
 
     private LimbsTaskQueue() {
-
-
         super();
         armsAndHead = new SDArmsAndHead();
         boolean init = armsAndHead.init();
@@ -67,23 +66,29 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     @Override
     public Boolean performTask(Command command) {
-        EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
         switch (command.getType()) {
             case ACTIONSET:
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 isStopAction = false;
                 isBusy = true;
                 perform((ActionSetCommand) command);
                 break;
             case MECHANICAL_MOVEMENT:
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 isStopAction = false;
                 isBusy = true;
                 perform(command.getContent());
                 break;
             case LE_XING_FOOT:
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 isStopAction = false;
                 isBusy = true;
                 LeXingCommand leXingCommand = (LeXingCommand) command;
                 perform(leXingCommand);
+                break;
+            case BLUETOOTH_CONTROL_FOOT:
+                BluetoothControlFootCommand footCommand = (BluetoothControlFootCommand) command;
+                perform(footCommand);
                 break;
         }
 
@@ -103,6 +108,13 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 stopFootLuGong(command.duration);
         }
         notifyComplete();
+    }
+
+    private void perform(BluetoothControlFootCommand command) {
+        if (isUseLeXing)
+            sendLeXingFootCommand(command.v, command.w);
+        else
+            sendLeXingFootCommandByLuGong(command.v, command.w);
     }
 
 

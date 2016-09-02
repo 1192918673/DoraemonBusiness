@@ -55,6 +55,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     private IMessageReceive receive;
     private ISoundInputDevice soundInputDevice;
     private Brain brain;
+    private double wakePhis = 0;
 
     private Doraemon(Context context) {
         this.context = context;
@@ -102,7 +103,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 启动唤醒  Waiting For Wakeup
      */
-    public synchronized void startWakeup() {
+    private synchronized void startWakeup() {
         soundInputDevice.start();
         addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
     }
@@ -117,16 +118,16 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 开始自动声音识别 Automatic Speech Recognition
      */
-    public synchronized void startASR() {
+    private synchronized void startASR() {
+        ear.startRecognition(wakePhis);
         ear.setASRListener(this);
-        ear.startRecognition();
         addCommand(new ExpressionCommand(Constants.LISTENNING_GIF, 0));
     }
 
     /**
      * 停止自动语音识别
      */
-    public synchronized void stopASR() {
+    private synchronized void stopASR() {
         ear.stopRecognition();
         ear.setASRListener(null);
     }
@@ -190,7 +191,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         //现在唤醒是在提示唤醒词后才开启唤醒
         if (event.inputSource == SoundCommand.InputSource.START_WAKE_UP) {
             if (BuildConfig.HAVE_SPEECH_DEVCE)
-                Doraemon.getInstance(context).startWakeup();
+                switchSoundMonitor(SoundMonitorType.EDD);
             return;
         }
 
@@ -200,7 +201,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
 
         if (event.inputSource == SoundCommand.InputSource.SOUND_TRANSLATE ||
                 event.inputSource == SoundCommand.InputSource.AFTER_WAKE_UP)
-            switchListener(SoundMonitorType.ASR);
+            switchSoundMonitor(SoundMonitorType.ASR);
     }
 
     /**
@@ -214,7 +215,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         if (isOutputBusy())
             return;
 
-        switchListener(SoundMonitorType.ASR);
+        switchSoundMonitor(SoundMonitorType.ASR);
     }
 
     /**
@@ -228,7 +229,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         if (isOutputBusy())
             return;
 
-        switchListener(SoundMonitorType.ASR);
+        switchSoundMonitor(SoundMonitorType.ASR);
     }
 
     /**
@@ -283,7 +284,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     public void startASREvent(StartASREvent event) {
         //完成后开启语音监听
         if (BuildConfig.HAVE_SPEECH_DEVCE)
-            startASR();
+            switchSoundMonitor(SoundMonitorType.ASR);
     }
 
     /**
@@ -322,6 +323,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWakeup(WakeupSuccessEvent event) {
         //当唤醒的时候停止当前的动作
+        this.wakePhis = event.mPhis;
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
         //提示成功 TTS完成后自动打开ASR 这里的类型必须是WAKE_UP
@@ -354,19 +356,14 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSwitchMonitorType(SwitchMonitorEvent event) {
         //当input 超时 让声音板休眠 并开启声音监听
-        switchListener(event.type);
+        switchSoundMonitor(event.type);
     }
 
-    private synchronized void switchListener(SoundMonitorType type) {
+    private synchronized void switchSoundMonitor(SoundMonitorType type) {
         switch (type) {
             case ASR:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     stopWakeUp();
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     startASR();
                 }
                 break;
@@ -374,7 +371,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     stopASR();
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -397,4 +394,9 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         brain.addCommand(commands);
     }
 
+    public void destroy() {
+        ear.destroy();
+        soundInputDevice.destroy();
+        MouthTaskQueue.getInstance().destroy();
+    }
 }

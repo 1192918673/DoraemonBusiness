@@ -13,7 +13,7 @@ public interface IEar {
     /**
      * 开始语音识别
      */
-    void startRecognition();
+    void startRecognition(double phis);
 
     /**
      * 停止语音识别
@@ -26,6 +26,8 @@ public interface IEar {
      * @param listener
      */
     void setASRListener(ASRListener listener);
+
+    void destroy();
 
     interface ASRListener {
         void onASRResult(String input, String asrOutput, String action, String starName, String musicName);

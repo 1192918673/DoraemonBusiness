@@ -6,6 +6,7 @@ import com.geeknewbee.doraemon.constants.Constants;
  * Brain执行的命令
  */
 public class Command {
+
     private CommandType type;
     private String content;
 
@@ -31,4 +32,5 @@ public class Command {
     public String toString() {
         return "command type:" + type.ordinal() + " content:" + content;
     }
+
 }

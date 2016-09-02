@@ -14,4 +14,5 @@ public interface IMusicPlayer {
 
     boolean isPlaying();
 
+    void destroy();
 }

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.multidex.MultiDex;
 
+import com.aispeech.common.AIConstant;
 import com.facebook.stetho.Stetho;
 import com.geeknewbee.doraemon.database.DaoMaster;
 import com.geeknewbee.doraemon.database.DaoSession;
@@ -36,8 +37,9 @@ public class App extends BaseApplication {
         initHuanXinSDK();
         LogUtils.LOG_DEBUG = BuildConfig.NEED_DEBUG;
 
-        Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(this));
+//        Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(this));
 
+        AIConstant.setUseSpi(true);
         //方便调试
         if (BuildConfig.NEED_DEBUG)
             Stetho.initialize(Stetho.newInitializerBuilder(this).

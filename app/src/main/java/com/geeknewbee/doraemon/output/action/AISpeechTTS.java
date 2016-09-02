@@ -33,20 +33,21 @@ public class AISpeechTTS implements ITTS {
 
     private AILocalTTSEngine init() {
         LogUtils.d(TAG, "startInit...");
+
         if (mTTSEngine != null) {
-            return mTTSEngine;
+            mTTSEngine.destroy();
         }
-        mTTSEngine = AILocalTTSEngine.createInstance();// 创建实例
-        mTTSEngine.setResource("tts.zip", "zhilingf.v0.4.11.bin"); // 设置合成资源包和使用的资源模型名
-        // mTTSEngine.setModelPath(Environment.getExternalStorageDirectory() + "/ttsRes/" + modelName);// 设置合成模型文件的路径
-        mTTSEngine.setRealBack(true);// 设置是否开启实时反馈，默认开启
-        mTTSEngine.setUseCahce(false, 20);// 开启本地合成缓存,缓存音频条数为20条,缓存文件在 外存->Android->data->包名->cache->ttsCache目录下
-        mTTSEngine.init(BaseApplication.mContext, new AILocalTTSListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
+        mTTSEngine = AILocalTTSEngine.createInstance();//创建实例
+        mTTSEngine.setResource("qianran.v2.4.8.bin");
+        mTTSEngine.setDictDbName("aitts_sent_dict_v3.5.db");
+        mTTSEngine.setRealBack(true);//设置本地合成使用实时反馈
+        mTTSEngine.init(BaseApplication.mContext, new AILocalTTSListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);//初始化合成引擎
         mTTSEngine.setLeftMargin(125);
         mTTSEngine.setRightMargin(25);
-        mTTSEngine.setSpeechRate(0.9f);// 设置语速 取值范围0-10，1为正常语速，10为最快，0为最慢
-        mTTSEngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));// 设置设备Id
+        mTTSEngine.setSpeechRate(0.85f);//设置语速
+        mTTSEngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));
         LogUtils.d(TAG, "endInit...");
+
         return mTTSEngine;
     }
 
@@ -74,6 +75,13 @@ public class AISpeechTTS implements ITTS {
         }
         notifyComplete();
         return true;
+    }
+
+    @Override
+    public void destroy() {
+        if (mTTSEngine != null) {
+            mTTSEngine.destroy();
+        }
     }
 
     @Override
@@ -111,6 +119,11 @@ public class AISpeechTTS implements ITTS {
         @Override
         public void onProgress(int currentTime, int totalTime, boolean isRefTextTTSFinished) {
 //            LogUtils.d(TAG, "当前播放时间:" + currentTime + "ms, 已经送入内核的文本合成的总时长:" + totalTime + "ms, 是否所有文本合成完成:" + isRefTextTTSFinished);
+        }
+
+        @Override
+        public void onBufferReceived(byte[] bytes) {
+
         }
 
         @Override

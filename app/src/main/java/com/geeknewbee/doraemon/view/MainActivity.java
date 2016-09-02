@@ -145,6 +145,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         destroy();
+        Doraemon.getInstance(getApplicationContext()).destroy();
     }
 
     private void destroy() {

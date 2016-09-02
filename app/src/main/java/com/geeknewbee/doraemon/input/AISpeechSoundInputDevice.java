@@ -26,16 +26,14 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     }
 
     private void init() {
-        AIConstant.setUseSpi(true);
         mEngine = AILocalEddEngine.createInstance(); //创建实例
-//        mEngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());//设置回消音频文件存放路径
         mEngine.setResBin(SpeechConstants.wakeup_dnn_res);
-        mEngine.setDoaCfg(SpeechConstants.uca_config); // 设置声源定位配置文件？
-        mEngine.setAecCfg(SpeechConstants.ace_cfg); //
-        mEngine.setDoaEnable(true); // 声源定位是否开启
+        mEngine.setDoaCfg(SpeechConstants.uca_config);//环形麦的配置
+//		mEddEngine.setDoaCfg(SampleConstants.ula_config);//线性麦的配置
+        mEngine.setAecCfg("aec.cfg");
+        mEngine.setDoaEnable(true);
         mEngine.init(App.mContext, new AISpeechListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
-        mEngine.setStopOnWakeupSuccess(true); // 设置当检测到唤醒词后自动停止唤醒引擎
-        mEngine.setWords(new String[]{"你好小乐"}); // 设置唤醒词为小乐，该唤醒词需要与唤醒资源对应
+        mEngine.setStopOnWakeupSuccess(true);//设置当检测到唤醒词后自动停止唤醒引擎
         mEngine.setDeviceId(Util.getIMEI(App.mContext));
     }
 
@@ -48,8 +46,9 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     @Override
     public synchronized void start() {
 //        if (!isRunning) {
+        if (mEngine != null)
             mEngine.start();
-            LogUtils.d(TAG, "WakeupEngine start...");
+        LogUtils.d(TAG, "WakeupEngine start...");
 //        } else {
 //            LogUtils.d(TAG, "WakeupEngine had run.");
 //        }
@@ -59,6 +58,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     @Override
     public synchronized void stop() {
 //        if (isRunning)
+        if (mEngine != null)
             mEngine.stop();
 //        isRunning = false;
         LogUtils.d(TAG, "WakeupEngine stop!!!");
@@ -70,8 +70,16 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     }
 
     @Override
-    public synchronized void onWakeUp(double angle) {
-        EventBus.getDefault().post(new WakeupSuccessEvent(angle));
+    public synchronized void onWakeUp(double angle, double phis) {
+        EventBus.getDefault().post(new WakeupSuccessEvent(angle, phis));
+    }
+
+    @Override
+    public void destroy() {
+        if (mEngine != null) {
+            mEngine.destroy();
+            mEngine = null;
+        }
     }
 
     private class AISpeechListenerImpl implements AILocalEddListener {
@@ -104,7 +112,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         @Override
         public void onDoa(String recordId, double phis, double angle) {
             LogUtils.d(TAG, "DoaSuccess recordId:" + recordId + ",phis:" + phis + ",angle:" + angle + "\n");
-            onWakeUp(angle);
+            onWakeUp(angle, phis);
             // mEngine.start();//如果设置了doa enable为true，在这里start
         }
 

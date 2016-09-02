@@ -14,4 +14,6 @@ public interface ITTS {
     boolean talk(String param, SoundCommand.InputSource inputSource);
 
     boolean stop();
+
+    void destroy();
 }

@@ -89,4 +89,10 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     public synchronized boolean isBusy() {
         return itts.isSpeaking() || iMusicPlayer.isPlaying() || mediaPlayerHelper.isPlaying();
     }
+
+    public void destroy() {
+        itts.destroy();
+        iMusicPlayer.destroy();
+        mediaPlayerHelper.destroy();
+    }
 }

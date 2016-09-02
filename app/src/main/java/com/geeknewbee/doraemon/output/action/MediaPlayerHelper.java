@@ -57,4 +57,11 @@ public class MediaPlayerHelper {
             return false;
         }
     }
+
+    public void destroy() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
 }

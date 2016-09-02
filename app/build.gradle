@@ -27,7 +27,7 @@ android {
         multiDexEnabled = true
         ndk { abiFilters 'armeabi-v7a' }
         resConfigs "zh"
-        buildConfigField "boolean", "NEED_DEBUG", "false"
+        buildConfigField "boolean", "NEED_DEBUG", "true"
         buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "true"
         buildConfigField "boolean", "NEED_START_BLE", "false"
         buildConfigField "boolean", "SHOW_ASR_RESULT", "true"
@@ -49,6 +49,8 @@ android {
     }
     buildTypes {
         release {
+            buildConfigField "boolean", "NEED_DEBUG", "false"
+            buildConfigField "boolean", "SHOW_ASR_RESULT", "false"
             signingConfig signingConfigs.myConfig
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

@@ -20,5 +20,7 @@ public interface ISoundInputDevice {
 
     void setAngle(int angle);
 
-    void onWakeUp(double angle);
+    void onWakeUp(double angle, double phis);
+
+    void destroy();
 }

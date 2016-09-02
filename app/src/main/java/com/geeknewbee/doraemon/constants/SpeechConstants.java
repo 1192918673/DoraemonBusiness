@@ -11,10 +11,12 @@ public class SpeechConstants {
 
     public static String local_asr_net_bin = "local.net.bin";// 网络资源
 
+
     public static String vad_res = "vad.aihome.v0.5.20160324.bin";
     public static String wakeup_dnn_res = "aihome_comm_xiaole_20160331_boundary.bin";
     public static String ebnfc_res = "ebnfc.aihome.0.3.0.bin";
     public static String ebnfr_res = "ebnfr.aihome.0.3.0.bin";
     public static String ace_cfg = "aec.cfg";
     public static String uca_config = "uca_config.ini";
+    public static String ula_config = "ula_config.ini";
 }

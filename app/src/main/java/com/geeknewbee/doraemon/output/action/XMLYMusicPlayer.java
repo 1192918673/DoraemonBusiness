@@ -257,4 +257,9 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     public boolean isPlaying() {
         return mPlayerManager.isPlaying();
     }
+
+    @Override
+    public void destroy() {
+        release();
+    }
 }

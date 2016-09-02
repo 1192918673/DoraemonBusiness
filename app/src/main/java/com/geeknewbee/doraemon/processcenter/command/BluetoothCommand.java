@@ -56,6 +56,11 @@ public class BluetoothCommand {
     private List<SportAction> sportActions;
 
     /**
+     * 手动控制脚步
+     */
+    private FootCommand bluetoothFootCommand;
+
+    /**
      * 根据蓝牙指令获取对应的Command
      *
      * @return
@@ -98,6 +103,10 @@ public class BluetoothCommand {
                 commands.add(new LocalResourceCommand(danceMusicName));
                 commands.add(LocalSportActionManager.getInstance().getActionSetCommand(danceName));
             }
+        }
+
+        if (bluetoothFootCommand != null) {
+            commands.add(new BluetoothControlFootCommand(bluetoothFootCommand.v, bluetoothFootCommand.w));
         }
 
         if (!TextUtils.isEmpty(action)) {
@@ -149,8 +158,10 @@ public class BluetoothCommand {
                 }
             }
 
-            if (footCommand != null)
-                result.add(new LeXingCommand(footCommand.v, footCommand.w, footCommand.duration));
+            if (footCommand != null) {
+                LeXingCommand command = new LeXingCommand(footCommand.v, footCommand.w, footCommand.duration);
+                result.add(command);
+            }
             return result;
         }
 
@@ -169,5 +180,27 @@ public class BluetoothCommand {
              */
             public int duration = 0;
         }
+    }
+
+    public static class FootCommand {
+
+        public FootCommand(int v, int w) {
+            this.v = v;
+            this.w = w;
+        }
+
+        public FootCommand(int v, int w, int duration) {
+            this.v = v;
+            this.w = w;
+            this.duration = duration;
+        }
+
+
+        public int v;
+        public int w;
+        /**
+         * 持续时间 ms
+         */
+        public int duration = 0;
     }
 }

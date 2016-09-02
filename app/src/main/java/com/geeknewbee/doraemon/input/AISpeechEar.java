@@ -38,6 +38,7 @@ public class AISpeechEar implements IEar {
     private boolean needStartRecognitionFlag;//是否需要在初始引擎成功后启动监听,存在调用startRecognition 时候mASREngine==null的情况
     //正在监听标示
     private boolean isListening;
+    private double mPhis = 0;
 
     public AISpeechEar() {
         init();
@@ -102,7 +103,7 @@ public class AISpeechEar implements IEar {
      */
     private AIMixASREngine initAsrEngine() {
         if (mASREngine != null) {
-            return mASREngine;
+            mASREngine.destroy();
         }
         LogUtils.d(TAG, "ASR create");
 //        mASREngine = AIMixASREngine.createInstance();// 获取实例
@@ -175,14 +176,12 @@ public class AISpeechEar implements IEar {
 //            }
 //        }
 
-
-        AIConstant.setUseSpi(true);
         mASREngine = AIMixASREngine.createInstance();
         mASREngine.setResBin(SpeechConstants.ebnfr_res);
         mASREngine.setNetBin(AILocalGrammarEngine.OUTPUT_NAME, true);
 
         mASREngine.setVadResource(SpeechConstants.vad_res);
-        mASREngine.setServer("ws://s-test.api.aispeech.com:10000");
+        mASREngine.setServer("ws://s.api.aispeech.com:1028,ws://s.api.aispeech.com:80");
         mASREngine.setRes("aihome");
         mASREngine.setUseXbnfRec(true);
         mASREngine.setUsePinyin(true);
@@ -197,8 +196,9 @@ public class AISpeechEar implements IEar {
         mASREngine.setDeviceId(Util.getIMEI(App.mContext));
         mASREngine.setCloudVadEnable(false);
         mASREngine.setAecCfg(SpeechConstants.ace_cfg);
-        mASREngine.setConfigName(SpeechConstants.uca_config);
-        mASREngine.setUcaParamMode(1);
+        mASREngine.setConfigName(SpeechConstants.uca_config); //环形麦的配置
+//        mAsrEngine.setConfigName(SampleConstants.ula_config);//线性麦的配置
+        mASREngine.setUcaParamMode(2);
         mASREngine.setEchoEnable(false);
         mASREngine.setCloudVadEnable(true);
         mASREngine.init(App.mContext, new AIASRListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
@@ -207,14 +207,11 @@ public class AISpeechEar implements IEar {
     }
 
     @Override
-    public synchronized void startRecognition() {
+    public synchronized void startRecognition(double phis) {
+        this.mPhis = phis;
         if (mASREngine != null) {
-            if (isListening()) {
-                LogUtils.d(TAG, "asr is listing");
-                needStartRecognitionFlag = true;
-                return;
-            }
             needStartRecognitionFlag = false;
+            mASREngine.setUcaPhis(phis);
             mASREngine.start();
             LogUtils.d(TAG, "startRecognition");
         } else {
@@ -227,10 +224,10 @@ public class AISpeechEar implements IEar {
 
     @Override
     public synchronized void stopRecognition() {
-        if (mASREngine != null && isListening()) {
+        if (mASREngine != null) {
             mASREngine.cancel();
             mASREngine.stopRecording();
-            LogUtils.d(TAG, "stopRecording");
+            LogUtils.d(TAG, "stopRecognition");
         } else
             LogUtils.d(TAG, "stopRecognition");
 
@@ -240,6 +237,14 @@ public class AISpeechEar implements IEar {
     @Override
     public void setASRListener(ASRListener listener) {
         asrListener = listener;
+    }
+
+    @Override
+    public void destroy() {
+        if (mASREngine != null) {
+            mASREngine.destroy();
+            mASREngine = null;
+        }
     }
 
     private JSONObject getJSONObject(JSONObject semantics, String request) {
@@ -295,7 +300,7 @@ public class AISpeechEar implements IEar {
             mASREngine = initAsrEngine();
             LogUtils.d(TAG, "mASREngine=:" + mASREngine);
             if (needStartRecognitionFlag) {
-                startRecognition();
+                startRecognition(mPhis);
             }
         }
 
