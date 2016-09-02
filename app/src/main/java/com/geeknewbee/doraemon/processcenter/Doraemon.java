@@ -10,6 +10,7 @@ import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
+import com.geeknewbee.doraemon.entity.event.NetWorkStateChangeEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
@@ -17,6 +18,7 @@ import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.WakeupSuccessEvent;
+import com.geeknewbee.doraemon.input.AISpeechAuth;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.AISpeechSoundInputDevice;
 import com.geeknewbee.doraemon.input.HYMessageReceive;
@@ -47,6 +49,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     private volatile static Doraemon instance;
     private final Context context;
     private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
+    private final AISpeechAuth speechAuth;
     private IEar ear;
     private IEye eye;
     private IMessageReceive receive;
@@ -55,6 +58,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
 
     private Doraemon(Context context) {
         this.context = context;
+        speechAuth = new AISpeechAuth();
         ear = new AISpeechEar();
         eye = new ReadSenseEye();
         receive = HYMessageReceive.getInstance();
@@ -75,6 +79,17 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         return instance;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void reAuthAndInit(NetWorkStateChangeEvent event) {
+        if (!event.isConnected || speechAuth.isAuthed())
+            return;
+
+        speechAuth.auth();
+        ear.reInit();
+        soundInputDevice.reInit();
+        MouthTaskQueue.getInstance().reInit();
+    }
+
     /**
      * 是否正在监听声音
      *
@@ -87,7 +102,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 启动唤醒  Waiting For Wakeup
      */
-    public void startWakeup() {
+    public synchronized void startWakeup() {
         soundInputDevice.start();
         addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
     }
@@ -95,14 +110,14 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 停止唤醒
      */
-    private void stopWakeUp() {
+    private synchronized void stopWakeUp() {
         soundInputDevice.stop();
     }
 
     /**
      * 开始自动声音识别 Automatic Speech Recognition
      */
-    public void startASR() {
+    public synchronized void startASR() {
         ear.setASRListener(this);
         ear.startRecognition();
         addCommand(new ExpressionCommand(Constants.LISTENNING_GIF, 0));
@@ -111,9 +126,9 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 停止自动语音识别
      */
-    public void stopASR() {
-        ear.setASRListener(null);
+    public synchronized void stopASR() {
         ear.stopRecognition();
+        ear.setASRListener(null);
     }
 
     /**
@@ -342,17 +357,27 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         switchListener(event.type);
     }
 
-    private void switchListener(SoundMonitorType type) {
+    private synchronized void switchListener(SoundMonitorType type) {
         switch (type) {
             case ASR:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     stopWakeUp();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     startASR();
                 }
                 break;
             case EDD:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     stopASR();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     startWakeup();
                 }
                 break;

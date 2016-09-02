@@ -49,7 +49,6 @@ public class BluetoothServiceManager {
                 case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
                         case BluetoothChatService.STATE_CONNECTED:
-                            talkTask.start();
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
                             break;
@@ -63,6 +62,9 @@ public class BluetoothServiceManager {
                 case Constants.MESSAGE_READ_SOUND:
                     byte[] readBuf = (byte[]) msg.obj;
                     //播放声音
+                    if (!talkTask.hasStarted())
+                        talkTask.start();
+
                     audioData.add(readBuf);
                     break;
                 case Constants.MESSAGE_READ_COMMAND:

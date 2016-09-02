@@ -15,9 +15,14 @@ public class BluetoothTalkTask {
     private BlockingQueue<byte[]> audioData;
     private TalkThread talkThread;
     private boolean stop = false;
+    private boolean hasStarted = false;
 
     public BluetoothTalkTask(BlockingQueue<byte[]> blockingQueue) {
         this.audioData = blockingQueue;
+    }
+
+    public synchronized boolean hasStarted() {
+        return hasStarted;
     }
 
     public void start() {
@@ -26,6 +31,7 @@ public class BluetoothTalkTask {
         }
 
         this.stop = false;
+        hasStarted = true;
         talkThread = new TalkThread();
         talkThread.start();
     }

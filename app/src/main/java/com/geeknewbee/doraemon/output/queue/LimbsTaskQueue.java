@@ -37,6 +37,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private IFoot foot;
     private boolean isStopAction = false;//跳舞中断标识
     private boolean isBusy = false;
+    private boolean isUseLeXing = false;//是否使用乐行
 
     private LimbsTaskQueue() {
         super();
@@ -88,9 +89,16 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     private void perform(LeXingCommand command) {
-        sendLeXingFootCommandByLuGong(command.v, command.w);
+        if (isUseLeXing)
+            sendLeXingFootCommand(command.v, command.w);
+        else
+            sendLeXingFootCommandByLuGong(command.v, command.w);
+
         if (command.duration != 0) {
-            stopFootLuGong(command.duration);
+            if (isUseLeXing)
+                stopFoot(command.duration);
+            else
+                stopFootLuGong(command.duration);
         }
         notifyComplete();
     }
@@ -105,24 +113,30 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         for (SportAction sportAction : command.sportActions) {
             if (isStopAction) {
                 armsAndHead.reset();
-                stopFootLuGong(0);
+                if (isUseLeXing)
+                    stopFoot(0);
+                else
+                    stopFootLuGong(0);
                 break;
             }
 
             if (!TextUtils.isEmpty(sportAction.expressionName))
                 Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 3));
 
-            sendCommandContent(sportAction.topCommand);
+            sendTopCommand(sportAction.topCommand);
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-//            sendCommandContent(sportAction.footCommand);
-//            sendLeXingFootCommand(sportAction.footCommand);
-            sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
 
-            stopFootLuGong(sportAction.delayTime);
+            if (isUseLeXing) {
+                sendLeXingFootCommand(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
+                stopFoot(sportAction.delayTime);
+            } else {
+                sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
+                stopFootLuGong(sportAction.delayTime);
+            }
         }
 
         notifyComplete();
@@ -154,6 +168,21 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         foot.setSpeed(Integer.valueOf(split[0]), Integer.valueOf(split[1]));
     }
 
+    private boolean sendLeXingFootCommand(int v, int w) {
+        return foot.setSpeed(v, w);
+    }
+
+    private void stopFoot(int delayTime) {
+        try {
+            Thread.sleep(delayTime);
+            sendLeXingFootCommand(0, 0);//最后要停止运动
+            Thread.sleep(20);
+            sendLeXingFootCommand(0, 0);//最后要停止运动
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 直接控制乐行有问题，现在采用暂时方案,先和路工的中控板通信，中控板再发命令到地盘msc
      *
@@ -181,11 +210,11 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     private void perform(String s) {
-        sendCommandContent(s);
+        sendTopCommand(s);
         notifyComplete();
     }
 
-    private Boolean sendCommandContent(String s) {
+    private Boolean sendTopCommand(String s) {
         if (TextUtils.isEmpty(s)) {
             return false;
         }

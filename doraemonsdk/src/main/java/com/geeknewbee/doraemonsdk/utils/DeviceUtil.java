@@ -104,4 +104,14 @@ public class DeviceUtil {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dipValue * scale + 0.5f);
     }
+
+    public static void openWifi(Context context) {
+        try {
+            WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            if (!wifiMgr.isWifiEnabled())
+                wifiMgr.setWifiEnabled(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

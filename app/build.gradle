@@ -25,7 +25,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled = true
-        ndk { abiFilters 'armeabi-v7a' }
+        ndk { abiFilters 'armeabi' }
         resConfigs "zh"
         buildConfigField "boolean", "NEED_DEBUG", "false"
         buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "true"

@@ -11,6 +11,7 @@ import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
+
 import java.util.Date;
 
 /**
@@ -48,7 +49,7 @@ public class InputTimeoutMonitorTask extends Thread {
             start();
         begintTime = new Date().getTime();
         isMonitor = true;
-        LogUtils.d(TAG, "Start Monitor ASRListener...");
+        LogUtils.d(TAG, "Start Timeout Monitor Listener...");
     }
 
     /**
@@ -56,7 +57,7 @@ public class InputTimeoutMonitorTask extends Thread {
      */
     public synchronized void stopMonitor() {
         isMonitor = false;
-        LogUtils.d(TAG, "Stop Monitor ASRListener...");
+        LogUtils.d(TAG, "Stop Timeout Monitor Listener...");
     }
 
     @Override

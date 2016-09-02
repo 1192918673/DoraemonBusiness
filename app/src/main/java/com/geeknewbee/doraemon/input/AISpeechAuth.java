@@ -2,8 +2,8 @@ package com.geeknewbee.doraemon.input;
 
 import com.aispeech.export.listeners.AIAuthListener;
 import com.aispeech.speech.AIAuthEngine;
-import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.io.FileNotFoundException;
@@ -13,10 +13,14 @@ import java.io.FileNotFoundException;
  */
 public class AISpeechAuth {
 
-    private String TAG = AISpeechAuth.class.getSimpleName();
+    private AIAuthEngine mAuthEngine;
+
+    public AISpeechAuth() {
+        // 创建实例
+        mAuthEngine = AIAuthEngine.getInstance(BaseApplication.mContext);
+    }
 
     public boolean auth() {
-        AIAuthEngine mAuthEngine = AIAuthEngine.getInstance(BaseApplication.mContext);// 创建实例
         try {
             mAuthEngine.init(SpeechConstants.APPKEY, SpeechConstants.SECRETKEY, SpeechConstants.APP_CONSTANT);// 初始化
         } catch (FileNotFoundException e1) {
@@ -27,19 +31,24 @@ public class AISpeechAuth {
 
             @Override
             public void onAuthSuccess() {
-                LogUtils.d(TAG, "注册成功");
+                LogUtils.d(AISpeechEar.TAG, "注册成功");
             }
 
             @Override
             public void onAuthFailed(String result) {
-                LogUtils.d(TAG, "注册失败：" + result);
+                LogUtils.d(AISpeechEar.TAG, "注册失败：" + result);
             }
         });
 
         if (mAuthEngine.isAuthed()) {
+            LogUtils.d(AISpeechEar.TAG, "已经注册");
             return true;
         } else {
             return mAuthEngine.doAuth();// 认证
         }
+    }
+
+    public boolean isAuthed() {
+        return mAuthEngine != null && mAuthEngine.isAuthed();
     }
 }
