@@ -70,7 +70,6 @@ android {
             buildConfigField "String", "URLDOMAIN", DevURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : DevUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]
-            buildConfigField "boolean", "NEED_DEBUG", "true"
         }
         //测试版
         Beta {
@@ -97,6 +96,14 @@ android {
                     + variant.buildType.name + "_" + variant.versionName + ".apk")
         }
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
 }
 
 dependencies {
