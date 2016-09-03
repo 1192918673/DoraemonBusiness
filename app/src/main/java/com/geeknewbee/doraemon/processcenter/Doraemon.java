@@ -2,10 +2,10 @@ package com.geeknewbee.doraemon.processcenter;
 
 import android.content.Context;
 
-import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.entity.event.ASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
@@ -30,9 +30,9 @@ import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
+import com.geeknewbee.doraemon.processcenter.InputTimeoutMonitorTask.TimeOutMonitorType;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
-import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
@@ -103,7 +103,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 启动唤醒  Waiting For Wakeup
      */
-    private synchronized void startWakeup() {
+    private void startWakeup() {
         soundInputDevice.start();
         addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
     }
@@ -111,14 +111,14 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 停止唤醒
      */
-    private synchronized void stopWakeUp() {
+    private void stopWakeUp() {
         soundInputDevice.stop();
     }
 
     /**
      * 开始自动声音识别 Automatic Speech Recognition
      */
-    private synchronized void startASR() {
+    private void startASR() {
         ear.startRecognition(wakePhis);
         ear.setASRListener(this);
         addCommand(new ExpressionCommand(Constants.LISTENNING_GIF, 0));
@@ -127,7 +127,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     /**
      * 停止自动语音识别
      */
-    private synchronized void stopASR() {
+    private void stopASR() {
         ear.stopRecognition();
         ear.setASRListener(null);
     }
@@ -258,8 +258,8 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReadyForSpeech(ReadyForSpeechEvent event) {
-        //开启声音输入超时监听
-        inputTimeOutMonitorTask.startMonitor();
+        //开启声音等待超时监听
+        inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_WAIT_SOUND_INPUT);
     }
 
     /*
@@ -272,6 +272,19 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         LogUtils.d(AISpeechEar.TAG, "onBeginningOfSpeech");
         //显示正在监听Gif
         addCommand(new ExpressionCommand("eyegif_ting", 0));
+        //开启声音输入超时监听
+        inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_WAIT_SOUND_END);
+    }
+
+    /*
+     * ASR监听到开始说话：无语音超时计时结束
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onASRResults(ASRResultEvent event) {
+        LogUtils.d(AISpeechEar.TAG, "onASRResults");
+        //开启声音输入超时监听
         inputTimeOutMonitorTask.stopMonitor();
     }
 
@@ -323,6 +336,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWakeup(WakeupSuccessEvent event) {
         //当唤醒的时候停止当前的动作
+        inputTimeOutMonitorTask.stopMonitor();
         this.wakePhis = event.mPhis;
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
@@ -342,7 +356,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
             clockDirection = LeXingUtil.ClockDirection.EASTERN;
         }
         int[] speed = LeXingUtil.getSpeed(direction, clockDirection, (int) turnAngle, 0, 2000);
-        Doraemon.getInstance(App.mContext).addCommand(new LeXingCommand(speed[0], speed[1], 2000));
+//        Doraemon.getInstance(App.mContext).addCommand(new LeXingCommand(speed[0], speed[1], 2000));
         //TODO 设置角度
 //        mEngine.setDoaChannel(6);//每次都是头对着用户
     }
@@ -363,19 +377,18 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         switch (type) {
             case ASR:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
+                    inputTimeOutMonitorTask.stopMonitor();
                     stopWakeUp();
+                    stopASR();
                     startASR();
                 }
                 break;
             case EDD:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     stopASR();
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    stopWakeUp();
                     startWakeup();
+                    inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_EDD_TIME);
                 }
                 break;
         }

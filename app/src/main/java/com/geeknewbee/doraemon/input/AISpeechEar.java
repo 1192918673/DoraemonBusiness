@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.aispeech.AIError;
 import com.aispeech.AIResult;
-import com.aispeech.common.AIConstant;
 import com.aispeech.common.JSONResultParser;
 import com.aispeech.common.Util;
 import com.aispeech.export.engines.AILocalGrammarEngine;
@@ -14,6 +13,7 @@ import com.aispeech.export.listeners.AIASRListener;
 import com.aispeech.export.listeners.AILocalGrammarListener;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
+import com.geeknewbee.doraemon.entity.event.ASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
 import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemonsdk.BaseApplication;
@@ -192,7 +192,8 @@ public class AISpeechEar implements IEar {
         mASREngine.setWaitCloudTimeout(5000);
         mASREngine.setPauseTime(500);
         mASREngine.setUseConf(true);
-        mASREngine.setNoSpeechTimeOut(0);
+        mASREngine.setNoSpeechTimeOut(15000);//设置无语音超时时长，单位毫秒，默认值为5000ms ；如果达到该设置值时，自动停止录音并放弃请求内核
+        mASREngine.setMaxSpeechTimeS(20);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常`
         mASREngine.setDeviceId(Util.getIMEI(App.mContext));
         mASREngine.setCloudVadEnable(false);
         mASREngine.setAecCfg(SpeechConstants.ace_cfg);
@@ -206,18 +207,24 @@ public class AISpeechEar implements IEar {
         return mASREngine;
     }
 
+    /**
+     * 测试发现不能重复的打开ASR
+     *
+     * @param phis
+     */
     @Override
     public synchronized void startRecognition(double phis) {
         this.mPhis = phis;
-        if (mASREngine != null) {
+        if (mASREngine != null && !isListening()) {
             needStartRecognitionFlag = false;
             mASREngine.setUcaPhis(phis);
             mASREngine.start();
             LogUtils.d(TAG, "startRecognition");
-        } else {
+        } else if (!isListening()) {
             needStartRecognitionFlag = true;
             LogUtils.d(TAG, "startRecognition");
-        }
+        } else
+            LogUtils.d(TAG, "startRecognition");
 
         setListerStatue(true);
     }
@@ -344,6 +351,7 @@ public class AISpeechEar implements IEar {
         @Override
         public void onResults(AIResult results) {
             setListerStatue(false);
+            EventBus.getDefault().post(new ASRResultEvent());
             LogUtils.d(TAG, results.getResultObject().toString());
 
             EventManager.sendBeginningOfDealWithEvent();

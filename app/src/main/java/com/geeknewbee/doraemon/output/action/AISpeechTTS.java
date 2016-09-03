@@ -72,8 +72,8 @@ public class AISpeechTTS implements ITTS {
     public boolean stop() {
         if (mTTSEngine != null) {
             mTTSEngine.stop();
+            isSpeaking = false;
         }
-        notifyComplete();
         return true;
     }
 
@@ -128,14 +128,14 @@ public class AISpeechTTS implements ITTS {
 
         @Override
         public void onCompletion(String utteranceId) {
-            notifyComplete();
             LogUtils.d(TAG, "tts onCompletion");
+            notifyComplete();
         }
 
         @Override
         public void onError(String utteranceId, AIError error) {
-            notifyComplete();
             LogUtils.d(TAG, "TTS Error：" + error.toString());
+            notifyComplete();
         }
     }
 }

@@ -51,7 +51,8 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         switch (input.getType()) {
             case PLAY_SOUND:
                 SoundCommand soundCommand = (SoundCommand) input;
-                if (soundCommand.inputSource != SoundCommand.InputSource.START_WAKE_UP)
+                if (soundCommand.inputSource != SoundCommand.InputSource.START_WAKE_UP
+                        && soundCommand.inputSource != SoundCommand.InputSource.AFTER_WAKE_UP)
                     EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
 
                 itts.talk(soundCommand.getContent(), soundCommand.inputSource);

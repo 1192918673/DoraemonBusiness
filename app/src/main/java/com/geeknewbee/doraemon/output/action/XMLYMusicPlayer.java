@@ -166,7 +166,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                     mPlayerManager.playList(tracks, 0);
                 } else {
                     // 此处说完话后要开启ASR，为解决音乐任务先于“正在搜索音乐...”的TIPS结束后，处于谁也没有启动ASR的死角
-                    Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("没有搜索到音乐", SoundCommand.InputSource.SOUND_TRANSLATE));
+                    Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("没有搜索到音乐", SoundCommand.InputSource.TIPS));
                     notifyComplete();
                 }
             }
@@ -201,25 +201,32 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         // 4078745$$段子搬运工,4218901$$哈哈逗你,4342792$$波波讲段子,3849250$$Alpha冷,4388970$$不止是幽默,
         // 4422113$$竹子讲笑话，羞羞哒,4322121$$生活小趣,4694948$$乐在其中,4660402$$晨彩飞扬,
         Map<String, String> map = new HashMap<String, String>();
-        map.put(DTransferConstants.ALBUM_ID, albumId.get(new Random().nextInt(albumId.size())) + "");
+        if (albumId.size() > 0)
+            map.put(DTransferConstants.ALBUM_ID, albumId.get(new Random().nextInt(albumId.size())) + "");
         map.put(DTransferConstants.SORT, "asc");
         map.put(DTransferConstants.PAGE, "1");//当前第几页，不填默认为1；以后可以改成随机
         CommonRequest.getTracks(map, new IDataCallBack<TrackList>() {
             @Override
             public void onSuccess(TrackList trackList) {
-                StringBuffer sb = new StringBuffer();
-                List<Track> list = trackList.getTracks();
-                for (Track track : list) {
-                    sb.append(track.getDataId() + "**" + track.getTrackTitle() + ",");
-                }
-                LogUtils.d(Constants.TAG_MUSIC, "专辑ID下的专辑列表：" + list.size() + "**" + sb.toString());
+                if (trackList.getTracks() != null && trackList.getTracks().size() > 0) {
+                    StringBuffer sb = new StringBuffer();
+                    List<Track> list = trackList.getTracks();
+                    for (Track track : list) {
+                        sb.append(track.getDataId() + "**" + track.getTrackTitle() + ",");
+                    }
+                    LogUtils.d(Constants.TAG_MUSIC, "专辑ID下的专辑列表：" + list.size() + "**" + sb.toString());
 
-                Random random = new Random(0);
-                int i = random.nextInt(list.size());
-                tracks.clear();
-                tracks.add(trackList.getTracks().get(i));
-                mPlayerManager.clearPlayCache();
-                mPlayerManager.playList(tracks, 0);
+                    Random random = new Random(0);
+                    int i = random.nextInt(list.size());
+                    tracks.clear();
+                    tracks.add(trackList.getTracks().get(i));
+                    mPlayerManager.clearPlayCache();
+                    mPlayerManager.playList(tracks, 0);
+                } else {
+                    // 此处说完话后要开启ASR，为解决音乐任务先于“正在搜索音乐...”的TIPS结束后，处于谁也没有启动ASR的死角
+                    Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("没有搜索到笑话", SoundCommand.InputSource.TIPS));
+                    notifyComplete();
+                }
             }
 
             @Override
@@ -241,7 +248,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         if (mPlayerManager != null) {
             mPlayerManager.stop();
         }
-        notifyComplete();
         return true;
     }
 

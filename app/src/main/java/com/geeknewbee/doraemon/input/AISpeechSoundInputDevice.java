@@ -46,21 +46,22 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     @Override
     public synchronized void start() {
 //        if (!isRunning) {
-        if (mEngine != null)
+        if (mEngine != null && !isRunning) {
             mEngine.start();
-        LogUtils.d(TAG, "WakeupEngine start...");
+            LogUtils.d(TAG, "WakeupEngine start...");
+        } else
+            LogUtils.d(TAG, "WakeupEngine had start");
 //        } else {
 //            LogUtils.d(TAG, "WakeupEngine had run.");
 //        }
-//        isRunning = true;
+        isRunning = true;
     }
 
     @Override
     public synchronized void stop() {
-//        if (isRunning)
         if (mEngine != null)
             mEngine.stop();
-//        isRunning = false;
+        isRunning = false;
         LogUtils.d(TAG, "WakeupEngine stop!!!");
     }
 
@@ -118,6 +119,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
 
         @Override
         public void onError(AIError error) {
+            isRunning = false;
             LogUtils.d(TAG, "DNNError:" + error.toString());
         }
     }
