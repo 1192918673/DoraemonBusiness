@@ -194,6 +194,10 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTTSComplete(TTSCompleteEvent event) {
+        //提醒类文本不改变原有状态
+        if (event.inputSource == SoundCommand.InputSource.TIPS)
+            return;
+
         //现在唤醒是在提示唤醒词后才开启唤醒
         if (event.inputSource == SoundCommand.InputSource.START_WAKE_UP) {
             if (BuildConfig.HAVE_SPEECH_DEVCE)
