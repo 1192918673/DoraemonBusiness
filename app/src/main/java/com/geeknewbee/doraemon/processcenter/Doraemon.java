@@ -397,7 +397,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
                     stopASR();
                     stopWakeUp();
                     startWakeup();
-                    inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_EDD_TIME);
+//                    inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_EDD_TIME);
                     switchMonitorLock.unlock();
                 }
                 break;
