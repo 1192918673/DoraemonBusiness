@@ -33,7 +33,7 @@ public class FaceManager {
     //上次显示的GIF name
     private String lastName;
     private int loopNumber;
-    private int currentLoop;
+    private int currentLoop;//当前表情的循环剩余次数
     private Handler mHandler = new Handler() {
 
         @Override
@@ -48,12 +48,12 @@ public class FaceManager {
         }
     };
 
-
     private FaceManager() {
         animationListener = new AnimationListener() {
             @Override
             public void onAnimationCompleted(int loopNumber) {
                 LogUtils.d("FaceManager", "onAnimationCompleted loop:" + loopNumber + " name：" + lastName);
+                LogUtils.d("FaceManager", "FaceManager.this.loopNumber:" + FaceManager.this.loopNumber);
                 synchronized (FaceManager.this) {
                     if (FaceManager.this.loopNumber != 0)//0为无限循环
                     {
@@ -89,6 +89,10 @@ public class FaceManager {
     public synchronized void displayGif(final String content, int loops) {
         int imageResId = BaseApplication.mContext.getResources().getIdentifier(content, "drawable", BaseApplication.mContext.getPackageName());
         if (imageResId <= 0)
+            return;
+
+        //如果是执行默认的GIF需要等到当前gif显示完成后才能显示（不去影响当前的GIF）
+        if (currentLoop != 0 && (content.equals(Constants.LISTENNING_GIF) || content.equals(Constants.DEFAULT_GIF)))
             return;
 
         showGif(content, loops);
