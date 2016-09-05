@@ -24,6 +24,7 @@ public class Constants {
     public static final int MESSAGE_READ_SOUND = 6;
     public static final int MESSAGE_READ_COMMAND = 7;
     public static final int MESSAGE_BLE_WIFI = 8;
+    public static final int MESSAGE_BLE_TTS = 9;
 
     //Http
     public static final String API_SECRET = "l5+z87&&szj_^$$7";

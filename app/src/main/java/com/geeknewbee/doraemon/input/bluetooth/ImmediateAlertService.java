@@ -47,12 +47,21 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                     BluetoothGattCharacteristic.PERMISSION_READ |
                             BluetoothGattCharacteristic.PERMISSION_WRITE);
 
+            BluetoothGattCharacteristic tts = new BluetoothGattCharacteristic(
+                    UUID.fromString(BleUuid.CHAR_NOTIFY_TTS_STRING),
+                    BluetoothGattCharacteristic.PROPERTY_READ |
+                            BluetoothGattCharacteristic.PROPERTY_WRITE |
+                            BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                    BluetoothGattCharacteristic.PERMISSION_READ |
+                            BluetoothGattCharacteristic.PERMISSION_WRITE);
+
             read = new BluetoothGattCharacteristic(
                     UUID.fromString(BleUuid.CHAR_NOTIFY_WIFI_STRING),
                     BluetoothGattCharacteristic.PROPERTY_READ |
                             BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                     BluetoothGattCharacteristic.PERMISSION_READ);
             dis.addCharacteristic(mansc);
+            dis.addCharacteristic(tts);
             dis.addCharacteristic(read);
             mGattServer.addService(dis);
         }
@@ -106,6 +115,13 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             }
             mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                     null);
+        } else if (characteristic.getUuid().equals(
+                UUID.fromString(BleUuid.CHAR_NOTIFY_TTS_STRING))) {
+            LogUtils.d(TAG, "CHAR_ALERT_LEVEL");
+            if (value != null && value.length > 0) {
+                mHandler.obtainMessage(Constants.MESSAGE_BLE_TTS, value.length, -1, value)
+                        .sendToTarget();
+            }
         }
     }
 
