@@ -25,7 +25,7 @@ public class BleUuid {
     public static final String CHAR_SERIAL_NUMBER_STRING = "00002a25-0000-1000-8000-00805f9b34fb";
     public static final String CHAR_SET_WIFI_STRING = "00002a30-0000-1000-8000-00805f9b34fb";
     public static final String CHAR_NOTIFY_WIFI_STRING = "00002a31-0000-1000-8000-00805f9b34fb";
-    public static final String CHAR_NOTIFY_TTS_STRING = "00002a32-0000-1000-8000-00805f9b34fb";
+    public static final String CHAR_NOTIFY_TTS_STRING = "00002a29-0000-1000-8000-00805f9b34fb";
 
     // 1802 Immediate Alert
     public static final String SERVICE_IMMEDIATE_ALERT = "00001802-0000-1000-8000-00805f9b34fb";
