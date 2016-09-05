@@ -41,6 +41,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 哆啦A梦 单利模式
@@ -56,6 +58,10 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
     private ISoundInputDevice soundInputDevice;
     private Brain brain;
     private double wakePhis = 0;
+    //创建一个切换ASR\EDD锁对象
+    private Lock switchMonitorLock = new ReentrantLock();
+    //创建一个切换AddCommand锁对象
+    private Lock addCommandLock = new ReentrantLock();
 
     private Doraemon(Context context) {
         this.context = context;
@@ -373,22 +379,26 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         switchSoundMonitor(event.type);
     }
 
-    private synchronized void switchSoundMonitor(SoundMonitorType type) {
+    private void switchSoundMonitor(SoundMonitorType type) {
         switch (type) {
             case ASR:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
+                    switchMonitorLock.lock();
                     inputTimeOutMonitorTask.stopMonitor();
                     stopWakeUp();
                     stopASR();
                     startASR();
+                    switchMonitorLock.unlock();
                 }
                 break;
             case EDD:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
+                    switchMonitorLock.lock();
                     stopASR();
                     stopWakeUp();
                     startWakeup();
                     inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_EDD_TIME);
+                    switchMonitorLock.unlock();
                 }
                 break;
         }
@@ -399,12 +409,16 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
      *
      * @param command
      */
-    public synchronized void addCommand(Command command) {
+    public void addCommand(Command command) {
+        addCommandLock.lock();
         brain.addCommand(command);
+        addCommandLock.unlock();
     }
 
-    public synchronized void addCommand(List<Command> commands) {
+    public void addCommand(List<Command> commands) {
+        addCommandLock.lock();
         brain.addCommand(commands);
+        addCommandLock.unlock();
     }
 
     public void destroy() {

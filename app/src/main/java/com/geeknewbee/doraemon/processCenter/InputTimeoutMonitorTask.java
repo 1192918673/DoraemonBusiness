@@ -22,7 +22,7 @@ public class InputTimeoutMonitorTask extends Thread {
     public static final String TAG = AISpeechEar.class.getSimpleName();
     //超时时间
     public static final int WAIT_SOUND_INPUT_OUT_TIME = 1000 * 10;
-    public static final int EDD_TIME = 1000 * 10;
+    public static final int EDD_TIME = 1000 * 5;
     public static final int WAIT_SOUND_END_TIME = 1000 * 18;
 
     private Context context;

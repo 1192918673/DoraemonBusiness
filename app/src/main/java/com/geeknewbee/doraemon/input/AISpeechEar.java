@@ -213,7 +213,7 @@ public class AISpeechEar implements IEar {
      * @param phis
      */
     @Override
-    public synchronized void startRecognition(double phis) {
+    public void startRecognition(double phis) {
         this.mPhis = phis;
         if (mASREngine != null && !isListening()) {
             needStartRecognitionFlag = false;
@@ -230,7 +230,7 @@ public class AISpeechEar implements IEar {
     }
 
     @Override
-    public synchronized void stopRecognition() {
+    public void stopRecognition() {
         if (mASREngine != null) {
             mASREngine.cancel();
             mASREngine.stopRecording();
@@ -279,11 +279,11 @@ public class AISpeechEar implements IEar {
     }
 
     @Override
-    public synchronized boolean isListening() {
+    public boolean isListening() {
         return isListening;
     }
 
-    private synchronized void setListerStatue(boolean isListening) {
+    private void setListerStatue(boolean isListening) {
         this.isListening = isListening;
     }
 

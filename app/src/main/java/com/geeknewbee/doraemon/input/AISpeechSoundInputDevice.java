@@ -44,7 +44,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     }
 
     @Override
-    public synchronized void start() {
+    public void start() {
 //        if (!isRunning) {
         if (mEngine != null && !isRunning) {
             mEngine.start();
@@ -58,7 +58,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     }
 
     @Override
-    public synchronized void stop() {
+    public void stop() {
         if (mEngine != null)
             mEngine.stop();
         isRunning = false;
@@ -71,7 +71,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
     }
 
     @Override
-    public synchronized void onWakeUp(double angle, double phis) {
+    public void onWakeUp(double angle, double phis) {
         EventBus.getDefault().post(new WakeupSuccessEvent(angle, phis));
     }
 
