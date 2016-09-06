@@ -17,7 +17,7 @@ import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
-import com.geeknewbee.doraemon.processcenter.LocalSportActionManager;
+import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
@@ -90,7 +90,7 @@ public class MainActivity extends Activity {
         //当没有token的时候需要获取token
         DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
         //初始化本地动作库
-        LocalSportActionManager.getInstance().initLocalAction();
+        LocalResourceManager.getInstance().initLocalAction();
         //开机提示：是否联网
         if (DeviceUtil.isNetworkConnected(getApplicationContext())) {
             Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("呼叫你好小乐，唤醒我", SoundCommand.InputSource.START_WAKE_UP));

@@ -85,7 +85,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         // 5.如果以上都不能寻找到答案的时候。当思必驰有回复用思必驰的结果，思必驰没有则直接重新开启声音监听
         if (TextUtils.isEmpty(input.asrOutput)) {
             List<Command> commands = new ArrayList<>();
-            commands.add(LocalSportActionManager.getInstance().getActionSetCommand(LocalSportActionManager.NO_ANSWER));
+            commands.add(new SoundCommand(LocalResourceManager.getInstance().getNoAnswerString(), SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         } else {
             List<Command> commands = new ArrayList<>();
@@ -107,7 +107,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
         //现在的动作是固定的几个动作，以后改成服务器生成动作脚步，直接执行
         if (data.getAction() != null && data.getAction().size() > 0) {
-            ActionSetCommand actionSetCommand = LocalSportActionManager.getInstance().getActionSetCommand(data.getAction());
+            ActionSetCommand actionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(data.getAction());
             if (actionSetCommand != null)
                 commandList.add(actionSetCommand);
         }
@@ -163,33 +163,33 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
         if (input.contains("前") && (input.contains("进") || input.contains("向") || input.contains("走"))) {
             List<Command> commands = new ArrayList<>();
-            commands.add(LocalSportActionManager.getInstance().getActionSetCommand("forward"));
+            commands.add(LocalResourceManager.getInstance().getActionSetCommand("forward"));
             return commands;
         }
         if (input.contains("后") && (input.contains("退") || input.contains("向") || input.contains("走"))) {
             List<Command> commands = new ArrayList<>();
-            commands.add(LocalSportActionManager.getInstance().getActionSetCommand("backward"));
+            commands.add(LocalResourceManager.getInstance().getActionSetCommand("backward"));
             return commands;
         }
         if (input.contains("左") && (input.contains("转") || input.contains("向"))) {
             List<Command> commands = new ArrayList<>();
-            commands.add(LocalSportActionManager.getInstance().getActionSetCommand("left"));
+            commands.add(LocalResourceManager.getInstance().getActionSetCommand("left"));
             return commands;
         }
         if (input.contains("右") && (input.contains("转") || input.contains("向"))) {
             List<Command> commands = new ArrayList<>();
-            commands.add(LocalSportActionManager.getInstance().getActionSetCommand("right"));
+            commands.add(LocalResourceManager.getInstance().getActionSetCommand("right"));
             return commands;
         }
         if (input.contains("举手") || input.contains("伸胳膊") || input.contains("抬头")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(LocalSportActionManager.getInstance().getActionSetCommand(Arrays.asList("l_arm_up", "r_arm_up")));
+            commands.add(LocalResourceManager.getInstance().getActionSetCommand(Arrays.asList("l_arm_up", "r_arm_up")));
             return commands;
         }
         if (input.contains("跳") && (input.contains("舞") || input.contains("苹果"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(new LocalResourceCommand(R.raw.little_apple));
-            commands.add(LocalSportActionManager.getInstance().getActionSetCommand(LocalSportActionManager.XIAO_PING_GUO));
+            commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.XIAO_PING_GUO));
             return commands;
         }
 
