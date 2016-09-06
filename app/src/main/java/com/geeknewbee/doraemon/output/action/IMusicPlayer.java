@@ -4,6 +4,9 @@ package com.geeknewbee.doraemon.output.action;
  * 用于播放音乐、讲笑话
  */
 public interface IMusicPlayer {
+
+    void reInit();
+
     boolean play(String param);
 
     boolean joke();
