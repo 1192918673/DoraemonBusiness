@@ -6,12 +6,12 @@ package com.geeknewbee.doraemon.input;
  */
 public interface IEye {
     /**
-     * 开始语音识别
+     * 开始人脸识别
      */
     void startRecognition();
 
     /**
-     * 停止语音识别
+     * 停止人脸识别
      */
     void stopRecognition();
 
