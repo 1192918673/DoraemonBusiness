@@ -2,7 +2,6 @@
 <resources>
     <string-array name="no_answer">
         <item>我听力不好</item>
-        <item>这是个有趣的问题</item>
         <item>你敢不敢再说一遍</item>
         <item>重要的事情要说三遍，您还差两遍呢</item>
         <item>弱弱地说一句，刚才我分神了，没有听清楚</item>
@@ -26,8 +25,6 @@
         <item>是谁，偷走了我的耳朵，赶紧给我环回来</item>
         <item>刚才开小差了，没有听清耶</item>
         <item>可怜可怜我吧，给我再说一遍</item>
-        <item>看我变身，变成超级顺风耳</item>
-        <item>不好玩儿，换个话题</item>
         <item>这么深奥的对话，还是不聊了吧</item>
         <item>哎呀，肿么办，我是不是胖的都没有耳朵啦</item>
         <item>您再说一遍好么</item>
@@ -43,7 +40,6 @@
         <item>您真的可以再说一遍</item>
         <item>您想说的是什么呢</item>
         <item>我还想听您在说一遍</item>
-        <item>其实您还可以在说一遍，真的可以</item>
         <item>我还想听您在说一遍，怎么办呢</item>
         <item>衷心希望您再说一次</item>
         <item>我由衷的想再听您说一遍</item>
@@ -53,16 +49,13 @@
         <item>近两天有点上火，耳朵沉，您再说一遍好么</item>
         <item>您在说一遍，我就知道您想表达什么了</item>
         <item>再给我一次机会好么</item>
-        <item>虽然我没听清楚您说什么，但是好厉害的样子</item>
         <item>你说什么？</item>
         <item>再说一次</item>
         <item>你说的话我没有听到</item>
         <item>你是在说外星语么？</item>
         <item>为什么我听不到你在说什么？</item>
         <item>我不知道你说的是什么</item>
-        <item>没有检测到呦</item>
         <item>你要不要再说一次</item>
-        <item>你敢再说一遍么</item>
         <item>噢！我没听懂</item>
         <item>你说啥呢</item>
         <item>我耳朵聋了么？</item>
@@ -107,48 +100,19 @@
         <item>你这样问感觉有点不好</item>
         <item>这种搭讪方式早就过时了</item>
         <item>这个问题让我记住你了</item>
-        <item>还能不能愉快的聊天了</item>
-        <item>你这样聊天很容易没朋友</item>
         <item>有什么不懂的可以找度娘</item>
-        <item>这么简单的问题你以为我会不知道吗</item>
-        <item>重要的问题说三遍</item>
-        <item>我想静一会</item>
         <item>你的声音有点小</item>
-        <item>你说话声音真好听，我想再听一遍</item>
-        <item>我才不会轻易告诉你答案呢</item>
-        <item>说点好听的我就告诉你</item>
         <item>我在想为什么要告诉你这个答案呢</item>
         <item>老实说，其实我也不是很清楚呢</item>
-        <item>关于这个问题的答案我有很多想法</item>
-        <item>你这样问有点太直接了</item>
         <item>这个不好回答</item>
-        <item>你真的想知道</item>
-        <item>十万个为什么可以帮助你回答这个问题</item>
-        <item>你怎么会这样问呢</item>
-        <item>这个问题很尖锐</item>
-        <item>其实好多人都问过这个问题了</item>
-        <item>能不能有点创新精神，问个不一样的</item>
         <item>这个问题很没有水平啊</item>
-        <item>这种问题有点小儿科</item>
-        <item>能不能问点大人才会问的问题</item>
-        <item>不要再把我当成小孩子了</item>
-        <item>我已经长大了</item>
         <item>都不知道你说的是什么</item>
-        <item>我才不会让你知道我没听清你说什么</item>
         <item>换一个问题</item>
-        <item>这样问有点直接</item>
-        <item>放松一点，不要搞得这么严肃嘛</item>
-        <item>谁能告诉我，我刚刚听到了什么</item>
-        <item>刚刚好像听到了一个笑话</item>
         <item>不好意思，刚刚有点走神</item>
         <item>抱歉，刚刚不在状态</item>
         <item>最近有点精神恍惚</item>
-        <item>刚刚吓到宝宝了</item>
         <item>刚刚在思考人生，没听清你说了什么</item>
-        <item>你敢不敢把你刚才的话再说十遍</item>
-        <item>你刚刚说话都没有看我的眼睛</item>
         <item>刚刚你的语速有点快</item>
         <item>不知道你在说什么</item>
-        <item>有点烦躁不想说话</item>
     </string-array>
 </resources>
