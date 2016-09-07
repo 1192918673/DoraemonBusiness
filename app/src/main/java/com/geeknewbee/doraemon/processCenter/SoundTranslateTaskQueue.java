@@ -62,7 +62,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         // 1.当没有解析到声音的时候不做任何输出,重新开启ASR
         if (TextUtils.isEmpty(input.input)) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand(input.asrOutput, SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(LocalResourceManager.getInstance().getNoAnswerString(), SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
 
