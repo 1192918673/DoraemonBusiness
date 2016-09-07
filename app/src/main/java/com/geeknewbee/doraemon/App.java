@@ -12,7 +12,6 @@ import com.geeknewbee.doraemon.database.DaoMaster;
 import com.geeknewbee.doraemon.database.DaoSession;
 import com.geeknewbee.doraemon.database.upgrade.MyOpenHelper;
 import com.geeknewbee.doraemon.input.AISpeechAuth;
-import com.geeknewbee.doraemon.security.DefaultExceptionHandler;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.chat.EMClient;
@@ -24,21 +23,30 @@ import java.util.List;
 
 public class App extends BaseApplication {
 
-    private static final String TAG = App.class.getSimpleName();
+    public static final String TAG = "Doraemon_App";
     public static App instance;
     private DaoSession daoSession;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        int pid = android.os.Process.myPid();
+        String processAppName = getAppName(pid);
+        // 如果app启用了远程的service，此application:onCreate会被调用多次
+        // 默认的app会在以包名为默认的process name下运行，如果查到的process name不是app的process name就立即返回
+        if (processAppName == null || !processAppName.equalsIgnoreCase(getPackageName())) {
+            LogUtils.d(TAG, "enter the service process!");
+            // 则此application::onCreate 是被service 调用的，直接返回
+            //防止多次初始化
+            return;
+        }
+        LogUtils.d(TAG, "enter the App process!");
         init();
         instance = this;
         setupDatabase();
         initHuanXinSDK();
         LogUtils.LOG_DEBUG = BuildConfig.NEED_DEBUG;
-
 //        Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(this));
-
         AIConstant.setUseSpi(true);
         //方便调试
         if (BuildConfig.NEED_DEBUG)
@@ -54,23 +62,11 @@ public class App extends BaseApplication {
         EMOptions options = new EMOptions();
         // 默认添加好友时，是不需要验证的，改成需要验证
         options.setAcceptInvitationAlways(true);
-        options.setAutoLogin(false);
-        int pid = android.os.Process.myPid();
-        String processAppName = getAppName(pid);
-        // 如果app启用了远程的service，此application:onCreate会被调用2次
-        // 为了防止环信SDK被初始化2次，加此判断会保证SDK被初始化1次
-        // 默认的app会在以包名为默认的process name下运行，如果查到的process name不是app的process name就立即返回
-        if (processAppName == null || !processAppName.equalsIgnoreCase(getPackageName())) {
-            LogUtils.d(TAG, "enter the service process!");
-
-            // 则此application::onCreate 是被service 调用的，直接返回
-            return;
-        }
-
+        options.setAutoLogin(true);
         //初始化
         EMClient.getInstance().init(getApplicationContext(), options);
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
-        EMClient.getInstance().setDebugMode(true);
+        EMClient.getInstance().setDebugMode(false);
     }
 
     @Override

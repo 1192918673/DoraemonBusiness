@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
@@ -22,6 +23,7 @@ import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,6 +44,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LogUtils.d(App.TAG, "MainActivity onCreate");
         initView();
         startBluetoothService();
         initData();

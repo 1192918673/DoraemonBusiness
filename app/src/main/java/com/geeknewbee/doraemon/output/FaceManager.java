@@ -52,13 +52,10 @@ public class FaceManager {
         animationListener = new AnimationListener() {
             @Override
             public void onAnimationCompleted(int loopNumber) {
-                LogUtils.d("FaceManager", "onAnimationCompleted loop:" + loopNumber + " name：" + lastName);
-                LogUtils.d("FaceManager", "FaceManager.this.loopNumber:" + FaceManager.this.loopNumber);
                 synchronized (FaceManager.this) {
                     if (FaceManager.this.loopNumber != 0)//0为无限循环
                     {
                         currentLoop--;
-                        LogUtils.d("FaceManager", "getCurrentLoop:" + currentLoop);
                         if (currentLoop == 0) {
                             if (Doraemon.getInstance(faceActivity.getApplication()).isListening()) {
                                 showGif(Constants.LISTENNING_GIF, 0);
