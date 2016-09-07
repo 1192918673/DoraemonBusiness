@@ -86,7 +86,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         // 5.如果以上都不能寻找到答案的时候。当思必驰有回复用思必驰的结果，思必驰没有则直接重新开启声音监听
         if (TextUtils.isEmpty(input.asrOutput)) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand(LocalResourceManager.getInstance().getNoAnswerString(), SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(LocalResourceManager.getInstance().getDefaultString(), SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         } else {
             List<Command> commands = new ArrayList<>();
