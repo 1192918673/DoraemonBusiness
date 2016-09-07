@@ -48,7 +48,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
 //        if (!isRunning) {
         if (mEngine != null && !isRunning) {
             mEngine.start();
-            LogUtils.d(TAG, "WakeupEngine start...");
+            LogUtils.d(TAG, "WakeupEngine start");
         } else
             LogUtils.d(TAG, "WakeupEngine had start");
 //        } else {
@@ -62,7 +62,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         if (mEngine != null)
             mEngine.stop();
         isRunning = false;
-        LogUtils.d(TAG, "WakeupEngine stop!!!");
+        LogUtils.d(TAG, "WakeupEngine stop");
     }
 
     @Override

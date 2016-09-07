@@ -21,6 +21,7 @@ import com.geeknewbee.doraemon.output.BluetoothTalkTask;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -88,6 +89,11 @@ public class BluetoothServiceManager {
                     } catch (JsonSyntaxException e) {
                         e.printStackTrace();
                     }
+                    break;
+                case Constants.MESSAGE_BLE_TTS:
+                    byte[] ttsBuf = (byte[]) msg.obj;
+                    String ttsString = new String(ttsBuf, 0, ttsBuf.length);
+                    doraemon.addCommand(new SoundCommand(ttsString, SoundCommand.InputSource.TIPS));
                     break;
             }
         }

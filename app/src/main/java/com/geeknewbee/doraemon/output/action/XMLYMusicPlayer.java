@@ -51,7 +51,6 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
         @Override
         public void onPlayProgress(int currPos, int duration) {
-            LogUtils.d(Constants.TAG_MUSIC, "onPlayProgress");
         }
 
         @Override

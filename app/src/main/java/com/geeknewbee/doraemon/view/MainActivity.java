@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
@@ -17,11 +18,12 @@ import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
-import com.geeknewbee.doraemon.processcenter.LocalSportActionManager;
+import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,6 +44,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LogUtils.d(App.TAG, "MainActivity onCreate");
         initView();
         startBluetoothService();
         initData();
@@ -90,7 +93,7 @@ public class MainActivity extends Activity {
         //当没有token的时候需要获取token
         DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
         //初始化本地动作库
-        LocalSportActionManager.getInstance().initLocalAction();
+        LocalResourceManager.getInstance().initLocalAction();
         //开机提示：是否联网
         if (DeviceUtil.isNetworkConnected(getApplicationContext())) {
             Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("呼叫你好小乐，唤醒我", SoundCommand.InputSource.START_WAKE_UP));
@@ -113,7 +116,7 @@ public class MainActivity extends Activity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPlayMusicComplete(ReceiveASRResultEvent event) {
+    public void onASRResult(ReceiveASRResultEvent event) {
         //收到ASR的识别结果
         result.setText(event.input);
     }

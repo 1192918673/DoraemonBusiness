@@ -2,6 +2,7 @@ package com.geeknewbee.doraemon.processcenter;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
@@ -9,27 +10,30 @@ import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 本地的运动集合，因为现在服务器是返回固定的几个动作，这里和服务做对应。
  * 以后可以让服务器直接发送约定好的命令，直接执行
  */
-public class LocalSportActionManager extends Thread {
+public class LocalResourceManager extends Thread {
     public static final String XIAO_PING_GUO = "xiao_ping_guo";
     public static final String NO_ANSWER = "no_answer";
-    private volatile static LocalSportActionManager instance;
+    private volatile static LocalResourceManager instance;
+    private final String[] noAnswerList;
     private Map<String, List<SportAction>> localActionMap;
     private boolean isRunning = false;
 
-    private LocalSportActionManager() {
+    private LocalResourceManager() {
         localActionMap = new HashMap<>();
+        noAnswerList = App.mContext.getResources().getStringArray(R.array.no_answer);
     }
 
-    public static LocalSportActionManager getInstance() {
+    public static LocalResourceManager getInstance() {
         if (instance == null)
-            synchronized (LocalSportActionManager.class) {
+            synchronized (LocalResourceManager.class) {
                 if (instance == null)
-                    instance = new LocalSportActionManager();
+                    instance = new LocalResourceManager();
             }
 
         return instance;
@@ -141,4 +145,24 @@ public class LocalSportActionManager extends Thread {
         localActionMap.put(XIAO_PING_GUO, actions);
         isRunning = false;
     }
+
+    /**
+     * 获取当没有回答时候的默认回答
+     *
+     * @return
+     */
+    public String getNoAnswerString() {
+        return noAnswerList[getRandom(noAnswerList.length)];
+    }
+
+    /**
+     * 生成指定范围的随机数
+     *
+     * @return int随机数
+     */
+    private int getRandom(int max) {
+        Random random = new Random();
+        return random.nextInt(max);
+    }
+
 }

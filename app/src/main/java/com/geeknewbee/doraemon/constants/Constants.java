@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Constants {
-    public static final String BLUETOOTH_NAME = "Doraemon";
+    public static final String BLUETOOTH_NAME = "DoraemonTest";
     public static final int RESPONSE_STATUS_SUCCESS = 200;
     public static final int HTTP_TIME_OUT = 30 * 1000;
     public static final String TAG_COMMAND = "ROBOT_COMMAND";
@@ -24,6 +24,7 @@ public class Constants {
     public static final int MESSAGE_READ_SOUND = 6;
     public static final int MESSAGE_READ_COMMAND = 7;
     public static final int MESSAGE_BLE_WIFI = 8;
+    public static final int MESSAGE_BLE_TTS = 9;
 
     //Http
     public static final String API_SECRET = "l5+z87&&szj_^$$7";
