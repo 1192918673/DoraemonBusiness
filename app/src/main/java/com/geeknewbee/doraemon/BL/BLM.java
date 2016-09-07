@@ -2,7 +2,6 @@ package com.geeknewbee.doraemon.BL;
 
 import android.content.Context;
 
-import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.event.BLLocalResponse;
@@ -74,7 +73,7 @@ public class BLM {
         if(response.getType() == 1) {   //电视
             String[] mData = response.getData().split(",");
             if (null != mData && mData.length == 2) {
-                LogUtils.d("SoundTranslateTaskQueue","操作电视：" + response.getData());
+                LogUtils.d(TAG,"操作电视：" + response.getData());
                 broadLinkRMProSend(mData[0], mData[1], 100);
                 broadLinkRMProSend(mData[0], mData[1], 200);
                 broadLinkRMProSend(mData[0], mData[1], 200);
@@ -82,13 +81,13 @@ public class BLM {
         }else if (response.getType() == 3) {   //窗帘操作
             String[] mData= response.getData().split(",");
             if (null != mData && mData.length == 2) {
-                LogUtils.d("SoundTranslateTaskQueue", "操作窗帘：" + response.getData());
+                LogUtils.d(TAG, "操作窗帘：" + response.getData());
                 broadLinkRMProSend(mData[0], mData[1], 1000);
             }
         } else if (response.getType() == 4) {   //射频开关操作
             String[] mData = response.getData().split(",");
             if (null != mData && mData.length == 2) {
-                LogUtils.d("SoundTranslateTaskQueue","操作射频开关：" + response.getData());
+                LogUtils.d(TAG,"操作射频开关：" + response.getData());
                 broadLinkRMProSend(mData[0], mData[1], 1000);
             }
         }
@@ -125,10 +124,10 @@ public class BLM {
      */
     public static void modifyPlugbase(String input, String blMac) {
         if (input.indexOf("开") != -1) {
-            LogUtils.d("SoundTranslateTaskQueue","打开插座：" + blMac);
+            LogUtils.d(TAG,"打开插座：" + blMac);
             modifyPlugbase(blMac, 1);
         } else {
-            LogUtils.d("SoundTranslateTaskQueue","关闭插座：" + blMac);
+            LogUtils.d(TAG,"关闭插座：" + blMac);
             modifyPlugbase(blMac, 0);
         }
     }
@@ -152,9 +151,9 @@ public class BLM {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                LogUtils.i("MainActivity","BroadLink发送命令：" + cmd);
+                LogUtils.i(TAG,"BroadLink发送命令：" + cmd);
                 String blResponse = blNetwork.requestDispatch(cmd);
-                LogUtils.i("MainActivity","BroadLink返回：" + blResponse);
+                LogUtils.i(TAG,"BroadLink返回：" + blResponse);
 
                 BLLocalResponse response = new Gson().fromJson(blResponse, BLLocalResponse.class);
                 switch (msg_what) {

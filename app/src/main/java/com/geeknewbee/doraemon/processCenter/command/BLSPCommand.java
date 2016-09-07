@@ -1,16 +1,19 @@
 package com.geeknewbee.doraemon.processcenter.command;
 
+import com.facebook.stetho.dumpapp.StreamFramer;
+import com.geeknewbee.doraemon.entity.GetAnswerResponse;
+
 /**
  * Created by GYY on 2016/9/6.
  */
 public class BLSPCommand extends Command {
 
     private String input;
-    private String content;
+    private String mac;
 
     public BLSPCommand(String content, String input) {
         super(CommandType.BL_SP);
-        this.content = content;
+        this.mac = content;
         this.input = input;
     }
 
@@ -18,8 +21,7 @@ public class BLSPCommand extends Command {
         return input;
     }
 
-    @Override
-    public String getContent() {
-        return content;
+    public String getMac() {
+        return mac;
     }
 }

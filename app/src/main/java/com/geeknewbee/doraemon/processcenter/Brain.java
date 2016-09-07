@@ -104,9 +104,10 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case BL:    //博联遥控
                 BLCommand blCommand = (BLCommand) command;
                 BLM.broadLinkRMProSend(blCommand.getResponse());
+                break;
             case BL_SP: //博联插座
                 BLSPCommand blspCommand = (BLSPCommand) command;
-                BLM.modifyPlugbase(blspCommand.getInput(), blspCommand.getContent().trim());
+                BLM.modifyPlugbase(blspCommand.getInput(), blspCommand.getMac().trim());
                 break;
         }
     }
