@@ -76,7 +76,7 @@ public class InputTimeoutMonitorTask extends Thread {
                     if (now.getTime() - getBeginTime() > WAIT_SOUND_INPUT_OUT_TIME) {
                         //当超过规定的时间要通知停止监听
                         stopMonitor();
-                        EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+                        //添加Sound Command 就会开启到EDD模式，不需要手动切换到EDD
                         Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("不说话，我去休息了", SoundCommand.InputSource.TIPS));
                     }
                     break;
@@ -84,7 +84,7 @@ public class InputTimeoutMonitorTask extends Thread {
                     if (now.getTime() - getBeginTime() > WAIT_SOUND_END_TIME) {
                         //当超过规定的时间要通知停止监听
                         stopMonitor();
-                        EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+                        //添加Sound Command 就会开启到EDD模式，不需要手动切换到EDD
                         Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("不说话，我去休息了", SoundCommand.InputSource.TIPS));
                     }
                     break;

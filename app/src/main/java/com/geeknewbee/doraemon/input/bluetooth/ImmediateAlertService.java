@@ -47,12 +47,21 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                     BluetoothGattCharacteristic.PERMISSION_READ |
                             BluetoothGattCharacteristic.PERMISSION_WRITE);
 
+            BluetoothGattCharacteristic tts = new BluetoothGattCharacteristic(
+                    UUID.fromString(BleUuid.CHAR_SET_TTS_STRING),
+                    BluetoothGattCharacteristic.PROPERTY_READ |
+                            BluetoothGattCharacteristic.PROPERTY_WRITE |
+                            BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                    BluetoothGattCharacteristic.PERMISSION_READ |
+                            BluetoothGattCharacteristic.PERMISSION_WRITE);
+
             read = new BluetoothGattCharacteristic(
                     UUID.fromString(BleUuid.CHAR_NOTIFY_WIFI_STRING),
                     BluetoothGattCharacteristic.PROPERTY_READ |
                             BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                     BluetoothGattCharacteristic.PERMISSION_READ);
             dis.addCharacteristic(mansc);
+            dis.addCharacteristic(tts);
             dis.addCharacteristic(read);
             mGattServer.addService(dis);
         }
@@ -83,10 +92,21 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         if (characteristic.getUuid().equals(
                 UUID.fromString(BleUuid.CHAR_SET_WIFI_STRING))) {
             Log.d(TAG, "CHAR_SET_WIFI_STRING");
-            characteristic.setValue("Name:Hoge");
+            characteristic.setValue("Name:WIFI");
+            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                    characteristic.getValue());
+        } else if (characteristic.getUuid().equals(
+                UUID.fromString(BleUuid.CHAR_SET_TTS_STRING))) {
+            characteristic.setValue("Name:TTS");
+            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                    characteristic.getValue());
+        } else if (characteristic.getUuid().equals(
+                UUID.fromString(BleUuid.CHAR_NOTIFY_WIFI_STRING))) {
+            characteristic.setValue("Name:NOTIFY WIFI");
             mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                     characteristic.getValue());
         }
+
     }
 
     public void onCharacteristicWriteRequest(BluetoothDevice device,
@@ -104,6 +124,16 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             } else {
                 LogUtils.d(TAG, "invalid value written");
             }
+            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                    null);
+        } else if (characteristic.getUuid().equals(
+                UUID.fromString(BleUuid.CHAR_SET_TTS_STRING))) {
+            LogUtils.d(TAG, "Get TTS string:" + value.length);
+            if (value.length > 0) {
+                mHandler.obtainMessage(Constants.MESSAGE_BLE_TTS, value.length, -1, value)
+                        .sendToTarget();
+            }
+
             mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                     null);
         }

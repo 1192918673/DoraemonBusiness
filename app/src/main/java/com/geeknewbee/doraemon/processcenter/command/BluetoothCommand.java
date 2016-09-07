@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemon.processcenter.LocalSportActionManager;
+import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,9 +99,9 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(danceName)) {
-            if (LocalSportActionManager.getInstance().containsAction(danceName)) {
+            if (LocalResourceManager.getInstance().containsAction(danceName)) {
                 commands.add(new LocalResourceCommand(danceMusicName));
-                commands.add(LocalSportActionManager.getInstance().getActionSetCommand(danceName));
+                commands.add(LocalResourceManager.getInstance().getActionSetCommand(danceName));
             }
         }
 
@@ -117,7 +117,7 @@ public class BluetoothCommand {
                     break;
                 case "dance":
                     commands.add(new LocalResourceCommand(R.raw.little_apple));
-                    commands.add(LocalSportActionManager.getInstance().getActionSetCommand(LocalSportActionManager.XIAO_PING_GUO));
+                    commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.XIAO_PING_GUO));
                     break;
                 case "movie":
                     break;
@@ -125,7 +125,7 @@ public class BluetoothCommand {
                     commands.add(new Command(CommandType.STOP));
                     break;
                 default:
-                    commands.add(LocalSportActionManager.getInstance().getActionSetCommand(Arrays.asList(action)));
+                    commands.add(LocalResourceManager.getInstance().getActionSetCommand(Arrays.asList(action)));
                     break;
             }
         }
