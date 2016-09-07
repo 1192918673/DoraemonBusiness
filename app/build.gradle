@@ -50,14 +50,17 @@ android {
     buildTypes {
         release {
             buildConfigField "boolean", "NEED_DEBUG", "false"
-            buildConfigField "boolean", "SHOW_ASR_RESULT", "false"
             signingConfig signingConfigs.myConfig
             minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true // 是否去除无效的资源文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             signingConfig signingConfigs.myConfig
             minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true // 是否去除无效的资源文件
         }
     }
 
