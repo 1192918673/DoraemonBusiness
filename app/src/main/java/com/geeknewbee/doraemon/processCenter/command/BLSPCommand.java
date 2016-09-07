@@ -1,8 +1,5 @@
 package com.geeknewbee.doraemon.processcenter.command;
 
-import com.facebook.stetho.dumpapp.StreamFramer;
-import com.geeknewbee.doraemon.entity.GetAnswerResponse;
-
 /**
  * Created by GYY on 2016/9/6.
  */

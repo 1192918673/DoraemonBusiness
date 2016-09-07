@@ -3,7 +3,6 @@ package com.geeknewbee.doraemon.processcenter;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
@@ -116,9 +115,6 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
                 commandList.add(actionSetCommand);
         }
 
-//        //根据得到的回答类型向博联发送命令
-//        sendBLCom(input, data);
-
         // 博联的遥控设备
         if(data.getType() == 1 || data.getType() == 3 || data.getType() == 4) {
             commandList.add(new BLCommand(data));
@@ -127,56 +123,9 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             commandList.add(new BLSPCommand(data.getData(), input));
         }
 
-//        if(data.getType() == 1) {   //电视
-//            commandList.add(new BLTVCommand(data.getData()));
-//        } else if (data.getType() == 2) {   //对插座进行开操作
-//            commandList.add(new BLSPCommand(data.getData(), input));
-//        } else if (data.getType() == 3) {   //窗帘操作
-//            commandList.add(new BLCurCommand(data.getData()));
-//        } else if (data.getType() == 4) {   //射频开关操作
-//            commandList.add(new BLRfCommand(data.getData()));
-//        }
-
         return commandList;
     }
 
-    /**
-     * 根据得到的回答类型向博联发送命令
-     * @param input 输入的语音
-     * @param data 从云服务器访问得到的结果
-     */
-    private void sendBLCom(String input, GetAnswerResponse data) {
-        if(data.getType() == 1) {   //电视
-            String[] mData = data.getData().split(",");
-            if (null != mData && mData.length == 2) {
-                LogUtils.d("SoundTranslateTaskQueue","操作电视：" + data.getData());
-                BLM.broadLinkRMProSend(mData[0], mData[1], 100);
-                BLM.broadLinkRMProSend(mData[0], mData[1], 200);
-                BLM.broadLinkRMProSend(mData[0], mData[1], 200);
-            }
-        } else if (data.getType() == 2) {   //对插座进行开操作
-            String mac = data.getData().trim();
-            if (input.indexOf("开") != -1) {
-                LogUtils.d("SoundTranslateTaskQueue","打开插座：" + data.getData());
-                BLM.modifyPlugbase(mac, 1);
-            } else {
-                LogUtils.d("SoundTranslateTaskQueue","关闭插座：" + data.getData());
-                BLM.modifyPlugbase(mac, 0);
-            }
-        } else if (data.getType() == 3) {   //窗帘操作
-            String[] mData= data.getData().split(",");
-            if (null != mData && mData.length == 2) {
-                LogUtils.d("SoundTranslateTaskQueue", "操作窗帘：" + data.getData());
-                BLM.broadLinkRMProSend(mData[0], mData[1], 1000);
-            }
-        } else if (data.getType() == 4) {   //射频开关操作
-            String[] mData = data.getData().split(",");
-            if (null != mData && mData.length == 2) {
-                LogUtils.d("SoundTranslateTaskQueue","操作射频开关：" + data.getData());
-                BLM.broadLinkRMProSend(mData[0], mData[1], 1000);
-            }
-        }
-    }
 
     /**
      * 本地响应处理

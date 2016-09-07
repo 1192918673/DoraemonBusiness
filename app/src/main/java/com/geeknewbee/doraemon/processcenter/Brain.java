@@ -15,7 +15,6 @@ import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
-import java.security.PublicKey;
 import java.util.List;
 
 /**
@@ -87,20 +86,6 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case BLUETOOTH_CONTROL_FOOT:
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
-//            case BL_TV:
-//                LogUtils.d("SoundTranslateTaskQueue","操作电视：" + command.getContent());
-//                BLM.broadLinkRMProSend(command.getContent(), 100);
-//                BLM.broadLinkRMProSend(command.getContent(), 200);
-//                BLM.broadLinkRMProSend(command.getContent(), 200);
-//                break;
-//            case BL_CURTAIN:
-//                LogUtils.d("SoundTranslateTaskQueue", "操作窗帘：" + command.getContent());
-//                BLM.broadLinkRMProSend(command.getContent(), 1000);
-//                break;
-//            case BL_RF:
-//                LogUtils.d("SoundTranslateTaskQueue","操作射频开关：" + command.getContent());
-//                BLM.broadLinkRMProSend(command.getContent(), 1000);
-//                break;
             case BL:    //博联遥控
                 BLCommand blCommand = (BLCommand) command;
                 BLM.broadLinkRMProSend(blCommand.getResponse());
