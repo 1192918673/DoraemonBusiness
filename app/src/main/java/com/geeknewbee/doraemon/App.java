@@ -41,6 +41,10 @@ public class App extends BaseApplication {
             return;
         }
         LogUtils.d(TAG, "enter the App process!");
+        create();
+    }
+
+    private void create() {
         init();
         instance = this;
         setupDatabase();
