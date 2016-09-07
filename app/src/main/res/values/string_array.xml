@@ -115,4 +115,21 @@
         <item>刚刚你的语速有点快</item>
         <item>不知道你在说什么</item>
     </string-array>
+
+    <string-array name="default_answer">
+        <item>这个问题我还不知道怎么回答你</item>
+        <item>我还需要继续努力学习</item>
+        <item>噢！我没听懂</item>
+        <item>关于这个问题我得想想</item>
+        <item>这个问题很深奥啊</item>
+        <item>我暂时不想回答这个问题</item>
+        <item>你确定你真的想知道吗</item>
+        <item>请恕在下不能回答你的问题</item>
+        <item>这种问题我不想回答</item>
+        <item>这个有点难以回答</item>
+        <item>这个问题让我记住你了</item>
+        <item>有什么不懂的可以找度娘</item>
+        <item>我在想为什么要告诉你这个答案呢</item>
+        <item>这个不好回答</item>
+    </string-array>
 </resources>

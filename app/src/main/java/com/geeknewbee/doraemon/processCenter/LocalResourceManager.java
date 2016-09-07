@@ -21,12 +21,14 @@ public class LocalResourceManager extends Thread {
     public static final String NO_ANSWER = "no_answer";
     private volatile static LocalResourceManager instance;
     private final String[] noAnswerList;
+    private final String[] defaultAnswerList;
     private Map<String, List<SportAction>> localActionMap;
     private boolean isRunning = false;
 
     private LocalResourceManager() {
         localActionMap = new HashMap<>();
         noAnswerList = App.mContext.getResources().getStringArray(R.array.no_answer);
+        defaultAnswerList = App.mContext.getResources().getStringArray(R.array.default_answer);
     }
 
     public static LocalResourceManager getInstance() {
@@ -153,6 +155,15 @@ public class LocalResourceManager extends Thread {
      */
     public String getNoAnswerString() {
         return noAnswerList[getRandom(noAnswerList.length)];
+    }
+
+    /**
+     * 获取默认的回答
+     *
+     * @return
+     */
+    public String getDefaultString() {
+        return defaultAnswerList[getRandom(defaultAnswerList.length)];
     }
 
     /**
