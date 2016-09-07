@@ -8,6 +8,8 @@ import android.support.multidex.MultiDex;
 
 import com.aispeech.common.AIConstant;
 import com.facebook.stetho.Stetho;
+import com.geeknewbee.doraemon.BL.BLM;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.database.DaoMaster;
 import com.geeknewbee.doraemon.database.DaoSession;
 import com.geeknewbee.doraemon.database.upgrade.MyOpenHelper;
@@ -35,6 +37,8 @@ public class App extends BaseApplication {
         instance = this;
         setupDatabase();
         initHuanXinSDK();
+        initBroadLink();
+
         LogUtils.LOG_DEBUG = BuildConfig.NEED_DEBUG;
 
 //        Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(this));
@@ -45,6 +49,14 @@ public class App extends BaseApplication {
             Stetho.initialize(Stetho.newInitializerBuilder(this).
                     enableDumpapp(Stetho.defaultDumperPluginsProvider(this)).
                     enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
+    }
+
+
+    /**
+     * 初始化博联设备
+     */
+    private void initBroadLink() {
+        BLM.initBroadLink(this);
     }
 
     /**

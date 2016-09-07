@@ -46,6 +46,11 @@ public class Constants {
     public static final String KEY_HX_USERNAME = "key_hx_username";
 
     public static final String KEY_HX_USERPWD = "key_hx_user_pwd";
+
+    //BL许可
+    public static final String BROADLINK_USER_LICENSE = "\"aiotYtzPTYvo0c1rKoyS8zXkWr/yKN794M4SVRZVeMLbA8E2qFczFkycKEfgNBzd+djigmirvq2LpcLbVA7rhydxZwqKchdcUQzPWM4OqJES0e3uls8=\"";
+    public static final String BROADLINK_TYPE_LICENSE = "\"hJ2tiIpCJavZZMaZe+yWEYx7Fi3Euw07m4+vxSi/3aGItD+NviHtOKoOgbm/PYkbN+i36skA/Emzn32DSPvDY4FDbPAGyN7IIh1xTZpgrUogDtG9mXJsA1Htm+2xqw7CfaRZ2iZbtdGtM76e0yF4Rg==\"";
+
     // 有限歌曲随机库
     public static final Map<String, String> map1 = new HashMap<String, String>() {
         {

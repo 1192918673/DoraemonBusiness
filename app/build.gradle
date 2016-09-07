@@ -31,6 +31,7 @@ android {
         buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "true"
         buildConfigField "boolean", "NEED_START_BLE", "false"
         buildConfigField "boolean", "SHOW_ASR_RESULT", "true"
+
     }
 
     sourceSets {
@@ -61,7 +62,6 @@ android {
         }
     }
 
-
     productFlavors {
         //开发版
         Dev {
@@ -78,7 +78,6 @@ android {
             buildConfigField "String", "URLDOMAIN", BetaURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]
-            buildConfigField "boolean", "NEED_DEBUG", "false"
         }
 
         //发布版
@@ -86,7 +85,6 @@ android {
             buildConfigField "String", "URLDOMAIN", OnlineURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]
-            buildConfigField "boolean", "NEED_DEBUG", "false"
         }
     }
 
