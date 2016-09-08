@@ -87,6 +87,7 @@ public class BluetoothCommand {
         }
 
         if (wifiInfo != null) {
+            commands.add(new SoundCommand(Constants.TIPS_SET_WIFI, SoundCommand.InputSource.TIPS));
             commands.add(new WifiCommand(wifiInfo.SSID, wifiInfo.pwd, wifiInfo.type));
         }
 

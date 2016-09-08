@@ -125,4 +125,5 @@ public class Constants {
     // 本地语义对应的回答
     public static final String SELF_INTRODUCTION = "《我叫哆啦欸梦》，《出生地是日本东京》，《我的生日是二一一二年九月三日》，《 最喜欢吃》，《铜锣烧》，《害怕老鼠》，《现在通过时光机来到了二十一世纪》";
     public static final String TANG_SHI = "《登鹳雀楼》白日依山尽，黄河入海流。欲穷千里目，更上一层楼。";
+    public static final String TIPS_SET_WIFI = "正在设置WIFI";
 }

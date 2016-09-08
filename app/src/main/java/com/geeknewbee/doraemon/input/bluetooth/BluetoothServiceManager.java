@@ -85,6 +85,7 @@ public class BluetoothServiceManager {
                     try {
                         String readMessage = new String(wifiBuf, 0, wifiBuf.length);
                         BLECommand command = gsonSecond.fromJson(readMessage, BLECommand.class);
+                        doraemon.addCommand(new SoundCommand(Constants.TIPS_SET_WIFI, SoundCommand.InputSource.TIPS));
                         doraemon.addCommand(command.getCommand());
                     } catch (JsonSyntaxException e) {
                         e.printStackTrace();
