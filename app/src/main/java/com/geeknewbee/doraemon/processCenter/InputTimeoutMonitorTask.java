@@ -3,13 +3,9 @@ package com.geeknewbee.doraemon.processcenter;
 import android.content.Context;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
-import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.Date;
 
@@ -21,9 +17,7 @@ public class InputTimeoutMonitorTask extends Thread {
 
     public static final String TAG = AISpeechEar.class.getSimpleName();
     //超时时间
-    public static final int WAIT_SOUND_INPUT_OUT_TIME = 1000 * 10;
-    public static final int EDD_TIME = 1000 * 5;
-    public static final int WAIT_SOUND_END_TIME = 1000 * 18;
+    public static final int WAIT_SOUND_INPUT_OUT_TIME = 1000 * 15;
 
     private Context context;
     //上次输入时间
@@ -80,21 +74,6 @@ public class InputTimeoutMonitorTask extends Thread {
                         Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("不说话，我去休息了", SoundCommand.InputSource.TIPS));
                     }
                     break;
-                case MODEL_WAIT_SOUND_END:
-                    if (now.getTime() - getBeginTime() > WAIT_SOUND_END_TIME) {
-                        //当超过规定的时间要通知停止监听
-                        stopMonitor();
-                        //添加Sound Command 就会开启到EDD模式，不需要手动切换到EDD
-                        Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("不说话，我去休息了", SoundCommand.InputSource.TIPS));
-                    }
-                    break;
-                case MODEL_EDD_TIME:
-                    if (now.getTime() - getBeginTime() > EDD_TIME) {
-                        //当超过规定的时间要通知停止监听
-                        stopMonitor();
-                        EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-                    }
-                    break;
             }
             try {
                 Thread.sleep(1000);
@@ -106,8 +85,6 @@ public class InputTimeoutMonitorTask extends Thread {
 
     public static enum TimeOutMonitorType {
         MODEL_NONE,
-        MODEL_WAIT_SOUND_INPUT,    // 1:等待说话超时
-        MODEL_EDD_TIME, // 2:说话超时(现在防止在听的过程中sdk无法收到底层数据)
-        MODEL_WAIT_SOUND_END  // 3:唤醒状态下定时执行唤醒(现在防止在唤醒状态sdk无法收到底层数据)
+        MODEL_WAIT_SOUND_INPUT    // 1:等待说话超时
     }
 }

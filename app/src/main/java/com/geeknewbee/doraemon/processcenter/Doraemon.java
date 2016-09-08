@@ -276,20 +276,24 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
         LogUtils.d(AISpeechEar.TAG, "onBeginningOfSpeech");
         //显示正在监听Gif
         addCommand(new ExpressionCommand("eyegif_ting", 0));
-        //开启声音输入超时监听
-        inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_WAIT_SOUND_END);
+        //停止输入超时监听
+        inputTimeOutMonitorTask.stopMonitor();
     }
 
     /*
-     * ASR监听到开始说话：无语音超时计时结束
+     * 当语音输入并解析完成
      *
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onASRResults(ASRResultEvent event) {
         LogUtils.d(AISpeechEar.TAG, "onASRResults");
-        //开启声音输入超时监听
-        inputTimeOutMonitorTask.stopMonitor();
+        //停止输入超时监听
+        if (!event.isSuccess) {
+            //如果ASR监听过程出现错误,停止输入操作监听，并重新开启ASR模式
+            inputTimeOutMonitorTask.stopMonitor();
+            switchSoundMonitor(SoundMonitorType.ASR);
+        }
     }
 
     /**
@@ -340,7 +344,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWakeup(WakeupSuccessEvent event) {
         //当唤醒的时候停止当前的动作
-        inputTimeOutMonitorTask.stopMonitor();
         this.wakePhis = event.mPhis;
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
@@ -382,7 +385,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
             case ASR:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     switchMonitorLock.lock();
-                    inputTimeOutMonitorTask.stopMonitor();
                     stopWakeUp();
                     stopASR();
                     startASR();
@@ -395,7 +397,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
                     stopASR();
                     stopWakeUp();
                     startWakeup();
-//                    inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_EDD_TIME);
                     switchMonitorLock.unlock();
                 }
                 break;

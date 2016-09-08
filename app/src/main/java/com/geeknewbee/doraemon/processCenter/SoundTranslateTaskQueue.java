@@ -11,6 +11,8 @@ import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
+import com.geeknewbee.doraemon.processcenter.command.BLCommand;
+import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
@@ -61,8 +63,9 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     public List<Command> performTask(SoundTranslateInput input) {
         // 1.当没有解析到声音的时候不做任何输出,重新开启ASR
         if (TextUtils.isEmpty(input.input)) {
-            EventManager.sendStartAsrEvent();
-            return null;
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand(LocalResourceManager.getInstance().getNoAnswerString(), SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
         }
 
         // 2.先过滤本地命令
@@ -76,7 +79,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             Response<BaseResponseBody<GetAnswerResponse>> response = service.getAnswer(
                     DoraemonInfoManager.getInstance(App.mContext).getToken(), input.input).execute();
             if (response.isSuccessful() && response.body().isSuccess() && !TextUtils.isEmpty(response.body().getData().getAnswer())) {
-                return getCommands(response.body().getData());
+                return getCommands(input.input, response.body().getData());
             }
         } catch (IOException e) {
             LogUtils.d("SoundTranslateTaskQueue", e.getMessage());
@@ -85,7 +88,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         // 5.如果以上都不能寻找到答案的时候。当思必驰有回复用思必驰的结果，思必驰没有则直接重新开启声音监听
         if (TextUtils.isEmpty(input.asrOutput)) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand(LocalResourceManager.getInstance().getNoAnswerString(), SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(LocalResourceManager.getInstance().getDefaultString(), SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         } else {
             List<Command> commands = new ArrayList<>();
@@ -94,7 +97,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
     }
 
-    private List<Command> getCommands(GetAnswerResponse data) {
+    private List<Command> getCommands(String input, GetAnswerResponse data) {
         //语音回复
         List<Command> commandList = new ArrayList<>();
         if (!TextUtils.isEmpty(data.getAnswer()))
@@ -111,8 +114,18 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             if (actionSetCommand != null)
                 commandList.add(actionSetCommand);
         }
+
+        // 博联的遥控设备
+        if (data.getType() == 1 || data.getType() == 3 || data.getType() == 4) {
+            commandList.add(new BLCommand(data));
+            //博联的插座设备
+        } else if (data.getType() == 2) {
+            commandList.add(new BLSPCommand(data.getData(), input));
+        }
+
         return commandList;
     }
+
 
     /**
      * 本地响应处理

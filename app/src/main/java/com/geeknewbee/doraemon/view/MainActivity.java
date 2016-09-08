@@ -123,7 +123,7 @@ public class MainActivity extends Activity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPlayMusicComplete(ReceiveASRResultEvent event) {
+    public void onASRResult(ReceiveASRResultEvent event) {
         //收到ASR的识别结果
         result.setText(event.input);
     }

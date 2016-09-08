@@ -1,5 +1,6 @@
 package com.geeknewbee.doraemon.processcenter;
 
+import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.input.AISpeechEar;
@@ -8,6 +9,8 @@ import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
+import com.geeknewbee.doraemon.processcenter.command.BLCommand;
+import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
@@ -22,6 +25,7 @@ import java.util.List;
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
 public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
+
 
     public void translateSound(SoundTranslateInput input) {
         LogUtils.d(AISpeechEar.TAG, "translateSound");
@@ -86,6 +90,14 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case BLUETOOTH_CONTROL_FOOT:
                 LimbsTaskQueue.getInstance().addTask(command);
+                break;
+            case BL:    //博联遥控
+                BLCommand blCommand = (BLCommand) command;
+                BLM.broadLinkRMProSend(blCommand.getResponse());
+                break;
+            case BL_SP: //博联插座
+                BLSPCommand blspCommand = (BLSPCommand) command;
+                BLM.modifyPlugbase(blspCommand.getInput(), blspCommand.getMac().trim());
                 break;
         }
     }

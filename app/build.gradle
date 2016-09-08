@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 
 
 ext {
-    TestVersion = '1.0.0.1'
-    TestVersionCode = 1000001
+    TestVersion = '1.0.0.3'
+    TestVersionCode = 1000003
     Version = '1.0.0'
     VersionCode = 10000
     DevURLDOMAIN = '"http://doraemon.babadeyan.com"'
@@ -31,6 +31,7 @@ android {
         buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "true"
         buildConfigField "boolean", "NEED_START_BLE", "true"
         buildConfigField "boolean", "SHOW_ASR_RESULT", "true"
+
     }
 
     sourceSets {
@@ -50,17 +51,19 @@ android {
     buildTypes {
         release {
             buildConfigField "boolean", "NEED_DEBUG", "false"
-            buildConfigField "boolean", "SHOW_ASR_RESULT", "false"
             signingConfig signingConfigs.myConfig
             minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true // 是否去除无效的资源文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             signingConfig signingConfigs.myConfig
             minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true // 是否去除无效的资源文件
         }
     }
-
 
     productFlavors {
         //开发版
@@ -78,7 +81,6 @@ android {
             buildConfigField "String", "URLDOMAIN", BetaURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]
-            buildConfigField "boolean", "NEED_DEBUG", "false"
         }
 
         //发布版
@@ -86,7 +88,6 @@ android {
             buildConfigField "String", "URLDOMAIN", OnlineURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]
-            buildConfigField "boolean", "NEED_DEBUG", "false"
         }
     }
 
