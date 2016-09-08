@@ -30,6 +30,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         mEngine.setResBin(SpeechConstants.wakeup_dnn_res);
         mEngine.setDoaCfg(SpeechConstants.uca_config);//环形麦的配置
 //		mEddEngine.setDoaCfg(SampleConstants.ula_config);//线性麦的配置
+//        mEngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());
         mEngine.setAecCfg("aec.cfg");
         mEngine.setDoaEnable(true);
         mEngine.init(App.mContext, new AISpeechListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);

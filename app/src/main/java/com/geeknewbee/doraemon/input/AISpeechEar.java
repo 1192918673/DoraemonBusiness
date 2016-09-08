@@ -199,6 +199,8 @@ public class AISpeechEar implements IEar {
         mASREngine.setAecCfg(SpeechConstants.ace_cfg);
         mASREngine.setConfigName(SpeechConstants.uca_config); //环形麦的配置
 //        mAsrEngine.setConfigName(SampleConstants.ula_config);//线性麦的配置
+//        mASREngine.setEchoEnable(true);
+//        mASREngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());
         mASREngine.setUcaParamMode(2);
         mASREngine.setEchoEnable(false);
         mASREngine.setCloudVadEnable(true);

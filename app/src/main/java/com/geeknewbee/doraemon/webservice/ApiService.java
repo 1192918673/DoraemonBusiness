@@ -40,9 +40,9 @@ public interface ApiService {
     Call<BaseResponseBody<Object>> uploadSsid(@Field("token") String token, @Field("ssid") String ssid);
 
     // 上传版本名
-    @FormUrlEncoded
+    @Multipart
     @PUT("/robot/version")
-    Call<BaseResponseBody<Object>> uploadVersionName(@Field("token") String token, @Field("ssid") String appVersionName);
+    Call<BaseResponseBody<Object>> uploadVersionName(@Part("token") RequestBody token, @Field("ssid") RequestBody appVersionName);
 
     // 请求服务器版本号
     @GET("/robot/version")
@@ -51,5 +51,5 @@ public interface ApiService {
     // 上传照片
     @Multipart
     @POST("robot/photo")
-    Call<BaseResponseBody> uploadPhoto(@Part("token") RequestBody token, @Part("photo_type") RequestBody photo_type, @Part("photo\"; filename=\"picture.jpg") RequestBody photo);
+    Call<BaseResponseBody<Object>> uploadPhoto(@Part("token") RequestBody token, @Part("photo_type") RequestBody photo_type, @Part("photo\"; filename=\"picture.jpg") RequestBody photo);
 }
