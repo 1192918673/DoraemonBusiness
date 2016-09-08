@@ -1,6 +1,7 @@
 package com.geeknewbee.doraemon.processcenter;
 
 import android.content.Context;
+import android.view.SurfaceView;
 
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
@@ -47,7 +48,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 哆啦A梦 单利模式
  */
-public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageReceive.MessageListener {
+public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListener {
     private volatile static Doraemon instance;
     private final Context context;
     private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
@@ -67,7 +68,7 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         this.context = context;
         speechAuth = new AISpeechAuth();
         ear = new AISpeechEar();
-        eye = new ReadSenseEye();
+        eye = ReadSenseEye.getInstance();
         receive = HYMessageReceive.getInstance();
         brain = new Brain();
         soundInputDevice = new AISpeechSoundInputDevice();
@@ -140,18 +141,19 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
 
     /**
      * 开始自动人脸识别 Automatic face Recognition
+     * @param preView
      */
-    public void startAFR() {
-        eye.startRecognition();
-        eye.setAFRListener(this);
+    public void startAFR(SurfaceView preView) {
+        eye.startReadSence(preView);
+//        eye.setAFRListener(this);
     }
 
     /**
      * 停止自动人脸识别
      */
     public void stopAFR() {
-        eye.setAFRListener(null);
-        eye.stopRecognition();
+//        eye.setAFRListener(null);
+        eye.stopReadSence();
     }
 
     /**
@@ -177,14 +179,6 @@ public class Doraemon implements IEar.ASRListener, IEye.AFRListener, IMessageRec
         if (BuildConfig.SHOW_ASR_RESULT)
             EventBus.getDefault().post(new ReceiveASRResultEvent(input));
         brain.translateSound(new SoundTranslateInput(input, asrOutput, action, starName, musicName));
-    }
-
-    /**
-     * 检测到人脸
-     */
-    @Override
-    public void onDetectFace() {
-
     }
 
     /**
