@@ -5,8 +5,12 @@ import android.media.AudioManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
+import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.ShowQRTask;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
@@ -74,10 +78,12 @@ public class SysSettingManager {
 
         if (res != -1) {
             result = wm.enableNetwork(res, true);
-            if (result) new ShowQRTask().start();
         }
-
-        EventBus.getDefault().post(new SetWifiCompleteEvent(result, ssid));
+        if (result) new ShowQRTask(ssid).start();
+        else {
+            Doraemon.getInstance(App.mContext).addCommand(new SoundCommand(Constants.TIPS_CONNECT_WIFI_FAIL, SoundCommand.InputSource.TIPS));
+            EventBus.getDefault().post(new SetWifiCompleteEvent(result, ssid));//告知手机端连接失败
+        }
         return result;
     }
 

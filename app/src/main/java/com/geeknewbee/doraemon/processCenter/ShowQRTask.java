@@ -6,14 +6,15 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.entity.GetMembersCountResponse;
-import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.CommandType;
+import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 
@@ -25,24 +26,24 @@ import retrofit2.Retrofit;
  * 只有在机器猫还没有人绑定的时候会显示
  */
 public class ShowQRTask extends Thread {
-    private static final int INIT_STATUS = 0, SHOW_QR = 1, HIDE_QR = 2;
     private static final String TAG = ShowQRTask.class.getSimpleName();
     private static boolean TTS_TIPS_FLAG;
     private int number = 40;
-    private int status = INIT_STATUS;
+    private String ssid;
+
+    public ShowQRTask(String ssid) {
+        this.ssid = ssid;
+    }
 
     @Override
     public void run() {
         super.run();
         int index = 0;
         TTS_TIPS_FLAG = true;
-        status = SHOW_QR;
         Context context = App.mContext;
         while (true) {
             if (index >= number) {
-                if (status == HIDE_QR)
-                    Doraemon.getInstance(context).addCommand(new Command(CommandType.BIND_ACCOUNT_SUCCESS));
-                return;
+                break;
             }
 
             String token = DoraemonInfoManager.getInstance(context).getToken();
@@ -51,31 +52,18 @@ public class ShowQRTask extends Thread {
                     Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
                     TTS_TIPS_FLAG = false;
                 }
-                if (TextUtils.isEmpty(token)) return;
                 Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
                 ApiService service = retrofit.create(ApiService.class);
                 try {
                     Response<BaseResponseBody<GetMembersCountResponse>> response = service.getMembersCount(token).execute();
                     if (response.isSuccessful() && response.body().isSuccess()) {
-                        if (status == SHOW_QR) {
-                            if (response.body().getData().count == 0) {
-                                LogUtils.d(TAG, "显示二维码，绑定用户数：" + response.body().getData().count);
-                                Doraemon.getInstance(context).addCommand(new Command(CommandType.SHOW_QR, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context)));
-                                status = HIDE_QR;
-                                index = 0;
-                            } else {
-                                LogUtils.d(TAG, "二次绑定不用显示二维码，绑定用户数：" + response.body().getData().count);
-                                return;
-                            }
-                        }
-                        if (status == HIDE_QR) {
-                            LogUtils.d(TAG, "应该隐藏了，还未隐藏，绑定用户数：" + response.body().getData().count);
-                            if (response.body().getData().count > 0) {
-                                LogUtils.d(TAG, "二维码已经隐藏，" + response.body().getData().count);
-                                Doraemon.getInstance(context).addCommand(new Command(CommandType.BIND_ACCOUNT_SUCCESS));
-                                status = INIT_STATUS;
-                                return;
-                            }
+                        if (response.body().getData().count == 0) {
+                            EventBus.getDefault().post(new SetWifiCompleteEvent(true, ssid, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context)));//告知手机端连接成功
+                            break;
+                        } else {
+                            EventBus.getDefault().post(new SetWifiCompleteEvent(true, ssid, true));//告知手机端连接失败
+                            LogUtils.d(TAG, "二次绑定不用显示二维码，绑定用户数：" + response.body().getData().count);
+                            break;
                         }
                     }
                 } catch (IOException e) {
