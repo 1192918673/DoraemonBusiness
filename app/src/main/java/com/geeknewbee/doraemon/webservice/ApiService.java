@@ -42,7 +42,7 @@ public interface ApiService {
     // 上传版本名
     @Multipart
     @PUT("/robot/version")
-    Call<BaseResponseBody<Object>> uploadVersionName(@Part("token") RequestBody token, @Field("ssid") RequestBody appVersionName);
+    Call<BaseResponseBody<Object>> uploadVersionName(@Part("token") RequestBody token, @Part("ssid") RequestBody appVersionName);
 
     // 请求服务器版本号
     @GET("/robot/version")
