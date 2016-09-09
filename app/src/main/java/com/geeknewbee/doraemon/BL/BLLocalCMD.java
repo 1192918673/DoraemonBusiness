@@ -17,20 +17,20 @@ public class BLLocalCMD {
     private String command;
     private HashMap<String, Object> params = new HashMap<String, Object>(10);
 
-    public void setApi_id(int api_id) {
-        this.api_id = api_id;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
     public int getApi_id() {
         return api_id;
     }
 
+    public void setApi_id(int api_id) {
+        this.api_id = api_id;
+    }
+
     public String getCommand() {
         return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     public void put(String key, Object value) {

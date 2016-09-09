@@ -15,12 +15,10 @@ import cn.com.broadlink.blnetwork.BLNetwork;
  */
 public class BLM {
 
-    private static BLNetwork blNetwork;
-
     private static final int MSG_WHAT_BL_INIT = 100;
     private static final int MSG_WHAT_BL_SEND = 105;
     private static final int MSG_WHAT_BL_PLUG = 112;
-
+    private static BLNetwork blNetwork;
     private static String TAG = "BLM";
 
     /**
@@ -31,7 +29,7 @@ public class BLM {
             blNetwork = BLNetwork.getInstanceBLNetwork(context);
             broadLinkInit(1000);
         } catch (Exception e) {
-            LogUtils.d( TAG, "博联设备初始化错误：" + e.getLocalizedMessage());
+            LogUtils.d(TAG, "博联设备初始化错误：" + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -51,7 +49,7 @@ public class BLM {
     /**
      * 发送命令代码到设备
      */
-    public static void broadLinkRMProSend( String blMac, String cmd_data, int delay) {
+    public static void broadLinkRMProSend(String blMac, String cmd_data, int delay) {
         BLLocalCMD blLocalCMD = new BLLocalCMD();
         blLocalCMD.setApi_id(134);
         blLocalCMD.setCommand("rm2_send");
@@ -70,16 +68,16 @@ public class BLM {
      * 发送命令代码到设备
      */
     public static void broadLinkRMProSend(GetAnswerResponse response) {
-        if(response.getType() == 1) {   //电视
+        if (response.getType() == 1) {   //电视
             String[] mData = response.getData().split(",");
             if (null != mData && mData.length == 2) {
-                LogUtils.d(TAG,"操作电视：" + response.getData());
+                LogUtils.d(TAG, "操作电视：" + response.getData());
                 broadLinkRMProSend(mData[0], mData[1], 100);
                 broadLinkRMProSend(mData[0], mData[1], 200);
                 broadLinkRMProSend(mData[0], mData[1], 200);
             }
-        }else if (response.getType() == 3) {   //窗帘操作
-            String[] mData= response.getData().split(",");
+        } else if (response.getType() == 3) {   //窗帘操作
+            String[] mData = response.getData().split(",");
             if (null != mData && mData.length == 2) {
                 LogUtils.d(TAG, "操作窗帘：" + response.getData());
                 broadLinkRMProSend(mData[0], mData[1], 1000);
@@ -87,7 +85,7 @@ public class BLM {
         } else if (response.getType() == 4) {   //射频开关操作
             String[] mData = response.getData().split(",");
             if (null != mData && mData.length == 2) {
-                LogUtils.d(TAG,"操作射频开关：" + response.getData());
+                LogUtils.d(TAG, "操作射频开关：" + response.getData());
                 broadLinkRMProSend(mData[0], mData[1], 1000);
             }
         }
@@ -96,7 +94,7 @@ public class BLM {
     /**
      * 发送命令代码到设备
      */
-    public static void broadLinkRMProSend( String data, int delay) {
+    public static void broadLinkRMProSend(String data, int delay) {
         String[] mData = data.split(",");
         if (null != mData && mData.length == 2) {
             broadLinkRMProSend(mData[0], mData[1], delay);
@@ -119,19 +117,19 @@ public class BLM {
 
     /**
      * 操作插座
+     *
      * @param input 输入的语音
      * @param blMac 插座的mac
      */
     public static void modifyPlugbase(String input, String blMac) {
         if (input.indexOf("开") != -1) {
-            LogUtils.d(TAG,"打开插座：" + blMac);
+            LogUtils.d(TAG, "打开插座：" + blMac);
             modifyPlugbase(blMac, 1);
         } else {
-            LogUtils.d(TAG,"关闭插座：" + blMac);
+            LogUtils.d(TAG, "关闭插座：" + blMac);
             modifyPlugbase(blMac, 0);
         }
     }
-
 
 
     /**
@@ -151,9 +149,9 @@ public class BLM {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                LogUtils.i(TAG,"BroadLink发送命令：" + cmd);
+                LogUtils.i(TAG, "BroadLink发送命令：" + cmd);
                 String blResponse = blNetwork.requestDispatch(cmd);
-                LogUtils.i(TAG,"BroadLink返回：" + blResponse);
+                LogUtils.i(TAG, "BroadLink返回：" + blResponse);
 
                 BLLocalResponse response = new Gson().fromJson(blResponse, BLLocalResponse.class);
                 switch (msg_what) {
@@ -161,7 +159,7 @@ public class BLM {
                         if (response.getCode() == 0 || response.getCode() == 3) {
                             LogUtils.d(TAG, "BroadLink初始化成功");
                         } else {
-                            LogUtils.d(TAG,"BroadLink初始化失败：" + response.getMsg());
+                            LogUtils.d(TAG, "BroadLink初始化失败：" + response.getMsg());
                             broadLinkInit(1000);
                         }
                         break;

@@ -20,6 +20,8 @@ import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.geeknewbee.doraemonsdk.utils.MD5Util;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 
 /**
@@ -123,7 +125,9 @@ public class DoraemonInfoManager {
             LogUtils.d(Constants.HTTP_TAG, "Get Version Code Or Verson Name Exception...");
         }
 
-        RetrofitHelper.sendRequest(service.uploadVersionName(getToken(), appVersionName), new RetrofitCallBack<Object>() {
+        RequestBody rbToken = RequestBody.create(MediaType.parse("text/plain"), getToken());
+        RequestBody rbVersionName = RequestBody.create(MediaType.parse("text/plain"), appVersionName);
+        RetrofitHelper.sendRequest(service.uploadVersionName(rbToken, rbVersionName), new RetrofitCallBack<Object>() {
 
             @Override
             public void onSuccess(Object response) {

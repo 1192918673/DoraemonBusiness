@@ -133,9 +133,14 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
             @Override
             public void onError(int i, String s) {
-
+                LogUtils.d(Constants.TAG_MUSIC, "初始化Error:" + s);
             }
         });
+    }
+
+    @Override
+    public void reInit() {
+        init();
     }
 
     @Override

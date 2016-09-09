@@ -5,7 +5,7 @@ import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 /**
  * Created by GYY on 2016/9/6.
  */
-public class BLCommand extends Command{
+public class BLCommand extends Command {
 
     private GetAnswerResponse response;
 

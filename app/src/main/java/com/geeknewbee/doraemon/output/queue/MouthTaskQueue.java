@@ -44,6 +44,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     public void reInit() {
         itts.reInit();
+        iMusicPlayer.reInit();
     }
 
     @Override

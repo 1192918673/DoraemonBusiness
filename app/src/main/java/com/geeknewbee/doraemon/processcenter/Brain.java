@@ -4,6 +4,7 @@ import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.input.AISpeechEar;
+import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
@@ -48,6 +49,10 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 //面部表情
                 ExpressionCommand expressionCommand = (ExpressionCommand) command;
                 FaceManager.getInstance().displayGif(expressionCommand.getContent(), expressionCommand.loops);
+                break;
+            case READ_SENCE:
+                //拍照、人脸添加、人脸识别
+                ReadSenseEye.getInstance().startTakePicture(false);
                 break;
             case PLAY_MUSIC:
                 // 音乐

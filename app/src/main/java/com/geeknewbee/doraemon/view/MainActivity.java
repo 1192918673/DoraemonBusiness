@@ -3,10 +3,12 @@ package com.geeknewbee.doraemon.view;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.geeknewbee.doraemon.App;
@@ -35,11 +37,13 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class MainActivity extends Activity {
     public GifImageView gifView;
+    public View llQR;
     private ImageView imageQRLeft;
     private ImageView imageQRRight;
-    public View llQR;
     private BluetoothServiceManager bluetoothServiceManager;
     private TextView result;
+    private RelativeLayout rl_preView;
+    private SurfaceView mPreView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +54,8 @@ public class MainActivity extends Activity {
         initData();
         EventBus.getDefault().register(this);
 //        test();
-        Doraemon.getInstance(getApplicationContext()).startReceive();
+        Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
+        Doraemon.getInstance(getApplicationContext()).startAFR(mPreView); // 开启人脸检测
     }
 
     private void initView() {
@@ -63,6 +68,8 @@ public class MainActivity extends Activity {
         imageQRRight = (ImageView) findViewById(R.id.iv_right_qr);
         result = (TextView) findViewById(R.id.tv_result);
         llQR = findViewById(R.id.ll_qr);
+        rl_preView = (RelativeLayout) findViewById(R.id.rl_preView);
+        mPreView = (SurfaceView) findViewById(R.id.sv_preView);
 
         initFaceView();
     }

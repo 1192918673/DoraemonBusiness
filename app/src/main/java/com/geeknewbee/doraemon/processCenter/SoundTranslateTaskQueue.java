@@ -116,7 +116,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
 
         // 博联的遥控设备
-        if(data.getType() == 1 || data.getType() == 3 || data.getType() == 4) {
+        if (data.getType() == 1 || data.getType() == 3 || data.getType() == 4) {
             commandList.add(new BLCommand(data));
             //博联的插座设备
         } else if (data.getType() == 2) {
@@ -157,6 +157,11 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (input.contains("背") && input.contains("诗")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.TANG_SHI, SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
+        }
+        if (input.contains("拍照")) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(new Command(CommandType.READ_SENCE, "拍照"));
             return commands;
         }
         if (input.contains("温度")) {
