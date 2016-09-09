@@ -35,7 +35,6 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
 
     public void addCommand(Command command) {
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
-//        Doraemon.getInstance(App.mContext).stopASR();
         switch (command.getType()) {
             case PLAY_SOUND:
                 //讲话
@@ -78,12 +77,6 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case LE_XING_FOOT://乐行Foot
                 LimbsTaskQueue.getInstance().addTask(command);
-                break;
-            case SHOW_QR:
-                FaceManager.getInstance().showQR(command.getContent());
-                break;
-            case BIND_ACCOUNT_SUCCESS:
-                FaceManager.getInstance().hideQR();
                 break;
             case PLAY_LOCAL_RESOURCE:
                 MouthTaskQueue.getInstance().addTask(command);
