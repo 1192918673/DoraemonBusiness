@@ -19,13 +19,15 @@ package com.geeknewbee.doraemon.input.bluetooth;
  * BLE UUID Strings
  */
 public class BleUuid {
-    // 180A Device Information
+    // 180A Doraemon Information
     public static final String SERVICE_DEVICE_INFORMATION = "0000180a-0000-1000-8000-00805f9b34fb";
-    public static final String CHAR_MODEL_NUMBER_STRING = "00002a24-0000-1000-8000-00805f9b34fb";
-    public static final String CHAR_SERIAL_NUMBER_STRING = "00002a25-0000-1000-8000-00805f9b34fb";
     public static final String CHAR_SET_WIFI_STRING = "00002a30-0000-1000-8000-00805f9b34fb";
     public static final String CHAR_NOTIFY_WIFI_STRING = "00002a31-0000-1000-8000-00805f9b34fb";
-    public static final String CHAR_SET_TTS_STRING = "00002a29-0000-1000-8000-00805f9b34fb";
+
+    // 180B Business
+    public static final String SERVICE_BUSINESS = "0000180b-0000-1000-8000-00805f9b34fb";
+    public static final String CHAR_SET_TTS_STRING = "00002a60-0000-1000-8000-00805f9b34fb";
+    public static final String CHAR_NOTIFY_TTS_STRING = "00002a61-0000-1000-8000-00805f9b34fb";
 
     // 1802 Immediate Alert
     public static final String SERVICE_IMMEDIATE_ALERT = "00001802-0000-1000-8000-00805f9b34fb";

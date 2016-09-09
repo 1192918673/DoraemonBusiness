@@ -22,6 +22,7 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
     private BluetoothGattServer mGattServer;
     private BluetoothDevice bluetoothDevice;
     private BluetoothGattCharacteristic read;
+    private BluetoothGattCharacteristic notifyTTS;
 
     public ImmediateAlertService(Handler mHandler) {
         this.mHandler = mHandler;
@@ -34,7 +35,8 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         mGattServer = gattServer;
 
         // setup services
-        { // device information
+        {
+            // doraemon information
             BluetoothGattService dis = new BluetoothGattService(
                     UUID.fromString(BleUuid.SERVICE_DEVICE_INFORMATION),
                     BluetoothGattService.SERVICE_TYPE_PRIMARY);
@@ -47,6 +49,21 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                     BluetoothGattCharacteristic.PERMISSION_READ |
                             BluetoothGattCharacteristic.PERMISSION_WRITE);
 
+
+            read = new BluetoothGattCharacteristic(
+                    UUID.fromString(BleUuid.CHAR_NOTIFY_WIFI_STRING),
+                    BluetoothGattCharacteristic.PROPERTY_READ |
+                            BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                    BluetoothGattCharacteristic.PERMISSION_READ);
+            dis.addCharacteristic(mansc);
+            dis.addCharacteristic(read);
+            mGattServer.addService(dis);
+
+            // business information
+            BluetoothGattService business = new BluetoothGattService(
+                    UUID.fromString(BleUuid.SERVICE_BUSINESS),
+                    BluetoothGattService.SERVICE_TYPE_PRIMARY);
+
             BluetoothGattCharacteristic tts = new BluetoothGattCharacteristic(
                     UUID.fromString(BleUuid.CHAR_SET_TTS_STRING),
                     BluetoothGattCharacteristic.PROPERTY_READ |
@@ -55,15 +72,16 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                     BluetoothGattCharacteristic.PERMISSION_READ |
                             BluetoothGattCharacteristic.PERMISSION_WRITE);
 
-            read = new BluetoothGattCharacteristic(
-                    UUID.fromString(BleUuid.CHAR_NOTIFY_WIFI_STRING),
+            notifyTTS = new BluetoothGattCharacteristic(
+                    UUID.fromString(BleUuid.CHAR_NOTIFY_TTS_STRING),
                     BluetoothGattCharacteristic.PROPERTY_READ |
                             BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                     BluetoothGattCharacteristic.PERMISSION_READ);
-            dis.addCharacteristic(mansc);
-            dis.addCharacteristic(tts);
-            dis.addCharacteristic(read);
-            mGattServer.addService(dis);
+
+            business.addCharacteristic(tts);
+            business.addCharacteristic(notifyTTS);
+            mGattServer.addService(business);
+
         }
     }
 
@@ -105,6 +123,11 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             characteristic.setValue("Name:NOTIFY WIFI");
             mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                     characteristic.getValue());
+        } else if (characteristic.getUuid().equals(
+                UUID.fromString(BleUuid.CHAR_NOTIFY_TTS_STRING))) {
+            characteristic.setValue("Name:NOTIFY TTS");
+            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                    characteristic.getValue());
         }
 
     }
@@ -144,11 +167,19 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         super.onExecuteWrite(device, requestId, execute);
     }
 
-    //主动写值并通知远程设备
-    public void sendNotification(String value) {
+    //主动写值并通知远程设备wifi
+    public void sendWifiNotification(String value) {
         if (bluetoothDevice != null && mGattServer != null) {
             read.setValue(value);
             mGattServer.notifyCharacteristicChanged(bluetoothDevice, read, false);//测试发现必须发送此通知,并且保证特征值的notify权限
         }
     }
+
+    public void sendTTSNotification(String value) {
+        if (bluetoothDevice != null && mGattServer != null) {
+            notifyTTS.setValue(value);
+            mGattServer.notifyCharacteristicChanged(bluetoothDevice, notifyTTS, false);//测试发现必须发送此通知,并且保证特征值的notify权限
+        }
+    }
+
 }
