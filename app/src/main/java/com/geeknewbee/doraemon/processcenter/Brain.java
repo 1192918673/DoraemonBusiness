@@ -92,6 +92,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 BLSPCommand blspCommand = (BLSPCommand) command;
                 BLM.modifyPlugbase(blspCommand.getInput(), blspCommand.getMac().trim());
                 break;
+            case PLAY_MOVIE:
+                MouthTaskQueue.getInstance().addTask(command);
+                break;
         }
     }
 

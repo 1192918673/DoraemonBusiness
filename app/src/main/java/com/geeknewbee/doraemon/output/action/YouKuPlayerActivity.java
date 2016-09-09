@@ -1,24 +1,35 @@
 package com.geeknewbee.doraemon.output.action;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.baseproject.utils.Logger;
 import com.geeknewbee.doraemon.R;
+import com.geeknewbee.doraemon.entity.event.VideoCompleteEvent;
+import com.geeknewbee.doraemon.entity.event.VideoPlayCreate;
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
+import com.youku.player.ApiManager;
+import com.youku.player.VideoQuality;
 import com.youku.player.base.YoukuBasePlayerManager;
 import com.youku.player.base.YoukuPlayer;
 import com.youku.player.base.YoukuPlayerView;
 import com.youku.player.plugin.YoukuPlayerListener;
 
+import org.greenrobot.eventbus.EventBus;
+
 /**
- * 播放器播放界面，
+ * 优酷播放器播放界面
  */
-public class YouKuPlayerActivity extends Activity {
+public class YouKuPlayerActivity extends Activity implements IVideoPlayer {
+    public static final String TAG = "YouKuPlayerActivity";
+    public static final String EXTRA_VID = "vid";
     private YoukuBasePlayerManager basePlayerManager;
     // 播放器控件
     private YoukuPlayerView mYoukuPlayerView;
@@ -31,22 +42,33 @@ public class YouKuPlayerActivity extends Activity {
     // YoukuPlayer实例，进行视频播放控制
     private YoukuPlayer youkuPlayer;
 
+    //是否正在播放
+    private boolean isPlaying;
+    //是否已经调整过清晰度
+    private boolean hadchangedQuality;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.you_ku_player);
         initYouKu();
-        getVIDAndPlay(getIntent(), id);
+        EventBus.getDefault().post(new VideoPlayCreate(this));
+        isPlaying = true;
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         // 通过Intent获取播放需要的相关参数
-        getVIDAndPlay(intent, id);
+        getVIDAndPlay(intent);
+        EventBus.getDefault().post(new VideoPlayCreate(this));
+        isPlaying = true;
     }
 
-    private void getVIDAndPlay(Intent intent, String id) {
+    private void getVIDAndPlay(Intent intent) {
         // 通过上个页面传递过来的Intent获取播放参数
         getIntentData(intent);
 
@@ -60,6 +82,10 @@ public class YouKuPlayerActivity extends Activity {
     }
 
     private void initYouKu() {
+        // 播放器控件
+        mYoukuPlayerView = (YoukuPlayerView) this
+                .findViewById(R.id.youkuPlayerView);
+
         basePlayerManager = new YoukuBasePlayerManager(this) {
             @Override
             public void setPadHorizontalLayout() {
@@ -71,6 +97,8 @@ public class YouKuPlayerActivity extends Activity {
                 addPlugins();
                 // 实例化YoukuPlayer实例
                 youkuPlayer = player;
+
+                getVIDAndPlay(getIntent());
             }
 
             @Override
@@ -83,9 +111,6 @@ public class YouKuPlayerActivity extends Activity {
         };
         basePlayerManager.onCreate();
 
-        // 播放器控件
-        mYoukuPlayerView = (YoukuPlayerView) this
-                .findViewById(R.id.youkuPlayerView);
         // 控制竖屏和全屏时候的布局参数。这两句必填。
         mYoukuPlayerView
                 .setSmallScreenLayoutParams(new LinearLayout.LayoutParams(
@@ -101,16 +126,62 @@ public class YouKuPlayerActivity extends Activity {
         basePlayerManager.setPlayerListener(new YoukuPlayerListener() {
             @Override
             public void onCompletion() {
+                LogUtils.d(TAG, "onCompletion");
                 super.onCompletion();
+                endPlay();
+            }
+
+            @Override
+            public void onError(int what, int extra) {
+                super.onError(what, extra);
+                LogUtils.d(TAG, "onError what:" + what + " extra:" + extra);
+                endPlay();
+            }
+
+            @Override
+            public void onRealVideoStart() {
+                LogUtils.d(TAG, "onRealVideoStart");
+
+                super.onRealVideoStart();
+                if (!hadchangedQuality) {
+                    change(VideoQuality.HIGHT);
+                }
+            }
+
+            @Override
+            public void onTimeOut() {
+                LogUtils.d(TAG, "onTimeOut");
+
+                super.onTimeOut();
+                endPlay();
             }
         });
     }
 
+    private void endPlay() {
+        isPlaying = false;
+        EventBus.getDefault().post(new VideoCompleteEvent());
+        finish();
+    }
+
+    private void change(VideoQuality quality) {
+        try {
+            hadchangedQuality = true;
+            // 通过ApiManager实例更改清晰度设置，返回值（1):成功；（0): 不支持此清晰度
+            // 接口详细信息可以参数使用文档
+            int result = ApiManager.getInstance().changeVideoQuality(quality,
+                    basePlayerManager);
+            if (result == 0)
+                LogUtils.d(TAG, "不支持此清晰度");
+        } catch (Exception e) {
+            LogUtils.d(TAG, "change:" + e.getMessage());
+        }
+    }
+
     @Override
-    public void onBackPressed() { // android系统调用
-        Logger.d("sgh", "onBackPressed before super");
+    public void onBackPressed() {
         super.onBackPressed();
-        Logger.d("sgh", "onBackPressed");
+        LogUtils.d(TAG, "onBackPressed");
         basePlayerManager.onBackPressed();
     }
 
@@ -123,7 +194,12 @@ public class YouKuPlayerActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LogUtils.d(TAG, "onDestroy");
         basePlayerManager.onDestroy();
+        youkuPlayer = null;
+        mYoukuPlayerView.destroyDrawingCache();
+        mYoukuPlayerView = null;
+        EventBus.getDefault().post(new VideoPlayCreate(null));
     }
 
     @Override
@@ -176,7 +252,7 @@ public class YouKuPlayerActivity extends Activity {
      */
     private void getIntentData(Intent intent) {
         if (intent != null) {
-            id = intent.getStringExtra("vid");
+            id = intent.getStringExtra(EXTRA_VID);
         }
     }
 
@@ -184,10 +260,9 @@ public class YouKuPlayerActivity extends Activity {
         // youkuPlayer.playLocalVideo("abc",
         // "http://7xploe.media1.z0.glb.clouddn.com/XMTQ4NzA1Njc0OA==/hd1/p1_308.mp4",
         // "ceshi");
-
+        LogUtils.d(TAG, "Play:" + vid);
         youkuPlayer.playVideo(vid);
-
-        // XNzQ3NjcyNDc2
+        // XNzQ3NjcyNDc
         // XNzQ3ODU5OTgw
         // XNzUyMzkxMjE2
         // XNzU5MjMxMjcy 加密视频
@@ -198,5 +273,28 @@ public class YouKuPlayerActivity extends Activity {
         // XODA2OTkwMDU2 卧底韦恩突出现 劫持案愈发棘手
         // XODUwODM2NTI0 会员视频
         // XODQwMTY4NDg0 一个人的武林
+    }
+
+    @Override
+    public boolean init() {
+        //进入Activity 自动完成init
+        return true;
+    }
+
+    @Override
+    public void play(Context context, String url) {
+        //进入Activity就自动播放了
+    }
+
+    @Override
+    public void stop() {
+        if (basePlayerManager != null)
+            basePlayerManager.onStop();
+        finish();
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return isPlaying;
     }
 }

@@ -244,6 +244,11 @@ public class HYMessageReceive implements IMessageReceive {
                     LogUtils.d(TAG, "声音大小：" + vol);
                     messageListener.onReceivedMessage(Arrays.asList(new Command(CommandType.SETTING_VOLUME, vol + "")));
                 } else if (type == 3) {// 播放电影{"type":3,"data":"XMTYwODE0MjIxMg=="}
+                    String readData = pushData.getString("data");
+                    List<Command> commands = new ArrayList<>();
+                    commands.add(new SoundCommand(Constants.TIP_BEFORE_PLAY_MOVIE, SoundCommand.InputSource.TIPS));
+                    commands.add(new Command(CommandType.PLAY_MOVIE, readData));
+                    messageListener.onReceivedMessage(commands);
                 } else if (type == 4) {// 透传动作控制
                 } else if (type == 5) {// 手机识别
                 }

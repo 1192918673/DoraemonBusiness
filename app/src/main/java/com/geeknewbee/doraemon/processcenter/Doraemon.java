@@ -18,6 +18,7 @@ import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
+import com.geeknewbee.doraemon.entity.event.VideoCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.WakeupSuccessEvent;
 import com.geeknewbee.doraemon.input.AISpeechAuth;
 import com.geeknewbee.doraemon.input.AISpeechEar;
@@ -141,6 +142,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
 
     /**
      * 开始自动人脸识别 Automatic face Recognition
+     *
      * @param preView
      */
     public void startAFR(SurfaceView preView) {
@@ -215,6 +217,20 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayMusicComplete(MusicCompleteEvent event) {
+        //完成后开启语音监听
+        if (isOutputBusy())
+            return;
+
+        switchSoundMonitor(SoundMonitorType.ASR);
+    }
+
+    /**
+     * 当视频播放完成
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onVideoPlayComplete(VideoCompleteEvent event) {
         //完成后开启语音监听
         if (isOutputBusy())
             return;
