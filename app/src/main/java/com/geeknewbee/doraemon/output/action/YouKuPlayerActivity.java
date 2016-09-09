@@ -18,7 +18,7 @@ import com.youku.player.plugin.YoukuPlayerListener;
 /**
  * 播放器播放界面，
  */
-public class YuKuPlayerActivity extends Activity {
+public class YouKuPlayerActivity extends Activity {
     private YoukuBasePlayerManager basePlayerManager;
     // 播放器控件
     private YoukuPlayerView mYoukuPlayerView;
