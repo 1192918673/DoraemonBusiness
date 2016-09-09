@@ -214,7 +214,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (input.contains("看电影")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.TIP_BEFORE_PLAY_MOVIE, SoundCommand.InputSource.TIPS));
-            commands.add(new Command(CommandType.PLAY_MOVIE, "XODQwMTY4NDg0"));
+            commands.add(new Command(CommandType.PLAY_MOVIE, "XNzgyODExNDY4"));
             return commands;
         }
 
