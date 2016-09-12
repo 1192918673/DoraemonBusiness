@@ -85,7 +85,7 @@ public class BluetoothServiceManager {
                     Gson gsonSecond = new Gson();
                     try {
                         String readMessage = new String(wifiBuf, 0, wifiBuf.length);
-                        BLECommand command = gsonSecond.fromJson(readMessage, BLECommand.class);
+                        BluetoothCommand command = gsonSecond.fromJson(readMessage, BluetoothCommand.class);
                         doraemon.addCommand(new SoundCommand(Constants.TIPS_SET_WIFI, SoundCommand.InputSource.TIPS));
                         doraemon.addCommand(command.getCommand());
                     } catch (JsonSyntaxException e) {
@@ -258,16 +258,13 @@ public class BluetoothServiceManager {
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onSetWifiComplete(SetWifiCompleteEvent event) {
         if (ias != null) {
-            ias.sendWifiNotification(event.isSuccess ? "1" : "0");
-        }
-        if (mChatService != null) {
             BTPostBackCommand phoneCommand = new BTPostBackCommand();
             BTPostBackCommand.SetWIFICallBack wifiCallBack = new BTPostBackCommand.SetWIFICallBack();
             wifiCallBack.isSuccess = event.isSuccess;
             wifiCallBack.content = event.content;
             wifiCallBack.hadBound = event.hadBound;
             phoneCommand.setWifiCallBack(wifiCallBack);
-            mChatService.write(new Gson().toJson(phoneCommand).getBytes());
+            ias.sendWifiNotification(new Gson().toJson(phoneCommand));
         }
         LogUtils.d("WifiSetComplete", mChatService == null ? "mChatService:Null" : "mChatService:Not Null");
 
@@ -276,7 +273,7 @@ public class BluetoothServiceManager {
     }
 
     /**
-     * 当设置wifi 完成的回调
+     * 当设置tts 完成的回调
      */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onTTSComplete(TTSCompleteEvent event) {
