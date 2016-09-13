@@ -1,13 +1,10 @@
 package com.geeknewbee.doraemon.view;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -37,9 +34,6 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class MainActivity extends Activity {
     public GifImageView gifView;
-    public View llQR;
-    private ImageView imageQRLeft;
-    private ImageView imageQRRight;
     private BluetoothServiceManager bluetoothServiceManager;
     private TextView result;
     private RelativeLayout rl_preView;
@@ -64,10 +58,7 @@ public class MainActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
-        imageQRLeft = (ImageView) findViewById(R.id.iv_left_qr);
-        imageQRRight = (ImageView) findViewById(R.id.iv_right_qr);
         result = (TextView) findViewById(R.id.tv_result);
-        llQR = findViewById(R.id.ll_qr);
         rl_preView = (RelativeLayout) findViewById(R.id.rl_preView);
         mPreView = (SurfaceView) findViewById(R.id.sv_preView);
 
@@ -115,11 +106,6 @@ public class MainActivity extends Activity {
 
         //注册传感器检测
         SensorUtil.getInstance().initSensor();
-    }
-
-    public void setQR(Bitmap bitmap) {
-        imageQRLeft.setImageBitmap(bitmap);
-        imageQRRight.setImageBitmap(bitmap);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

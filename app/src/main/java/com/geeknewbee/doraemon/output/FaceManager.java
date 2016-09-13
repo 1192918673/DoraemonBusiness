@@ -1,18 +1,9 @@
 package com.geeknewbee.doraemon.output;
 
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
-import android.view.View;
-
-import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.view.MainActivity;
-import com.geeknewbee.doraemon.zxing.Encoder;
 import com.geeknewbee.doraemonsdk.BaseApplication;
-import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.io.IOException;
@@ -34,19 +25,6 @@ public class FaceManager {
     private String lastName;
     private int loopNumber;
     private int currentLoop;//当前表情的循环剩余次数
-    private Handler mHandler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case HIDE_QR: // 隐藏二维码
-                    faceActivity.llQR.setVisibility(View.INVISIBLE);
-                    faceActivity.gifView.setVisibility(View.VISIBLE);
-                    break;
-            }
-        }
-    };
 
     private FaceManager() {
         animationListener = new AnimationListener() {
@@ -126,37 +104,5 @@ public class FaceManager {
                 }
             }
         });
-    }
-
-
-    public void showQR(final String content) {
-        new AsyncTask<Void, Void, Bitmap>() {
-            @Override
-            protected Bitmap doInBackground(Void... params) {
-                try {
-                    return new Encoder.Builder()
-                            .setBackgroundColor(0xFFFFFF)
-                            .setCodeColor(0xFF000000)
-                            .setOutputBitmapPadding(0)
-                            .setOutputBitmapWidth(DeviceUtil.dip2px(App.mContext, 70))
-                            .setOutputBitmapHeight(DeviceUtil.dip2px(App.mContext, 70))
-                            .build().encode(content);
-                } catch (Exception e) {
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap bitmap) {
-                if (bitmap == null) return;
-                faceActivity.setQR(bitmap);
-                faceActivity.llQR.setVisibility(View.VISIBLE);
-                faceActivity.gifView.setVisibility(View.INVISIBLE);
-            }
-        }.execute();
-    }
-
-    public void hideQR() {
-        mHandler.sendEmptyMessage(HIDE_QR);
     }
 }

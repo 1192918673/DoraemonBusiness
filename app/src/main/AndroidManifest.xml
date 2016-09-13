@@ -62,6 +62,11 @@
             android:name=".view.VideoTalkActivity"
             android:screenOrientation="landscape" />
 
+        <activity
+            android:name=".output.action.YouKuPlayerActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/NoActionBar" />
+
         <receiver android:name=".broadcast.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -128,6 +133,15 @@
             </intent-filter>
         </receiver>
         <!-- 环信 配置-->
+
+        <!--优酷-->
+        <meta-data
+            android:name="client_id"
+            android:value="35b2577ad472303b" />
+        <meta-data
+            android:name="client_secret"
+            android:value="41f7de29e11269942c794c1e79ab8537" />
+        <!--优酷-->
 
     </application>
 

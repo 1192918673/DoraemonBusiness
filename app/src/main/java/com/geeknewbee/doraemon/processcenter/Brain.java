@@ -35,17 +35,10 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
 
     public void addCommand(Command command) {
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
-//        Doraemon.getInstance(App.mContext).stopASR();
         switch (command.getType()) {
             case SHOW_EXPRESSION: //面部表情
                 ExpressionCommand expressionCommand = (ExpressionCommand) command;
                 FaceManager.getInstance().displayGif(expressionCommand.getContent(), expressionCommand.loops);
-                break;
-            case SHOW_QR: //显示二维码
-                FaceManager.getInstance().showQR(command.getContent());
-                break;
-            case BIND_ACCOUNT_SUCCESS: //绑定成功(隐藏二维码)
-                FaceManager.getInstance().hideQR();
                 break;
             case PLAY_SOUND: //讲话
                 MouthTaskQueue.getInstance().addTask(command);
@@ -98,6 +91,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case BL_SP: //博联插座
                 BLSPCommand blspCommand = (BLSPCommand) command;
                 BLM.modifyPlugbase(blspCommand.getInput(), blspCommand.getMac().trim());
+                break;
+            case PLAY_MOVIE:
+                MouthTaskQueue.getInstance().addTask(command);
                 break;
         }
     }

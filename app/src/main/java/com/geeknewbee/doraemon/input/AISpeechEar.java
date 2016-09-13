@@ -117,7 +117,7 @@ public class AISpeechEar implements IEar {
 //        mASREngine.setEchoEnable(true);
 //        mASREngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());
         mASREngine.setUcaParamMode(2);
-        mASREngine.setEchoEnable(false);
+        mASREngine.setEchoEnable(true);
         mASREngine.setCloudVadEnable(true);
         mASREngine.init(App.mContext, new AIASRListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
         mASREngine.setUseCloud(true);//该方法必须在init之后

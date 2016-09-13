@@ -8,50 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:id="@+id/ll_qr"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffff"
-        android:orientation="horizontal"
-        android:visibility="invisible">
-
-        <RelativeLayout
-            android:id="@+id/view_left"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <ImageView
-                android:id="@+id/iv_left_qr"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:background="#ffffff"
-                android:scaleType="center" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/view_right"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <ImageView
-                android:id="@+id/iv_right_qr"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="50dp"
-                android:background="#ffffff"
-                android:scaleType="center" />
-        </RelativeLayout>
-    </LinearLayout>
-
-
     <TextView
         android:id="@+id/tv_result"
         android:layout_width="wrap_content"

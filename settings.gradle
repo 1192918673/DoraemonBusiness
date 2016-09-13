@@ -1,1 +1,1 @@
-include ':app', ':navipacksdk', ':doraemonsdk', ':daogenerate'
+include ':app', ':navipacksdk', ':doraemonsdk', ':daogenerate', ":YoukuPlayerOpenSDK"
