@@ -185,23 +185,20 @@ public class BluetoothCommand {
 
     public static class FootCommand {
 
-        public FootCommand(int v, int w) {
-            this.v = v;
-            this.w = w;
-        }
-
-        public FootCommand(int v, int w, int duration) {
-            this.v = v;
-            this.w = w;
-            this.duration = duration;
-        }
-
-
         public int v;
         public int w;
         /**
          * 持续时间 ms
          */
         public int duration = 0;
+        public FootCommand(int v, int w) {
+            this.v = v;
+            this.w = w;
+        }
+        public FootCommand(int v, int w, int duration) {
+            this.v = v;
+            this.w = w;
+            this.duration = duration;
+        }
     }
 }

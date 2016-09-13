@@ -29,17 +29,11 @@
                 android:scaleWidth="100%" />
         </item> -->
 
-    <item
-        android:id="@android:id/background"
-        android:drawable="@drawable/seekbar_bkg"></item>
+    <item android:id="@android:id/background" android:drawable="@drawable/seekbar_bkg"></item>
     <item android:id="@android:id/secondaryProgress">
-        <scale
-            android:drawable="@drawable/seekbar_second_progress"
-            android:scaleWidth="100%" />
+        <scale android:drawable="@drawable/seekbar_second_progress" android:scaleWidth="100%" />
     </item>
     <item android:id="@android:id/progress">
-        <scale
-            android:drawable="@drawable/seekbar_front_progress"
-            android:scaleWidth="100%" />
+        <scale android:drawable="@drawable/seekbar_front_progress" android:scaleWidth="100%" />
     </item>
 </layer-list>
