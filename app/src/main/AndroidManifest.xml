@@ -58,6 +58,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".view.VideoTalkActivity"
+            android:screenOrientation="landscape" />
+
         <receiver android:name=".broadcast.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

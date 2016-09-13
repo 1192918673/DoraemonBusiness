@@ -8,15 +8,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 
-import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemon.view.VideoTalkActivity;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConnectionListener;
@@ -47,6 +48,7 @@ public class HYMessageReceive implements IMessageReceive {
     public static final int STATE_DISCONNECTED = 3;
     private static HYMessageReceive instance;
     public String TAG = HYMessageReceive.class.getSimpleName();
+    private Context mContext = BaseApplication.mContext;
     private String authToken = null;
     private String hxUsername;
     private String hxPassword;
@@ -103,8 +105,8 @@ public class HYMessageReceive implements IMessageReceive {
                     EMClient.getInstance().chatManager().addMessageListener(msgListener);
                     break;
                 case LOGIN_FAILED:// 登录失败
-                    hxUsername = PrefUtils.getString(App.mContext, Constants.KEY_HX_USERNAME, null);
-                    hxPassword = PrefUtils.getString(App.mContext, Constants.KEY_HX_USERPWD, null);
+                    hxUsername = PrefUtils.getString(mContext, Constants.KEY_HX_USERNAME, null);
+                    hxPassword = PrefUtils.getString(mContext, Constants.KEY_HX_USERPWD, null);
                     EMLogin(hxUsername, hxPassword);
                     break;
                 case STATE_CONNECTED:// 已连接
@@ -119,7 +121,7 @@ public class HYMessageReceive implements IMessageReceive {
                         // 显示帐号在其他设备登陆
                         LogUtils.d(TAG, "显示帐号在其他设备登陆");
                     } else {
-                        if (NetUtils.hasNetwork(App.mContext)) {
+                        if (NetUtils.hasNetwork(mContext)) {
                             //连接不到聊天服务器
                             LogUtils.d(TAG, "连接不到聊天服务器");
                         } else {
@@ -131,6 +133,7 @@ public class HYMessageReceive implements IMessageReceive {
             }
         }
     };
+
     // 接受视频呼叫的广播接受者
     private BroadcastReceiver emIncomingCallReceiver = new BroadcastReceiver() {
         @Override
@@ -140,13 +143,15 @@ public class HYMessageReceive implements IMessageReceive {
             // call type
             String type = intent.getStringExtra("type");
             LogUtils.d(TAG, "收到来自" + from + "的视频呼叫");
-            // 跳转到通话页面
-            Intent intent1 = new Intent(App.mContext, VideoTalkActivity.class);
+
+            // 1.跳转到通话页面
+            Intent intent1 = new Intent(mContext, VideoTalkActivity.class);
             intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent1.putExtra("from", from);
-            App.mContext.startActivity(intent1);
-            // TODO 发送切换成EDD监听 是否再停用EDD监听？视频挂断在启动监听
+            mContext.startActivity(intent1);
+            // 2.TODO 发送切换成EDD监听 是否再停用EDD监听？视频挂断在启动监听
             EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+            Doraemon.getInstance(mContext).stopWakeUp();
         }
     };
 
@@ -168,9 +173,9 @@ public class HYMessageReceive implements IMessageReceive {
 
     private void initLogin() {
         // 1.获取登录需要的token、userName、pwd
-        authToken = PrefUtils.getString(App.mContext, Constants.KEY_TOKEN, null);
-        hxUsername = PrefUtils.getString(App.mContext, Constants.KEY_HX_USERNAME, null);
-        hxPassword = PrefUtils.getString(App.mContext, Constants.KEY_HX_USERPWD, null);
+        authToken = PrefUtils.getString(mContext, Constants.KEY_TOKEN, null);
+        hxUsername = PrefUtils.getString(mContext, Constants.KEY_HX_USERNAME, null);
+        hxPassword = PrefUtils.getString(mContext, Constants.KEY_HX_USERPWD, null);
         LogUtils.d(TAG, "authToken:" + authToken + ",hxUsername:" + hxUsername + ",hxPassword:" + hxPassword);
 
         // 2.注册一个监听连接状态的listener
@@ -263,7 +268,8 @@ public class HYMessageReceive implements IMessageReceive {
      */
     private void EMInit() {
         IntentFilter callFilter = new IntentFilter(EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
-        App.mContext.registerReceiver(emIncomingCallReceiver, callFilter);
+        mContext.registerReceiver(emIncomingCallReceiver, callFilter);
+        LogUtils.d(TAG, "环信广播接受者注册。。。");
     }
 
     /**
