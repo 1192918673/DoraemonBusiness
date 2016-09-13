@@ -14,6 +14,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -32,6 +33,8 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
     private byte[] setWifiResult;
     //创建一个切换setWifiLock锁对象
     private Lock setWifiLock = new ReentrantLock();
+    private BLEDataSender bleDataSender;
+    private BluetoothGattCharacteristic lastCharacteristic;
 
     public ImmediateAlertService(Handler mHandler) {
         this.mHandler = mHandler;
@@ -40,6 +43,7 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         //是否正在接收WIFI定义的命令
         isReceivingWifiCommand = false;
         setWifiResult = null;
+        bleDataSender = new BLEDataSender();
     }
 
     public void setupServices(BluetoothGattServer gattServer) {
@@ -110,10 +114,13 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
 
     public void onConnectionStateChange(BluetoothDevice device, int status,
                                         int newState) {
-        if (newState == BluetoothGattServer.STATE_CONNECTED)
+        if (newState == BluetoothGattServer.STATE_CONNECTED) {
             bluetoothDevice = device;
-        else
+            bleDataSender.init(bluetoothDevice, mGattServer);
+        } else {
             bluetoothDevice = null;
+            bleDataSender.clearAllData();
+        }
 
         Log.d(TAG, "onConnectionStateChange status=" + status + "->" + newState);
     }
@@ -199,15 +206,34 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         super.onExecuteWrite(device, requestId, execute);
     }
 
+    @Override
+    public void onNotificationSent(BluetoothDevice device, int status) {
+        super.onNotificationSent(device, status);
+        LogUtils.d(TAG, "onNotificationSent status:" + status);
+//        if (status == BluetoothGatt.GATT_SUCCESS) {
+//            bleDataSender.sendNextPackage(lastCharacteristic);
+//        }
+    }
+
     //主动写值并通知远程设备wifi
     public void sendWifiNotification(String value) {
         if (bluetoothDevice != null && mGattServer != null) {
             LogUtils.d(TAG, "notification WIFI :" + value);
-            read.setValue(value);
-            mGattServer.notifyCharacteristicChanged(bluetoothDevice, read, false);//测试发现必须发送此通知,并且保证特征值的notify权限
+            List<byte[]> list = BLEDataSender.getDataArray(value);
+            if (list == null) return;
+            for (byte[] bytes : list) {
+                read.setValue(bytes);
+                mGattServer.notifyCharacteristicChanged(bluetoothDevice, read, false);//测试发现必须发送此通知,并且保证特征值的notify权限
+                lastCharacteristic = read;
+            }
         }
     }
 
+    /**
+     * 发送个IOS 告知TTS完成
+     *
+     * @param value
+     */
     public void sendTTSNotification(String value) {
         if (bluetoothDevice != null && mGattServer != null) {
             LogUtils.d(TAG, "notification TTS :" + value);
