@@ -33,22 +33,6 @@ public class CameraHelper {
     private int cameraFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
 
     private int sw, sh;
-    private OnCameraStatusListener listener;
-    // 创建一个PictureCallback对象，并实现其中的onPictureTaken方法
-    private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
-
-        // 该方法用于处理拍摄后的照片数据
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-            // 停止照片拍摄
-            camera.stopPreview();
-
-            // 调用结束事件
-            if (null != listener) {
-                listener.onCameraStopped(data);
-            }
-        }
-    };
 
     public CameraHelper(Context context, SurfaceView surfaceView) {
         this.context = context;
@@ -206,27 +190,12 @@ public class CameraHelper {
         }
     }
 
-    // 设置监听事件
-    public void setOnCameraStatusListener(OnCameraStatusListener listener) {
-        this.listener = listener;
-    }
-
     public Camera.Size getPreviewSize() {
         return previewSize;
     }
 
     public void setPreviewSize(Camera.Size previewSize) {
         this.previewSize = previewSize;
-    }
-
-    public int switchCameraId() {
-        if (!hasFacing(Camera.CameraInfo.CAMERA_FACING_FRONT)) return cameraFacing;
-        cameraFacing = (cameraFacing == Camera.CameraInfo.CAMERA_FACING_FRONT ?
-                Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT);
-        stopCamera();
-        openCamera();
-        return cameraFacing;
-
     }
 
     private boolean hasFacing(int facing) {
@@ -245,33 +214,7 @@ public class CameraHelper {
         return cameraFacing;
     }
 
-    public void takePicture() {
-        LogUtil.d(TAG, "判断Camera是否为空");
-        if (camera != null) {
-            LogUtil.d(TAG, "Camera不为空");
-            camera.autoFocus(new Camera.AutoFocusCallback() {
-
-                @Override
-                public void onAutoFocus(boolean success, Camera camera) {
-                    if (success) {
-                        LogUtils.d(TAG, "相机自动聚焦成功，开始拍照");
-                        camera.takePicture(null, null, pictureCallback);
-                    }
-                }
-            });
-        }
-    }
-
     public void reStartCamera() {
         camera.startPreview();
-    }
-
-    /**
-     * 相机拍照监听接口
-     */
-    public interface OnCameraStatusListener {
-
-        // 相机拍照结束事件
-        void onCameraStopped(byte[] data);
     }
 }
