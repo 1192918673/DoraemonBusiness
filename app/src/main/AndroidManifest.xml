@@ -59,6 +59,10 @@
         </activity>
 
         <activity
+            android:name=".view.VideoTalkActivity"
+            android:screenOrientation="landscape" />
+
+        <activity
             android:name=".output.action.YouKuPlayerActivity"
             android:screenOrientation="landscape"
             android:theme="@style/NoActionBar" />

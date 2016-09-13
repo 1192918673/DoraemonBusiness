@@ -111,7 +111,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     /**
      * 启动唤醒  Waiting For Wakeup
      */
-    private void startWakeup() {
+    public void startWakeup() {
         soundInputDevice.start();
         addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
     }
@@ -119,7 +119,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     /**
      * 停止唤醒
      */
-    private void stopWakeUp() {
+    public void stopWakeUp() {
         soundInputDevice.stop();
     }
 

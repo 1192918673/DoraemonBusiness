@@ -36,55 +36,55 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     public void addCommand(Command command) {
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
         switch (command.getType()) {
-            case PLAY_SOUND:
-                //讲话
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case MECHANICAL_MOVEMENT:
-                //肢体运动
-                LimbsTaskQueue.getInstance().addTask(command);
-                break;
-            case SHOW_EXPRESSION:
-                //面部表情
+            case SHOW_EXPRESSION: //面部表情
                 ExpressionCommand expressionCommand = (ExpressionCommand) command;
                 FaceManager.getInstance().displayGif(expressionCommand.getContent(), expressionCommand.loops);
                 break;
-            case READ_SENCE:
-                //拍照、人脸添加、人脸识别
-                ReadSenseEye.getInstance().startTakePicture(false);
-                break;
-            case PLAY_MUSIC:
-                // 音乐
+            case PLAY_SOUND: //讲话
                 MouthTaskQueue.getInstance().addTask(command);
                 break;
-            case PLAY_JOKE:
-                // 笑话
+            case PLAY_MUSIC: //音乐
                 MouthTaskQueue.getInstance().addTask(command);
                 break;
-            case STOP:
-                MouthTaskQueue.getInstance().stop();
-                LimbsTaskQueue.getInstance().stop();
+            case PLAY_JOKE: //笑话
+                MouthTaskQueue.getInstance().addTask(command);
                 break;
-            case WIFI_MESSAGE:// 设置连接WIFI
-                WifiCommand wifiCommand = (WifiCommand) command;
-                SysSettingManager.connectWiFi(wifiCommand.ssid, wifiCommand.pwd, wifiCommand.type);
+            case PLAY_LOCAL_RESOURCE: //播放本地音频
+                MouthTaskQueue.getInstance().addTask(command);
                 break;
-            case SETTING_VOLUME:// 设置系统音量
-                SysSettingManager.setVolume(command.getContent());
-                break;
-            case ACTIONSET:
+            case MECHANICAL_MOVEMENT: //肢体运动
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
             case LE_XING_FOOT://乐行Foot
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
-            case PLAY_LOCAL_RESOURCE:
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case BLUETOOTH_CONTROL_FOOT:
+            case BLUETOOTH_CONTROL_FOOT: //蓝牙控制脚步
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
-            case BL:    //博联遥控
+            case ACTIONSET: //舞蹈动作
+                LimbsTaskQueue.getInstance().addTask(command);
+                break;
+            case STOP:
+                MouthTaskQueue.getInstance().stop();
+                LimbsTaskQueue.getInstance().stop();
+                break;
+            case TAKE_PICTURE: //拍照
+                ReadSenseEye.getInstance().startTakePicture(false);
+                break;
+            /*case ADD_FACE: //人脸添加
+                ReadSenseEye.getInstance().startAddFace();
+                break;
+            case REC_FACE: //人脸识别
+                ReadSenseEye.getInstance().startRecognition();
+                break;*/
+            case WIFI_MESSAGE://设置连接WIFI
+                WifiCommand wifiCommand = (WifiCommand) command;
+                SysSettingManager.connectWiFi(wifiCommand.ssid, wifiCommand.pwd, wifiCommand.type);
+                break;
+            case SETTING_VOLUME://设置系统音量
+                SysSettingManager.setVolume(command.getContent());
+                break;
+            case BL: //博联遥控
                 BLCommand blCommand = (BLCommand) command;
                 BLM.broadLinkRMProSend(blCommand.getResponse());
                 break;

@@ -29,8 +29,8 @@ public class App extends BaseApplication {
 
     public static final String TAG = "Doraemon_App";
     public static App instance;
-    private DaoSession daoSession;
     public static YoukuPlayerBaseConfiguration configuration;
+    private DaoSession daoSession;
 
     @Override
     public void onCreate() {

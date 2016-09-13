@@ -18,7 +18,7 @@
     <string name="player_error_no_pay">暂不支持付费视频播放，请到主站观看</string>
     <string name="player_error_no_network">您的网络已断开，请联网后继续观看。</string> <!-- 去联网 / 返回 -->
     <string name="super_pic">超清</string>
-    <string name="high_pic">高清  </string>
+    <string name="high_pic">高清</string>
     <string name="standard_pic">标清</string>
     <string name="no_copyright">无版权播放</string>
     <string name="detail_music">音乐</string>
