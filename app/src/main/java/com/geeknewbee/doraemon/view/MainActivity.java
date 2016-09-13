@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
         EventBus.getDefault().register(this);
 //        test();
         Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
-        Doraemon.getInstance(getApplicationContext()).startAFR(mPreView); // 开启人脸检测
+//        Doraemon.getInstance(getApplicationContext()).startAFR(mPreView); // 开启人脸检测
     }
 
     private void initView() {

@@ -60,7 +60,7 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
     private volatile static ReadSenseEye instance;
     private static boolean mIsAutoPicture; // 是否是自动拍照，还是口令让他拍照
     protected YMFaceTrack faceTrack;
-    private ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private ExecutorService executorService = Executors.newFixedThreadPool(5);
     private String[] emoTitle = {"喜悦", "悲愤", "傻逼", "傻逼", "惊讶", "愤怒", "正常"};
     private String[] names = {"刘德华", "刘德华", "刘德华", "刘德华", "刘德华", "刘德华", "刘德华", "刘德华", "刘德华", "刘德华"};
     private List<Float> save_list = new ArrayList<>();
@@ -192,41 +192,38 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
     }
 
     public void performCallback(final byte[] data, final Camera camera) {
-        for (int i = 0; i < 50; i++) {
+        /*for (int i = 0; i < 10; i++) {
             final int index = i;
             try {
-                Thread.sleep(100); // 休眠时间越短创建的线程数越多
+                Thread.sleep(500); // 休眠时间越短创建的线程数越多
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-            executorService.execute(new Runnable() {
+            }*/
+        executorService.execute(new Runnable() {
 
-                @Override
-                public void run() {
-                    // TODO Auto-generated method stub
-                    System.out.println("active count = " + Thread.activeCount() + " index = " + index);
-                    if (!busy) {
-                        iw = camera.getParameters().getPreviewSize().width;
-                        ih = camera.getParameters().getPreviewSize().height;
-                        if (scale_bit == 0) scale_bit = sw / (float) ih;
-                        busy = true;
+            @Override
+            public void run() {
+                LogUtils.d(TAG, "active count = " + Thread.activeCount());
+                if (!busy) {
+                    iw = camera.getParameters().getPreviewSize().width;
+                    ih = camera.getParameters().getPreviewSize().height;
+                    if (scale_bit == 0) scale_bit = sw / (float) ih;
+                    busy = true;
 
-                        switch (FUN_GO) {
-                            case PHO_FACE: // 拍照
-                                trackFacesTP(data, iw, ih);
-                                break;
+                    switch (FUN_GO) {
+                        case PHO_FACE: // 拍照
+                            trackFacesTP(data, iw, ih);
+                            break;
                             /*case REC_FACE: // 人脸识别
                                 trackFacesRec(data, iw, ih);
                                 break;
                             case ADD_FACE: // 人脸添加
                                 trackFacesRec(data, iw, ih);
                                 break;*/
-                        }
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     private void trackFacesTP(byte[] data, int iw, int ih) {
