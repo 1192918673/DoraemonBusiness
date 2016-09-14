@@ -294,14 +294,14 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
             public void onSuccess(Object response) {
                 LogUtils.d(TAG, "Upload picture success");
                 stopTakePicture();
-                mHandler.sendEmptyMessageDelayed(UPLOAD_SUCCESS, 2 * 1000 - (System.currentTimeMillis() - TIPS_START_TIME));
+                mHandler.sendEmptyMessageDelayed(UPLOAD_SUCCESS, 3 * 1000 - (System.currentTimeMillis() - TIPS_START_TIME));
             }
 
             @Override
             public void onFailure(String error) {
                 LogUtils.d(TAG, "Upload picture error :" + error);
                 stopTakePicture();
-                mHandler.sendEmptyMessageDelayed(UPLOAD_FAILED, 2 * 1000 - (System.currentTimeMillis() - TIPS_START_TIME));
+                mHandler.sendEmptyMessageDelayed(UPLOAD_FAILED, 3 * 1000 - (System.currentTimeMillis() - TIPS_START_TIME));
             }
         });
     }
