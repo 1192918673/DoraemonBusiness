@@ -3,8 +3,9 @@ package com.geeknewbee.doraemon.processcenter;
 import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
+import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
-import com.geeknewbee.doraemon.input.ReadSenseEye;
+import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
@@ -13,8 +14,11 @@ import com.geeknewbee.doraemon.processcenter.command.BLCommand;
 import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -69,14 +73,10 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 LimbsTaskQueue.getInstance().stop();
                 break;
             case TAKE_PICTURE: //拍照
-                ReadSenseEye.getInstance().startTakePicture(false);
+//                ReadSenseEye.getInstance().startTakePicture(false);
+                addCommand(new SoundCommand("好的《3》《2》1", SoundCommand.InputSource.TIPS));
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.CLOSE_ALL));
                 break;
-            /*case ADD_FACE: //人脸添加
-                ReadSenseEye.getInstance().startAddFace();
-                break;
-            case REC_FACE: //人脸识别
-                ReadSenseEye.getInstance().startRecognition();
-                break;*/
             case WIFI_MESSAGE://设置连接WIFI
                 WifiCommand wifiCommand = (WifiCommand) command;
                 SysSettingManager.connectWiFi(wifiCommand.ssid, wifiCommand.pwd, wifiCommand.type);

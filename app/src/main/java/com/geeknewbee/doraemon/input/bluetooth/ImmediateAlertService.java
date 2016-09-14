@@ -20,7 +20,6 @@ import java.util.UUID;
 public class ImmediateAlertService extends BluetoothGattServerCallback {
     public static final String TAG = "BLE_TAG";
     private final Handler mHandler;
-
     private BluetoothGattServer mGattServer;
     private BluetoothDevice bluetoothDevice;
     private BluetoothGattCharacteristic read;

@@ -46,6 +46,9 @@ public class RetrofitUtils {
 
     private static Retrofit createRetrofit(String urlDomain, int connectTimeOut) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.connectTimeout(connectTimeOut, TimeUnit.MILLISECONDS);
+        builder.writeTimeout(connectTimeOut, TimeUnit.MILLISECONDS);
+        builder.readTimeout(connectTimeOut, TimeUnit.MILLISECONDS);
         if (urlDomain.startsWith("https") && sslSocketFactory != null)
             builder.sslSocketFactory(sslSocketFactory);
         builder.connectTimeout(connectTimeOut, TimeUnit.MILLISECONDS);

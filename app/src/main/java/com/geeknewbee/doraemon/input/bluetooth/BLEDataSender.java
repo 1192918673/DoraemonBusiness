@@ -24,12 +24,6 @@ public class BLEDataSender {
     private BluetoothGattServer gattServer;
     private BluetoothDevice bluetoothDevice;
 
-    public void init(BluetoothDevice bluetoothDevice, BluetoothGattServer gattServer) {
-        characteristicQueueMap = new HashMap<>();
-        this.gattServer = gattServer;
-        this.bluetoothDevice = bluetoothDevice;
-    }
-
     /**
      * 获取分包
      *
@@ -52,6 +46,12 @@ public class BLEDataSender {
         }
 
         return result;
+    }
+
+    public void init(BluetoothDevice bluetoothDevice, BluetoothGattServer gattServer) {
+        characteristicQueueMap = new HashMap<>();
+        this.gattServer = gattServer;
+        this.bluetoothDevice = bluetoothDevice;
     }
 
     public synchronized void addData(BluetoothGattCharacteristic characteristic, String data) {

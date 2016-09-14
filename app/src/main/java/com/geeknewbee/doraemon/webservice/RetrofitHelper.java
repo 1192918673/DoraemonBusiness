@@ -30,7 +30,7 @@ public class RetrofitHelper {
 
                 boolean networkConnected = DeviceUtil.isNetworkConnected(BaseApplication.mContext);
                 callBack.onFailure(networkConnected ?
-                        BaseApplication.mContext.getString(R.string.connect_server_fail) :
+                        t.getMessage() :
                         BaseApplication.mContext.getString(R.string.not_connect_to_network));
             }
         });

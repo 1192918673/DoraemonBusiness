@@ -147,14 +147,12 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      */
     public void startAFR(SurfaceView preView) {
         eye.startReadSence(preView);
-//        eye.setAFRListener(this);
     }
 
     /**
      * 停止自动人脸识别
      */
     public void stopAFR() {
-//        eye.setAFRListener(null);
         eye.stopReadSence();
     }
 
@@ -384,7 +382,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
 //        mEngine.setDoaChannel(6);//每次都是头对着用户
     }
 
-
     /**
      * 切换监听类型
      *
@@ -413,6 +410,14 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
                     stopASR();
                     stopWakeUp();
                     startWakeup();
+                    switchMonitorLock.unlock();
+                }
+                break;
+            case CLOSE_ALL:
+                if (BuildConfig.HAVE_SPEECH_DEVCE) {
+                    switchMonitorLock.lock();
+                    stopASR();
+                    stopWakeUp();
                     switchMonitorLock.unlock();
                 }
                 break;
