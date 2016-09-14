@@ -45,8 +45,12 @@ public class LocalResourceManager extends Thread {
      * 初始化本地动作库
      */
     public synchronized void initLocalAction() {
-        if (!isRunning)
-            start();
+        try {
+            if (!isRunning)
+                start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
