@@ -17,6 +17,7 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
+import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.output.BluetoothTalkTask;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
@@ -84,7 +85,7 @@ public class BluetoothServiceManager {
                     Gson gsonSecond = new Gson();
                     try {
                         String readMessage = new String(wifiBuf, 0, wifiBuf.length);
-                        BLECommand command = gsonSecond.fromJson(readMessage, BLECommand.class);
+                        BluetoothCommand command = gsonSecond.fromJson(readMessage, BluetoothCommand.class);
                         doraemon.addCommand(new SoundCommand(Constants.TIPS_SET_WIFI, SoundCommand.InputSource.TIPS));
                         doraemon.addCommand(command.getCommand());
                     } catch (JsonSyntaxException e) {
@@ -94,7 +95,7 @@ public class BluetoothServiceManager {
                 case Constants.MESSAGE_BLE_TTS:
                     byte[] ttsBuf = (byte[]) msg.obj;
                     String ttsString = new String(ttsBuf, 0, ttsBuf.length);
-                    doraemon.addCommand(new SoundCommand(ttsString, SoundCommand.InputSource.TIPS));
+                    doraemon.addCommand(new SoundCommand(ttsString, SoundCommand.InputSource.IOS_BUSINESS));
                     break;
             }
         }
@@ -176,9 +177,9 @@ public class BluetoothServiceManager {
     }
 
     private void startServer() {
-        if (mChatService == null) {
-            startBluetoothServer();
-        }
+//        if (mChatService == null) {
+//            startBluetoothServer();
+//        }
 
         if (BuildConfig.NEED_START_BLE) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -257,20 +258,29 @@ public class BluetoothServiceManager {
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onSetWifiComplete(SetWifiCompleteEvent event) {
         if (ias != null) {
-            ias.sendNotification(event.isSuccess ? "1" : "0");
-        }
-        if (mChatService != null) {
             BTPostBackCommand phoneCommand = new BTPostBackCommand();
             BTPostBackCommand.SetWIFICallBack wifiCallBack = new BTPostBackCommand.SetWIFICallBack();
             wifiCallBack.isSuccess = event.isSuccess;
             wifiCallBack.content = event.content;
             wifiCallBack.hadBound = event.hadBound;
             phoneCommand.setWifiCallBack(wifiCallBack);
-            mChatService.write(new Gson().toJson(phoneCommand).getBytes());
+            ias.sendWifiNotification(new Gson().toJson(phoneCommand));
         }
         LogUtils.d("WifiSetComplete", mChatService == null ? "mChatService:Null" : "mChatService:Not Null");
 
         if (event.isSuccess)
             DoraemonInfoManager.getInstance(App.mContext).uploadSsid(event.SSID);
+    }
+
+    /**
+     * 当设置tts 完成的回调
+     */
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onTTSComplete(TTSCompleteEvent event) {
+        if (event.inputSource == SoundCommand.InputSource.IOS_BUSINESS) {
+            if (ias != null) {
+                ias.sendTTSNotification("END");
+            }
+        }
     }
 }

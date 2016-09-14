@@ -52,7 +52,7 @@ public class ShowQRTask extends Thread {
                     Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
                     TTS_TIPS_FLAG = false;
                 }
-                Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
+                Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN, 3000);
                 ApiService service = retrofit.create(ApiService.class);
                 try {
                     Response<BaseResponseBody<GetMembersCountResponse>> response = service.getMembersCount(token).execute();
@@ -68,7 +68,6 @@ public class ShowQRTask extends Thread {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return;
                 }
             }
 

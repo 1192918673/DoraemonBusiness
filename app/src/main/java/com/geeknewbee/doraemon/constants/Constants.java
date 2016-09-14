@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Constants {
-    public static final String BLUETOOTH_NAME = "Doraemon";     //DoraemonTest
+    public static final String BLUETOOTH_NAME = "DoraemonTest";     //DoraemonTest
     public static final int RESPONSE_STATUS_SUCCESS = 200;
     public static final int HTTP_TIME_OUT = 30 * 1000;
     public static final String TAG_COMMAND = "ROBOT_COMMAND";
@@ -37,8 +37,8 @@ public class Constants {
     public static final String LISTENNING_GIF = "eyegif_fa_dai";
 
     public static final String STOP_FLAG = "停";
-    public static final String COMMAND_ROBOT_PREFIX = "COMMAND_ROBOT";
-    public static final String COMMAND_ROBOT_SUFFIX = "COMMAND_ROBOT_SUFFIX";
+    public static final String COMMAND_ROBOT_PREFIX = "DRC";
+    public static final String COMMAND_ROBOT_SUFFIX = "DRC_SUFFIX";
     public static final String MOJI_WEATHER_API_TOKEN = "c4adee396b1260222696";
     //墨迹天气
     public static final String MOJI_WEATHER_API_PWD = "mojisgbb20151207";

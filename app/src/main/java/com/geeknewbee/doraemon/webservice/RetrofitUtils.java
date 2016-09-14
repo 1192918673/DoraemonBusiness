@@ -26,27 +26,32 @@ public class RetrofitUtils {
         RetrofitUtils.sslSocketFactory = sslSocketFactory;
     }
 
-    public synchronized static Retrofit getRetrofit(String urlDomain, int outTime) {
+    public synchronized static Retrofit getRetrofit(String urlDomain) {
+        return getRetrofit(urlDomain, Constants.HTTP_TIME_OUT);
+    }
+
+    public synchronized static Retrofit getRetrofit(String urlDomain, int connectTimeOut) {
         if (retrofitMap.containsKey(urlDomain))
             return retrofitMap.get(urlDomain);
         else {
-            Retrofit retrofit = createRetrofit(urlDomain, outTime);
+            Retrofit retrofit = createRetrofit(urlDomain, connectTimeOut);
             retrofitMap.put(urlDomain, retrofit);
             return retrofit;
         }
     }
 
-    public synchronized static Retrofit getRetrofit(String urlDomain) {
-        return getRetrofit(urlDomain, Constants.HTTP_TIME_OUT);
+    private static Retrofit createRetrofit(String urlDomain) {
+        return createRetrofit(urlDomain, Constants.HTTP_TIME_OUT);
     }
 
-    private static Retrofit createRetrofit(String urlDomain, int outTime) {
+    private static Retrofit createRetrofit(String urlDomain, int connectTimeOut) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(outTime, TimeUnit.MILLISECONDS);
-        builder.writeTimeout(outTime, TimeUnit.MILLISECONDS);
-        builder.readTimeout(outTime, TimeUnit.MILLISECONDS);
+        builder.connectTimeout(connectTimeOut, TimeUnit.MILLISECONDS);
+        builder.writeTimeout(connectTimeOut, TimeUnit.MILLISECONDS);
+        builder.readTimeout(connectTimeOut, TimeUnit.MILLISECONDS);
         if (urlDomain.startsWith("https") && sslSocketFactory != null)
             builder.sslSocketFactory(sslSocketFactory);
+        builder.connectTimeout(connectTimeOut, TimeUnit.MILLISECONDS);
         OkHttpClient client = builder.build();
 
 //        client.interceptors().add(new Interceptor() {

@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 
 
 ext {
-    TestVersion = '1.0.0.3'
-    TestVersionCode = 1000003
+    TestVersion = '1.0.0.4'
+    TestVersionCode = 1000004
     Version = '1.0.0'
     VersionCode = 10000
     DevURLDOMAIN = '"http://doraemon.babadeyan.com"'
