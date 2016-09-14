@@ -3,8 +3,10 @@ package com.geeknewbee.doraemon.view;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -13,6 +15,8 @@ import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
+import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
@@ -49,7 +53,6 @@ public class MainActivity extends Activity {
         EventBus.getDefault().register(this);
 //        test();
         Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
-//        Doraemon.getInstance(getApplicationContext()).startAFR(mPreView); // 开启人脸检测
     }
 
     private void initView() {
@@ -112,6 +115,14 @@ public class MainActivity extends Activity {
     public void onASRResult(ReceiveASRResultEvent event) {
         //收到ASR的识别结果
         result.setText(event.input);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTakePicture(SwitchMonitorEvent event) {
+        //收到ASR的识别结果
+        if (event.type == SoundMonitorType.CLOSE_ALL) {
+            Doraemon.getInstance(getApplicationContext()).startAFR(mPreView);// 开启人脸检测
+        }
     }
 
     /**

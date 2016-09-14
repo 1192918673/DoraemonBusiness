@@ -1,9 +1,12 @@
 package com.geeknewbee.doraemon.webservice;
 
 
+import android.util.EventLogTags;
+
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,7 +33,7 @@ public class RetrofitHelper {
 
                 boolean networkConnected = DeviceUtil.isNetworkConnected(BaseApplication.mContext);
                 callBack.onFailure(networkConnected ?
-                        BaseApplication.mContext.getString(R.string.connect_server_fail) :
+                        t.getMessage() :
                         BaseApplication.mContext.getString(R.string.not_connect_to_network));
             }
         });

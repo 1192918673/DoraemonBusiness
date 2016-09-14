@@ -11,8 +11,12 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import com.facebook.stetho.common.LogUtil;
+import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
+import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +30,7 @@ public class CameraHelper {
     private Camera.PreviewCallback previewCallback;
     private Camera camera = null;
     private SurfaceView surfaceView;
-    private SurfaceHolder surfaceHolder = null;
+    private SurfaceHolder surfaceHolder;
     private Context context;
     private Camera.Size previewSize;
 
@@ -39,35 +43,30 @@ public class CameraHelper {
         this.surfaceView = surfaceView;
         this.sw = DisplayUtil.getScreenWidthPixels(context);
         this.sh = DisplayUtil.getScreenHeightPixels(context);
+        LogUtils.d(TAG, "进入CameraHelper构造");
         surfaceHolder = surfaceView.getHolder();
+        LogUtils.d(TAG, "通过SurfaceView来获取SurfaceHolder");
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                LogUtils.d(TAG, "人脸识别surfaceView：surfaceCreated");
                 openCamera();
             }
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                LogUtils.d(TAG, "人脸识别surfaceView：surfaceChanged");
                 initCamera();
             }
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
+                LogUtils.d(TAG, "人脸识别surfaceView：surfaceDestroyed");
                 stopCamera();
             }
         });
-
-        surfaceView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                camera.autoFocus(new Camera.AutoFocusCallback() {
-                    @Override
-                    public void onAutoFocus(boolean b, Camera camera) {
-
-                    }
-                });
-            }
-        });
+        LogUtils.d(TAG, "SurfaceHolder的回调");
+        openCamera();
     }
 
     public void stopCamera() {
@@ -76,6 +75,7 @@ public class CameraHelper {
             camera.stopPreview();
             camera.release();
             camera = null;
+            EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.ASR));
         }
     }
 
@@ -111,8 +111,8 @@ public class CameraHelper {
                 parameters.setPreviewFormat(ImageFormat.NV21);
                 parameters.setPictureFormat(PixelFormat.JPEG);
 //                parameters.set("jpeg-quality", 85);
-                setOptimalPreviewSize(parameters, 960, 640);//phone
-//                setOptimalPreviewSize(parameters, 640, 640);//pad
+//                setOptimalPreviewSize(parameters, 960, 640);//phone
+                setOptimalPreviewSize(parameters, 640, 640);//pad
 
                 if (context.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
                     LogUtils.d(TAG, "竖屏");
@@ -186,12 +186,9 @@ public class CameraHelper {
 
             surfaceView.requestLayout();
             cameraParams.setPreviewSize(iw, ih);
-            cameraParams.setPictureSize(640, 480);
+            cameraParams.setPictureSize(iw, ih);
+//            cameraParams.setPreviewFpsRange(15, 15);
         }
-    }
-
-    public Camera.Size getPreviewSize() {
-        return previewSize;
     }
 
     public void setPreviewSize(Camera.Size previewSize) {

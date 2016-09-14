@@ -159,11 +159,11 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             commands.add(new SoundCommand(Constants.TANG_SHI, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
-        /*if (input.contains("拍照")) {
+        if (input.contains("拍") && input.contains("照")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new Command(CommandType.TAKE_PICTURE, "拍照"));
             return commands;
-        }*/
+        }
         if (input.contains("温度")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand("现在室内温度是" + SensorUtil.getInstance().temperture + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
