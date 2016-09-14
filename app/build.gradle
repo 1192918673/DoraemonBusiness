@@ -29,7 +29,7 @@ android {
         resConfigs "zh"
         buildConfigField "boolean", "NEED_DEBUG", "true"
         buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "true"
-        buildConfigField "boolean", "NEED_START_BLE", "true"
+        buildConfigField "boolean", "NEED_START_BLE", "false"
         buildConfigField "boolean", "SHOW_ASR_RESULT", "true"
     }
 

@@ -175,9 +175,9 @@ public class BluetoothServiceManager {
     }
 
     private void startServer() {
-//        if (mChatService == null) {
-//            startBluetoothServer();
-//        }
+        if (mChatService == null) {
+            startBluetoothServer();
+        }
 
         if (BuildConfig.NEED_START_BLE) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -255,13 +255,18 @@ public class BluetoothServiceManager {
      */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onSetWifiComplete(SetWifiCompleteEvent event) {
+        BTPostBackCommand phoneCommand = new BTPostBackCommand();
+        BTPostBackCommand.SetWIFICallBack wifiCallBack = new BTPostBackCommand.SetWIFICallBack();
+        wifiCallBack.isSuccess = event.isSuccess;
+        wifiCallBack.content = event.content;
+        wifiCallBack.hadBound = event.hadBound;
+        phoneCommand.setWifiCallBack(wifiCallBack);
+
+        if (mChatService != null) {
+            mChatService.write(new Gson().toJson(phoneCommand).getBytes());
+        }
+
         if (ias != null) {
-            BTPostBackCommand phoneCommand = new BTPostBackCommand();
-            BTPostBackCommand.SetWIFICallBack wifiCallBack = new BTPostBackCommand.SetWIFICallBack();
-            wifiCallBack.isSuccess = event.isSuccess;
-            wifiCallBack.content = event.content;
-            wifiCallBack.hadBound = event.hadBound;
-            phoneCommand.setWifiCallBack(wifiCallBack);
             ias.sendWifiNotification(new Gson().toJson(phoneCommand));
         }
         LogUtils.d("WifiSetComplete", mChatService == null ? "mChatService:Null" : "mChatService:Not Null");
