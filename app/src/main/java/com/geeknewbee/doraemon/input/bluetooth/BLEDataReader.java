@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +43,12 @@ public class BLEDataReader {
         if (oldData.startsWith(Constants.COMMAND_ROBOT_PREFIX)
                 && oldData.endsWith(Constants.COMMAND_ROBOT_SUFFIX)) {
             dataMap.put(characteristic, Constants.EMPTY_STRING); //当结束一个完整的命令的时候需要 清空Map中的值
-            return oldData.substring(Constants.COMMAND_ROBOT_PREFIX.length(), oldData.length() - Constants.COMMAND_ROBOT_SUFFIX.length());
+            String result = oldData.substring(Constants.COMMAND_ROBOT_PREFIX.length(), oldData.length() - Constants.COMMAND_ROBOT_SUFFIX.length());
+            LogUtils.d(ImmediateAlertService.TAG, "completion :" + result);
+            return result;
+        } else if (oldData.endsWith(Constants.COMMAND_ROBOT_SUFFIX)) {
+            dataMap.put(characteristic, Constants.EMPTY_STRING); //当一个命令结束了，但是是不完整的命令，则抛弃掉
+            return Constants.EMPTY_STRING;
         } else
             return Constants.EMPTY_STRING;
     }
