@@ -50,7 +50,7 @@ public class BluetoothChatService {
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
-    public static final int MAX_CONNECT_CLIENT_COUNT = 2;//允许最大的连接数
+    public static final int MAX_CONNECT_CLIENT_COUNT = 1;//允许最大的连接数
     // Debugging
     private static final String TAG = "BluetoothChatService";
     // Name for the SDP record when creating server socket
@@ -386,6 +386,7 @@ public class BluetoothChatService {
                     break;
                 }
             }
+            connectedThreadList.remove(this);
         }
 
         /**
