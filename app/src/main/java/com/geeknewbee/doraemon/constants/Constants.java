@@ -23,7 +23,7 @@ public class Constants {
     public static final int MESSAGE_TOAST = 5;
     public static final int MESSAGE_READ_SOUND = 6;
     public static final int MESSAGE_READ_COMMAND = 7;
-    public static final int MESSAGE_BLE_WIFI = 8;
+    public static final int MESSAGE_BLE_ANDROID = 8;
     public static final int MESSAGE_BLE_TTS = 9;
 
     //Http

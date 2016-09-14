@@ -80,13 +80,11 @@ public class BluetoothServiceManager {
                         e.printStackTrace();
                     }
                     break;
-                case Constants.MESSAGE_BLE_WIFI:
-                    byte[] wifiBuf = (byte[]) msg.obj;
+                case Constants.MESSAGE_BLE_ANDROID:
+                    String readMessage = (String) msg.obj;
                     Gson gsonSecond = new Gson();
                     try {
-                        String readMessage = new String(wifiBuf, 0, wifiBuf.length);
                         BluetoothCommand command = gsonSecond.fromJson(readMessage, BluetoothCommand.class);
-                        doraemon.addCommand(new SoundCommand(Constants.TIPS_SET_WIFI, SoundCommand.InputSource.TIPS));
                         doraemon.addCommand(command.getCommand());
                     } catch (JsonSyntaxException e) {
                         e.printStackTrace();

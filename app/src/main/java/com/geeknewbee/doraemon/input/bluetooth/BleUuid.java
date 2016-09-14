@@ -21,24 +21,15 @@ package com.geeknewbee.doraemon.input.bluetooth;
 public class BleUuid {
     // 180A Doraemon Information
     public static final String SERVICE_DEVICE_INFORMATION = "0000180a-0000-1000-8000-00805f9b34fb";
+
     public static final String CHAR_SET_WIFI_STRING = "00002a30-0000-1000-8000-00805f9b34fb";
     public static final String CHAR_NOTIFY_WIFI_STRING = "00002a31-0000-1000-8000-00805f9b34fb";
+    public static final String CHAR_SET_CONTROL_STRING = "00002a32-0000-1000-8000-00805f9b34fb";
 
     // 180B Business
     public static final String SERVICE_BUSINESS = "0000180b-0000-1000-8000-00805f9b34fb";
+
     public static final String CHAR_SET_TTS_STRING = "00002a60-0000-1000-8000-00805f9b34fb";
     public static final String CHAR_NOTIFY_TTS_STRING = "00002a61-0000-1000-8000-00805f9b34fb";
-
-    // 1802 Immediate Alert
-    public static final String SERVICE_IMMEDIATE_ALERT = "00001802-0000-1000-8000-00805f9b34fb";
-    public static final String CHAR_ALERT_LEVEL = "00002a06-0000-1000-8000-00805f9b34fb";
-
-    // 180F Battery
-    public static final String SERVICE_BATTERY_SERVICE = "0000180F-0000-1000-8000-00805f9b34fb";
-    public static final String CHAR_BATTERY_LEVEL = "00002a19-0000-1000-8000-00805f9b34fb";
-
-    // 180D Heart Rate
-    public static final String SERVICE_HEART_RATE = "0000180d-0000-1000-8000-00805f9b34fb";
-    public static final String CHAR_BATTER = "00002a19-0000-1000-8000-00805f9b34fb";
 
 }

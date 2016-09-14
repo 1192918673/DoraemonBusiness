@@ -8,16 +8,14 @@ import android.bluetooth.BluetoothGattServer;
 import android.bluetooth.BluetoothGattServerCallback;
 import android.bluetooth.BluetoothGattService;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.geeknewbee.doraemon.constants.Constants;
-import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ImmediateAlertService extends BluetoothGattServerCallback {
     public static final String TAG = "BLE_TAG";
@@ -27,23 +25,13 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
     private BluetoothDevice bluetoothDevice;
     private BluetoothGattCharacteristic read;
     private BluetoothGattCharacteristic notifyTTS;
-    private final int prefixLength;
-    private final int suffixLength;
-    private boolean isReceivingWifiCommand;
-    private byte[] setWifiResult;
-    //创建一个切换setWifiLock锁对象
-    private Lock setWifiLock = new ReentrantLock();
     private BLEDataSender bleDataSender;
-    private BluetoothGattCharacteristic lastCharacteristic;
+    private BLEDataReader bleDataReader;
 
     public ImmediateAlertService(Handler mHandler) {
         this.mHandler = mHandler;
-        prefixLength = Constants.COMMAND_ROBOT_PREFIX.length();
-        suffixLength = Constants.COMMAND_ROBOT_SUFFIX.length();
-        //是否正在接收WIFI定义的命令
-        isReceivingWifiCommand = false;
-        setWifiResult = null;
         bleDataSender = new BLEDataSender();
+        bleDataReader = new BLEDataReader();
     }
 
     public void setupServices(BluetoothGattServer gattServer) {
@@ -67,6 +55,10 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                     BluetoothGattCharacteristic.PERMISSION_READ |
                             BluetoothGattCharacteristic.PERMISSION_WRITE);
 
+            BluetoothGattCharacteristic control = new BluetoothGattCharacteristic(
+                    UUID.fromString(BleUuid.CHAR_SET_CONTROL_STRING),
+                    BluetoothGattCharacteristic.PROPERTY_WRITE,
+                    BluetoothGattCharacteristic.PERMISSION_WRITE);
 
             read = new BluetoothGattCharacteristic(
                     UUID.fromString(BleUuid.CHAR_NOTIFY_WIFI_STRING),
@@ -74,10 +66,11 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                             BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                     BluetoothGattCharacteristic.PERMISSION_READ);
             dis.addCharacteristic(mansc);
+            dis.addCharacteristic(control);
             dis.addCharacteristic(read);
             mGattServer.addService(dis);
 
-            // business information
+            // 商业场景service
             BluetoothGattService business = new BluetoothGattService(
                     UUID.fromString(BleUuid.SERVICE_BUSINESS),
                     BluetoothGattService.SERVICE_TYPE_PRIMARY);
@@ -117,9 +110,11 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         if (newState == BluetoothGattServer.STATE_CONNECTED) {
             bluetoothDevice = device;
             bleDataSender.init(bluetoothDevice, mGattServer);
+            bleDataReader.clearData();
         } else {
             bluetoothDevice = null;
             bleDataSender.clearAllData();
+            bleDataReader.clearData();
         }
 
         Log.d(TAG, "onConnectionStateChange status=" + status + "->" + newState);
@@ -128,29 +123,16 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
     public void onCharacteristicReadRequest(BluetoothDevice device,
                                             int requestId, int offset, BluetoothGattCharacteristic characteristic) {
         Log.d(TAG, "onCharacteristicReadRequest requestId=" + requestId + " offset=" + offset);
-        if (characteristic.getUuid().equals(
-                UUID.fromString(BleUuid.CHAR_SET_WIFI_STRING))) {
-            Log.d(TAG, "CHAR_SET_WIFI_STRING");
-            characteristic.setValue("Name:WIFI");
-            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                    characteristic.getValue());
-        } else if (characteristic.getUuid().equals(
-                UUID.fromString(BleUuid.CHAR_SET_TTS_STRING))) {
-            characteristic.setValue("Name:TTS");
-            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                    characteristic.getValue());
-        } else if (characteristic.getUuid().equals(
-                UUID.fromString(BleUuid.CHAR_NOTIFY_WIFI_STRING))) {
-            characteristic.setValue("Name:NOTIFY WIFI");
-            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                    characteristic.getValue());
-        } else if (characteristic.getUuid().equals(
-                UUID.fromString(BleUuid.CHAR_NOTIFY_TTS_STRING))) {
-            characteristic.setValue("Name:NOTIFY TTS");
-            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                    characteristic.getValue());
+        switch (characteristic.getUuid().toString()) {
+            case BleUuid.CHAR_SET_WIFI_STRING:
+            case BleUuid.CHAR_SET_TTS_STRING:
+            case BleUuid.CHAR_NOTIFY_WIFI_STRING:
+            case BleUuid.CHAR_NOTIFY_TTS_STRING:
+                characteristic.setValue("Name:NONE");
+                mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                        characteristic.getValue());
+                break;
         }
-
     }
 
     public void onCharacteristicWriteRequest(BluetoothDevice device,
@@ -159,60 +141,48 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         Log.d(TAG, "onCharacteristicWriteRequest requestId=" + requestId + " preparedWrite="
                 + Boolean.toString(preparedWrite) + " responseNeeded="
                 + Boolean.toString(responseNeeded) + " offset=" + offset);
-        if (characteristic.getUuid().equals(
-                UUID.fromString(BleUuid.CHAR_SET_WIFI_STRING))) {
-            setWifiLock.lock();
-
-            if (value != null && value.length > 0) {
-                String readMessage = new String(value, 0, value.length);
-                LogUtils.d(TAG, "set wifi value:" + readMessage);
-
-                if (isReceivingWifiCommand) {
-                    //还在接收Command 的后续包
-                    setWifiResult = BytesUtils.concat(setWifiResult, value);
-
-                    isReceivingWifiCommand = !checkIsEndOfCommand(setWifiResult, suffixLength, Constants.MESSAGE_BLE_WIFI);
-                } else {
-                    if (value.length > prefixLength) {
-                        String prefix = new String(value, 0, prefixLength);
-                        if (prefix.equals(Constants.COMMAND_ROBOT_PREFIX)) {
-                            //是命令的第一个包
-                            setWifiResult = value;
-                            isReceivingWifiCommand = !checkIsEndOfCommand(setWifiResult, suffixLength, Constants.MESSAGE_BLE_WIFI);
-                        }
-                    }
+        switch (characteristic.getUuid().toString()) {
+            case BleUuid.CHAR_SET_WIFI_STRING:
+            case BleUuid.CHAR_SET_CONTROL_STRING:
+                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_ANDROID);
+                mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                        null);
+                break;
+            case BleUuid.CHAR_SET_TTS_STRING:
+                LogUtils.d(TAG, "Get TTS string:" + value.length);
+                if (value.length > 0) {
+                    mHandler.obtainMessage(Constants.MESSAGE_BLE_TTS, value.length, -1, value)
+                            .sendToTarget();
                 }
-            } else {
-                LogUtils.d(TAG, "invalid value written");
-            }
-            setWifiLock.unlock();
-            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                    null);
-        } else if (characteristic.getUuid().equals(
-                UUID.fromString(BleUuid.CHAR_SET_TTS_STRING))) {
-            LogUtils.d(TAG, "Get TTS string:" + value.length);
-            if (value.length > 0) {
-                mHandler.obtainMessage(Constants.MESSAGE_BLE_TTS, value.length, -1, value)
-                        .sendToTarget();
-            }
+                mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                        null);
+                break;
+        }
+    }
 
-            mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                    null);
+    private void receiveCharacteristicData(BluetoothGattCharacteristic characteristic, byte[] value, int messageWhat) {
+        if (value != null && value.length > 0) {
+            String readMessage = new String(value, 0, value.length);
+            LogUtils.d(TAG, "receive value:" + readMessage);
+            String result = bleDataReader.readData(characteristic, readMessage);
+            if (!TextUtils.isEmpty(result))
+                mHandler.obtainMessage(messageWhat, result.length(), -1, result)
+                        .sendToTarget();
+        } else {
+            LogUtils.d(TAG, "invalid value written");
         }
     }
 
     @Override
     public void onExecuteWrite(BluetoothDevice device, int requestId, boolean execute) {
         super.onExecuteWrite(device, requestId, execute);
+        LogUtils.d(TAG, "onExecuteWrite execute:" + execute);
     }
 
     @Override
     public void onNotificationSent(BluetoothDevice device, int status) {
         super.onNotificationSent(device, status);
         LogUtils.d(TAG, "onNotificationSent status:" + status);
-//        if (status == BluetoothGatt.GATT_SUCCESS) {
-//            bleDataSender.sendNextPackage(lastCharacteristic);
-//        }
     }
 
     //主动写值并通知远程设备wifi
@@ -224,7 +194,6 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             for (byte[] bytes : list) {
                 read.setValue(bytes);
                 mGattServer.notifyCharacteristicChanged(bluetoothDevice, read, false);//测试发现必须发送此通知,并且保证特征值的notify权限
-                lastCharacteristic = read;
             }
         }
     }
@@ -240,28 +209,5 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             notifyTTS.setValue(value);
             mGattServer.notifyCharacteristicChanged(bluetoothDevice, notifyTTS, false);//测试发现必须发送此通知,并且保证特征值的notify权限
         }
-    }
-
-
-    /**
-     * 是否完成一个command
-     *
-     * @param result
-     * @param suffixLength
-     * @param readCommand
-     * @return
-     */
-    private boolean checkIsEndOfCommand(byte[] result, int suffixLength, int readCommand) {
-        String suffix = new String(result, result.length - suffixLength, suffixLength);
-        if (suffix.equals(Constants.COMMAND_ROBOT_SUFFIX)) {
-            //如果检测到命令完成标志 则sendMessage
-            int length = result.length - Constants.COMMAND_ROBOT_SUFFIX.length() - Constants.COMMAND_ROBOT_PREFIX.length();
-            byte[] command = new byte[length];
-            System.arraycopy(result, Constants.COMMAND_ROBOT_PREFIX.length(), command, 0, length);
-            mHandler.obtainMessage(readCommand, command.length, -1, command)
-                    .sendToTarget();
-            return true;
-        }
-        return false;
     }
 }
