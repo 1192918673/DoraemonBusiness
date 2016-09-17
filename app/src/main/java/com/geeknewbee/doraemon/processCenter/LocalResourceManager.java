@@ -143,6 +143,9 @@ public class LocalResourceManager extends Thread {
         actions = SportActionUtil.parseSportCommand(R.raw.action_foot_forward);
         localActionMap.put("forward", actions);
 
+        actions = SportActionUtil.parseSportCommand(R.raw.action_arm_move);
+        localActionMap.put("arm_move", actions);
+
         actions = SportActionUtil.parseSportCommand(R.raw.action_no_answer);
         localActionMap.put(NO_ANSWER, actions);
 
