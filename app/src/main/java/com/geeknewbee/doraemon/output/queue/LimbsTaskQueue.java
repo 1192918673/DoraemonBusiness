@@ -12,6 +12,7 @@ import com.geeknewbee.doraemon.output.action.IFoot;
 import com.geeknewbee.doraemon.output.action.LeXingFoot;
 import com.geeknewbee.doraemon.output.action.SDArmsAndHead;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
+import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -39,6 +40,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private boolean isStopAction = false;//跳舞中断标识
     private boolean isBusy = false;
     private boolean isUseLeXing = false;//是否使用乐行
+    private ArmMoveThread armMoveThread;//为了演示行走过程中手臂一直摆动
 
     private LimbsTaskQueue() {
         super();
@@ -111,10 +113,30 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     private void perform(BluetoothControlFootCommand command) {
+        if (command.v == 0 && command.w == 0) {
+            stopMoveThread();
+        } else
+            startMoveThread();
+
         if (isUseLeXing)
             sendLeXingFootCommand(command.v, command.w);
         else
             sendLeXingFootCommandByLuGong(command.v, command.w);
+    }
+
+    private void startMoveThread() {
+        if (armMoveThread == null) {
+            armMoveThread = new ArmMoveThread();
+        }
+
+        if (!armMoveThread.isRunning()) {
+            armMoveThread.start();
+        }
+    }
+
+    private void stopMoveThread() {
+        if (armMoveThread != null)
+            armMoveThread.cancel();
     }
 
 
@@ -262,5 +284,57 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     public void onDanceMusicStop(DanceMusicStopEvent event) {
         //当跳舞的音乐停止 则停止动作
         isStopAction = true;
+    }
+
+    private class ArmMoveThread extends Thread {
+        private boolean isStopMoveArm = false;
+        private final ActionSetCommand actionSetCommand;
+        private boolean isRunning = false;
+
+        public ArmMoveThread() {
+            actionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_ARM_MOVE);
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            while (!isStopMoveArm) {
+                performArmMove(actionSetCommand);
+            }
+            armsAndHead.reset();
+            isRunning = false;
+        }
+
+        @Override
+        public synchronized void start() {
+            isStopMoveArm = false;
+            isRunning = true;
+            super.start();
+        }
+
+        public void cancel() {
+            isStopMoveArm = true;
+        }
+
+        public boolean isRunning() {
+            return isRunning;
+        }
+
+        private void performArmMove(ActionSetCommand command) {
+            for (SportAction sportAction : command.sportActions) {
+                if (isStopMoveArm)
+                    break;
+
+                if (!TextUtils.isEmpty(sportAction.expressionName))
+                    Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 3));
+
+                sendTopCommand(sportAction.topCommand);
+                try {
+                    Thread.sleep(sportAction.delayTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

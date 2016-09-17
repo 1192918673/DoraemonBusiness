@@ -19,6 +19,7 @@ import java.util.Random;
 public class LocalResourceManager extends Thread {
     public static final String XIAO_PING_GUO = "xiao_ping_guo";
     public static final String NO_ANSWER = "no_answer";
+    public static final String ACTION_ARM_MOVE = "arm_move";
     private volatile static LocalResourceManager instance;
     private final String[] noAnswerList;
     private final String[] defaultAnswerList;
@@ -144,7 +145,7 @@ public class LocalResourceManager extends Thread {
         localActionMap.put("forward", actions);
 
         actions = SportActionUtil.parseSportCommand(R.raw.action_arm_move);
-        localActionMap.put("arm_move", actions);
+        localActionMap.put(ACTION_ARM_MOVE, actions);
 
         actions = SportActionUtil.parseSportCommand(R.raw.action_no_answer);
         localActionMap.put(NO_ANSWER, actions);

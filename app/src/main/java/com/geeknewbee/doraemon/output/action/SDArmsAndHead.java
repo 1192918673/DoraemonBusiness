@@ -28,7 +28,7 @@ public class SDArmsAndHead implements IArmsAndHead {
     }
 
     @Override
-    public boolean send(byte code, char[] buf) {
+    public synchronized boolean send(byte code, char[] buf) {
         if (port1 != null) {
 //            char crc = port1.getCrc(code, buf, buf.length);
 //            char[] bytes = charToByte(crc);
