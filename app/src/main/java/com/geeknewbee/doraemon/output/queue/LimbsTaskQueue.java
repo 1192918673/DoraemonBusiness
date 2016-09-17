@@ -40,7 +40,8 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private boolean isStopAction = false;//跳舞中断标识
     private boolean isBusy = false;
     private boolean isUseLeXing = false;//是否使用乐行
-    private ArmMoveThread armMoveThread;//为了演示行走过程中手臂一直摆动
+    //为了演示行走过程中手臂一直摆动
+    private ArmMoveThread armMoveThread;
 
     private LimbsTaskQueue() {
         super();
@@ -286,6 +287,9 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         isStopAction = true;
     }
 
+    /**
+     * 手臂前后运动的线程
+     */
     private class ArmMoveThread extends Thread {
         private boolean isStopMoveArm = false;
         private final ActionSetCommand actionSetCommand;
