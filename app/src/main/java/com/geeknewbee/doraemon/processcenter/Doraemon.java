@@ -394,6 +394,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     }
 
     private void switchSoundMonitor(SoundMonitorType type) {
+        inputTimeOutMonitorTask.stopMonitor();
         switch (type) {
             case ASR:
                 if (BuildConfig.HAVE_SPEECH_DEVCE) {
