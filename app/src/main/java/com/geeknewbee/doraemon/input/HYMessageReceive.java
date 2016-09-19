@@ -251,6 +251,12 @@ public class HYMessageReceive implements IMessageReceive {
                 } else if (type == 3) {// 播放电影{"type":3,"data":"XMTYwODE0MjIxMg=="}
                     String readData = pushData.getString("data");
                     List<Command> commands = new ArrayList<>();
+                    if (readData.equals("stop")) {
+                        commands.add(new Command(CommandType.STOP));
+                        messageListener.onReceivedMessage(commands);
+                        return;
+                    }
+
                     commands.add(new SoundCommand(Constants.TIP_BEFORE_PLAY_MOVIE, SoundCommand.InputSource.TIPS));
                     commands.add(new Command(CommandType.PLAY_MOVIE, readData));
                     messageListener.onReceivedMessage(commands);

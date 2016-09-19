@@ -42,8 +42,8 @@ public class AISpeechTTS implements ITTS {
         mTTSEngine.setDictDbName("aitts_sent_dict_v3.5.db");
         mTTSEngine.setRealBack(true);//设置本地合成使用实时反馈
         mTTSEngine.init(BaseApplication.mContext, new AILocalTTSListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);//初始化合成引擎
-        mTTSEngine.setLeftMargin(125);
-        mTTSEngine.setRightMargin(25);
+//        mTTSEngine.setLeftMargin(20);
+//        mTTSEngine.setRightMargin(20);
         mTTSEngine.setSpeechRate(0.85f);//设置语速
         mTTSEngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));
         LogUtils.d(TAG, "endInit...");
