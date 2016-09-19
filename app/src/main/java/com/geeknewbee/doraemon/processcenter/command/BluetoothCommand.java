@@ -114,7 +114,8 @@ public class BluetoothCommand {
             //原有的外包手机控制端直接发送的命令字
             switch (action) {
                 case "intro_self":
-                    commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.SOUND_TRANSLATE));
+                    commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.TIPS));
+                    commands.add(new ExpressionCommand("se", 5));
                     break;
                 case "dance":
                     commands.add(new LocalResourceCommand(R.raw.little_apple));
@@ -124,6 +125,20 @@ public class BluetoothCommand {
                     break;
                 case "stop":
                     commands.add(new Command(CommandType.STOP));
+                    break;
+                case "say_hi":
+                    commands.add(new SoundCommand(Constants.HELLO, SoundCommand.InputSource.TIPS));
+                    commands.add(new ExpressionCommand("wei_xiao", 3));
+                    commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_ARM_UP_DOWN_MOVE));
+                    break;
+                case "end_say":
+                    commands.add(new SoundCommand(Constants.END, SoundCommand.InputSource.TIPS));
+                    commands.add(new ExpressionCommand("wei_xiao", 3));
+                    commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_ARM_UP_DOWN_MOVE));
+                    break;
+                case "read_news":
+//                    commands.add(new SoundCommand(Constants.READ_NEWS_TIPS, SoundCommand.InputSource.TIPS));
+                    commands.add(new LocalResourceCommand(R.raw.oben_read_news));
                     break;
                 default:
                     commands.add(LocalResourceManager.getInstance().getActionSetCommand(Arrays.asList(action)));
@@ -191,10 +206,12 @@ public class BluetoothCommand {
          * 持续时间 ms
          */
         public int duration = 0;
+
         public FootCommand(int v, int w) {
             this.v = v;
             this.w = w;
         }
+
         public FootCommand(int v, int w, int duration) {
             this.v = v;
             this.w = w;
