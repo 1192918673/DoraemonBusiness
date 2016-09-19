@@ -96,7 +96,7 @@ public class AISpeechEar implements IEar {
         mASREngine.setNetBin(AILocalGrammarEngine.OUTPUT_NAME, true);
 
         mASREngine.setVadResource(SpeechConstants.vad_res);
-        mASREngine.setServer("ws://s.api.aispeech.com:1028,ws://s.api.aispeech.com:80");
+        mASREngine.setServer("ws://s-test.api.aispeech.com:10000");
         mASREngine.setRes("aihome");
         mASREngine.setUseXbnfRec(true);
         mASREngine.setUsePinyin(true);
@@ -121,6 +121,7 @@ public class AISpeechEar implements IEar {
         mASREngine.setCloudVadEnable(true);
         mASREngine.init(App.mContext, new AIASRListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
         mASREngine.setUseCloud(true);//该方法必须在init之后
+        mASREngine.setCoreType("cn.sds");
         return mASREngine;
     }
 
@@ -274,6 +275,12 @@ public class AISpeechEar implements IEar {
             EventManager.sendBeginningOfDealWithEvent();
             JSONResultParser parser = new JSONResultParser(results.getResultObject().toString());
             String outputString = parser.getResult().optString("output", (String) null);
+            String sds = parser.getResult().optString("sds", "");
+            try {
+                outputString = outputString == null ? getJSONString(new JSONObject(sds), "output") : null;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             String originSoundString = "";
             JSONObject semantics = parser.getSemantics();
             if (outputString == null) {
@@ -294,8 +301,8 @@ public class AISpeechEar implements IEar {
                 JSONObject request = getJSONObject(semantics, "request");
                 action = getJSONString(request, "action");
                 if (TextUtils.equals(action, "播放音乐") || TextUtils.equals(action, "音乐")) {
-                    star_name = getJSONString(getJSONObject(request, "param"), "歌手");
-                    music_name = getJSONString(getJSONObject(request, "param"), "歌曲");
+                    star_name = getJSONString(getJSONObject(request, "param"), "歌手名");
+                    music_name = getJSONString(getJSONObject(request, "param"), "歌曲名");
                 }
             }
 
