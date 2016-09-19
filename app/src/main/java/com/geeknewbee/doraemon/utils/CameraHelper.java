@@ -3,21 +3,16 @@ package com.geeknewbee.doraemon.utils;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-
 import org.greenrobot.eventbus.EventBus;
-
 import java.util.Iterator;
 import java.util.List;
-
 import dou.utils.DisplayUtil;
 
 @SuppressWarnings("deprecation")
@@ -40,9 +35,7 @@ public class CameraHelper {
         this.surfaceView = surfaceView;
         this.sw = DisplayUtil.getScreenWidthPixels(context);
         this.sh = DisplayUtil.getScreenHeightPixels(context);
-        LogUtils.d(TAG, "进入CameraHelper构造");
         surfaceHolder = surfaceView.getHolder();
-        LogUtils.d(TAG, "通过SurfaceView来获取SurfaceHolder");
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
@@ -62,7 +55,6 @@ public class CameraHelper {
                 stopCamera();
             }
         });
-        LogUtils.d(TAG, "SurfaceHolder的回调");
         openCamera();
     }
 
@@ -88,7 +80,6 @@ public class CameraHelper {
             }
 
             camera.setPreviewDisplay(surfaceHolder);
-            LogUtils.d(TAG, "相机设置预览SurfaceHolder");
             initCamera();
         } catch (Exception e) {
             LogUtils.d(TAG, "打开相机异常。。。");
@@ -106,10 +97,10 @@ public class CameraHelper {
                 Camera.Parameters parameters = camera.getParameters();
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                 parameters.setPreviewFormat(ImageFormat.NV21);
-                parameters.setPictureFormat(PixelFormat.JPEG);
-//                parameters.set("jpeg-quality", 85);
+                parameters.setPictureFormat(ImageFormat.JPEG);
+                parameters.set("jpeg-quality", 100);
 //                setOptimalPreviewSize(parameters, 960, 640);//phone
-                setOptimalPreviewSize(parameters, 640, 640);//pad
+                setOptimalPreviewSize(parameters, 640, 480);//pad
 
                 if (context.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
                     LogUtils.d(TAG, "竖屏");
@@ -183,7 +174,7 @@ public class CameraHelper {
 
             surfaceView.requestLayout();
             cameraParams.setPreviewSize(iw, ih);
-            cameraParams.setPictureSize(iw, ih);
+            cameraParams.setPictureSize(640, 480);
 //            cameraParams.setPreviewFpsRange(15, 15);
         }
     }

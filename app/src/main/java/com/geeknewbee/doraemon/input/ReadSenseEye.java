@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import mobile.ReadFace.YMFaceTrack;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Retrofit;
@@ -55,7 +54,6 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
     private static int FUN_GO = PHO_FACE; // 微笑拍照
     private volatile static ReadSenseEye instance;
     private static boolean mIsAutoPicture; // 是否是自动拍照，还是口令让他拍照
-    protected YMFaceTrack faceTrack;
     private Context context = BaseApplication.mContext;
     private ExecutorService executorService = Executors.newFixedThreadPool(5);
     private SurfaceView camera_view; // 相机预览
@@ -79,6 +77,15 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
             }
         }
     };
+    private int frameNumber; // 如果截取第一帧照片会非常暗所以截取第25帧
+    /**
+     * 拍照
+     *
+     * @param data
+     * @param iw
+     * @param ih
+     */
+    private Bitmap bitmap;
 
     public static ReadSenseEye getInstance() {
         if (instance == null) {
@@ -101,6 +108,7 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
 
         mCameraHelper = new CameraHelper(context, camera_view);
         mCameraHelper.setPreviewCallback(this); // 相机的预览监听
+        frameNumber = 0;
 
         /*faceTrack = new YMFaceTrack();
         faceTrack.initTrack(context, YMFaceTrack.FACE_180, YMFaceTrack.RESIZE_WIDTH_640); // 猫的相机：后置横屏
@@ -120,7 +128,6 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
     public void stopReadSence() {
         LogUtils.d(TAG, "Stop ReadSence...");
         if (mCameraHelper != null) mCameraHelper.stopCamera();
-        if (faceTrack != null) faceTrack.onRelease();
     }
 
     @Override
@@ -163,8 +170,6 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
     public void stopTakePicture() {
         if (mCameraHelper != null)
             mCameraHelper.stopCamera();
-        if (faceTrack != null)
-            faceTrack.onRelease();
     }
 
     /**
@@ -175,7 +180,8 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
      */
     @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
-        if (!busy) {
+        frameNumber++;
+        if (!busy && frameNumber > 25) {
             LogUtils.d(TAG, "相机回调");
             iw = camera.getParameters().getPreviewSize().width;
             ih = camera.getParameters().getPreviewSize().height;
@@ -183,13 +189,13 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
 
             switch (FUN_GO) {
                 case PHO_FACE: // 拍照
-                    trackFacesTP(data, iw, ih);
+                    trackFacesTP(data, iw, ih, camera);
                     break;
             }
         }
     }
 
-    private void trackFacesTP(final byte[] data, final int iw, final int ih) {
+    private void trackFacesTP(final byte[] data, final int iw, final int ih, final Camera camera) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -216,20 +222,27 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
 
 //                        tips("好的 3 2 1");
                     }
-                    takePicture(data, iw, ih);
+                    takePicture(data, iw, ih, camera);
                 }
             }
         });
     }
 
-    /**
-     * 拍照
-     *
-     * @param data
-     * @param iw
-     * @param ih
-     */
-    private void takePicture(byte[] data, int iw, int ih) {
+    private void takePicture(final byte[] data, int iw, int ih, Camera camera) {
+        /*Camera.Parameters parameters = camera.getParameters();
+        int width = parameters.getPreviewSize().width;
+        int height = parameters.getPreviewSize().height;
+        YuvImage yuv = new YuvImage(data, parameters.getPreviewFormat(), width, height, null);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        yuv.compressToJpeg(new Rect(0, 0, width, height), 100, out);
+
+        byte[] bytes = out.toByteArray();
+        final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        stopTakePicture();
+        BitmapUtil.saveBitmap(bitmap, "/mnt/sdcard/test.jpg");
+        uploadPicture(bitmap);*/
+
         ByteArrayOutputStream outstr = new ByteArrayOutputStream();
         Rect rect = new Rect(0, 0, iw, ih);
         YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, iw, ih, null);
@@ -237,11 +250,53 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
         Bitmap bmp = BitmapFactory.decodeByteArray(outstr.toByteArray(), 0, outstr.size());
         Bitmap bitmap = rotaingImageView(180, bmp);
 
+        stopTakePicture();
+        uploadPicture(bitmap);
+
+//        camera.takePicture(null, new Camera.PictureCallback() {
+//            @Override
+//            public void onPictureTaken(byte[] bytes, Camera camera) {
+//                LogUtils.d(TAG, "raw callback data length:" + bytes.length);
+//
+//                Matrix matrix = new Matrix();
+//                matrix.reset();
+//                if (mCameraHelper.getCameraId() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+//                    matrix.postRotate(180);
+//                    matrix.postScale(-1, 1);
+//                }
+//                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+//                String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
+//                BitmapUtil.saveBitmap(bitmap, "/mnt/sdcard/test.jpg");
+//
+//                stopTakePicture();
+//                uploadPicture(bitmap);
+//            }
+//        }, new Camera.PictureCallback() {
+//            @Override
+//            public void onPictureTaken(byte[] bytes, Camera camera) {
+//                LogUtils.d(TAG, "JPEG callback bytes length:" + bytes.length);
+//                Matrix matrix = new Matrix();
+//                matrix.reset();
+//                if (mCameraHelper.getCameraId() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+//                    matrix.postRotate(180);
+//                    matrix.postScale(-1, 1);
+//                }
+//                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+//                String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
+//                BitmapUtil.saveBitmap(bitmap, "/mnt/sdcard/test.jpg");
+//
+//                stopTakePicture();
+//                uploadPicture(bitmap);
+//            }
+//        });
+
+
         busy = false;
         needTakePicture = false;
         mIsAutoPicture = true;
         TIPS_START_TIME = System.currentTimeMillis();
-        uploadPicture(bitmap);
     }
 
     /**
@@ -293,14 +348,12 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
             @Override
             public void onSuccess(Object response) {
                 LogUtils.d(TAG, "Upload picture success");
-                stopTakePicture();
                 mHandler.sendEmptyMessageDelayed(UPLOAD_SUCCESS, 3 * 1000 - (System.currentTimeMillis() - TIPS_START_TIME));
             }
 
             @Override
             public void onFailure(String error) {
                 LogUtils.d(TAG, "Upload picture error :" + error);
-                stopTakePicture();
                 mHandler.sendEmptyMessageDelayed(UPLOAD_FAILED, 3 * 1000 - (System.currentTimeMillis() - TIPS_START_TIME));
             }
         });
