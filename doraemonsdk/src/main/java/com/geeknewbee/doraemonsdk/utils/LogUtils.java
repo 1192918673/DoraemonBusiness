@@ -21,7 +21,7 @@ public class LogUtils {
     }
 
     public static void d(String tag, String msg) {
-        if (LOG_DEBUG) {
+        if (LOG_DEBUG && !TextUtils.isEmpty(msg)) {
             Log.d(tag, msg);
         }
     }

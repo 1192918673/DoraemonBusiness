@@ -46,7 +46,7 @@ public class BLEDataReader {
             String result = oldData.substring(Constants.COMMAND_ROBOT_PREFIX.length(), oldData.length() - Constants.COMMAND_ROBOT_SUFFIX.length());
             LogUtils.d(ImmediateAlertService.TAG, "completion :" + result);
             return result;
-        } else if (oldData.endsWith(Constants.COMMAND_ROBOT_SUFFIX)) {
+        } else if (oldData.contains(Constants.COMMAND_ROBOT_SUFFIX)) {
             dataMap.put(characteristic, Constants.EMPTY_STRING); //当一个命令结束了，但是是不完整的命令，则抛弃掉
             return Constants.EMPTY_STRING;
         } else

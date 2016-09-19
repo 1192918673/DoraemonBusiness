@@ -7,6 +7,7 @@ import com.geeknewbee.doraemon.entity.event.DanceMusicStopEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
+import com.geeknewbee.doraemon.input.bluetooth.ImmediateAlertService;
 import com.geeknewbee.doraemon.output.action.IArmsAndHead;
 import com.geeknewbee.doraemon.output.action.IFoot;
 import com.geeknewbee.doraemon.output.action.LeXingFoot;
@@ -29,11 +30,13 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 四肢和头运动队列
  */
 public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
+    public static final String TAG = LimbsTaskQueue.class.getSimpleName();
     private volatile static LimbsTaskQueue instance;
     private IArmsAndHead armsAndHead;
     private IFoot foot;
@@ -42,6 +45,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private boolean isUseLeXing = false;//是否使用乐行
     //为了演示行走过程中手臂一直摆动
     private ArmMoveThread armMoveThread;
+    private ReentrantLock reentrantLock = new ReentrantLock();
 
     private LimbsTaskQueue() {
         super();
@@ -127,17 +131,25 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     private void startMoveThread() {
         if (armMoveThread == null) {
-            armMoveThread = new ArmMoveThread();
-        }
-
-        if (!armMoveThread.isRunning()) {
-            armMoveThread.start();
+            reentrantLock.lock();
+            if (armMoveThread == null) {
+                armMoveThread = new ArmMoveThread();
+                armMoveThread.start();
+            }
+            reentrantLock.unlock();
         }
     }
 
     private void stopMoveThread() {
-        if (armMoveThread != null)
-            armMoveThread.cancel();
+        if (armMoveThread != null) {
+            reentrantLock.lock();
+            if (armMoveThread != null) {
+                armMoveThread.cancel();
+                armMoveThread.interrupt();
+                armMoveThread = null;
+            }
+            reentrantLock.unlock();
+        }
     }
 
 
@@ -275,6 +287,10 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     public void stop() {
         isStopAction = true;
         clearTasks();
+        if (armMoveThread != null) {
+            armMoveThread.cancel();
+            armMoveThread.interrupt();
+        }
     }
 
     public synchronized boolean isBusy() {
@@ -293,7 +309,6 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private class ArmMoveThread extends Thread {
         private boolean isStopMoveArm = false;
         private final ActionSetCommand actionSetCommand;
-        private boolean isRunning = false;
 
         public ArmMoveThread() {
             actionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_ARM_MOVE);
@@ -301,27 +316,23 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
         @Override
         public void run() {
+            LogUtils.d(ImmediateAlertService.TAG, "ArmMoveThread start run");
             super.run();
             while (!isStopMoveArm) {
                 performArmMove(actionSetCommand);
             }
             armsAndHead.reset();
-            isRunning = false;
+            LogUtils.d(ImmediateAlertService.TAG, "ArmMoveThread complete");
         }
 
         @Override
         public synchronized void start() {
             isStopMoveArm = false;
-            isRunning = true;
             super.start();
         }
 
         public void cancel() {
             isStopMoveArm = true;
-        }
-
-        public boolean isRunning() {
-            return isRunning;
         }
 
         private void performArmMove(ActionSetCommand command) {

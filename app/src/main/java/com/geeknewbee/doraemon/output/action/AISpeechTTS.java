@@ -52,7 +52,7 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
-    public synchronized boolean talk(String text, SoundCommand.InputSource inputSource) {
+    public boolean talk(String text, SoundCommand.InputSource inputSource) {
         this.inputSource = inputSource;
         if (TextUtils.isEmpty(text)) {
             notifyComplete();

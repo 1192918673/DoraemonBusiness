@@ -175,9 +175,9 @@ public class BluetoothServiceManager {
     }
 
     private void startServer() {
-        if (mChatService == null) {
-            startBluetoothServer();
-        }
+//        if (mChatService == null) {
+//            startBluetoothServer();
+//        }
 
         if (BuildConfig.NEED_START_BLE) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
