@@ -38,13 +38,13 @@ public class AISpeechTTS implements ITTS {
             mTTSEngine.destroy();
         }
         mTTSEngine = AILocalTTSEngine.createInstance();//创建实例
-        mTTSEngine.setResource("qianran.v2.4.8.bin");
+        mTTSEngine.setResource("qianran.v2.4.8.bin");//设置使用的合成资源模型名
         mTTSEngine.setDictDbName("aitts_sent_dict_v3.5.db");
         mTTSEngine.setRealBack(true);//设置本地合成使用实时反馈
         mTTSEngine.init(BaseApplication.mContext, new AILocalTTSListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);//初始化合成引擎
-//        mTTSEngine.setLeftMargin(20);
-//        mTTSEngine.setRightMargin(20);
-        mTTSEngine.setSpeechRate(0.85f);//设置语速
+        mTTSEngine.setLeftMargin(0);
+        mTTSEngine.setRightMargin(0);
+        mTTSEngine.setSpeechRate(0.9f);//设置语速
         mTTSEngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));
         LogUtils.d(TAG, "endInit...");
 

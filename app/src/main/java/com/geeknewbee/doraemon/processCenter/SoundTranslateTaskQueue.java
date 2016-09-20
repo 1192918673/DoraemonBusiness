@@ -221,7 +221,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if ((TextUtils.equals(soundTranslateInput.action, "播放音乐")
                 || TextUtils.equals(soundTranslateInput.action, "音乐")
                 || TextUtils.equals(soundTranslateInput.musicName, "一首歌"))
-                && (input.contains("唱") || input.contains("来"))) {
+                && (input.contains("唱") || input.contains("来") || (input.contains("放")))) {
             if (TextUtils.isEmpty(soundTranslateInput.starName) && TextUtils.isEmpty(soundTranslateInput.musicName)) {
                 int i = new Random().nextInt(Constants.musics.size());
                 soundTranslateInput.starName = Constants.musics.get(i).get("starName");

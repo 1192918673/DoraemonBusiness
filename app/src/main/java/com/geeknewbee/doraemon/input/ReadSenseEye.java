@@ -229,20 +229,6 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
     }
 
     private void takePicture(final byte[] data, int iw, int ih, Camera camera) {
-        /*Camera.Parameters parameters = camera.getParameters();
-        int width = parameters.getPreviewSize().width;
-        int height = parameters.getPreviewSize().height;
-        YuvImage yuv = new YuvImage(data, parameters.getPreviewFormat(), width, height, null);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuv.compressToJpeg(new Rect(0, 0, width, height), 100, out);
-
-        byte[] bytes = out.toByteArray();
-        final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        stopTakePicture();
-        BitmapUtil.saveBitmap(bitmap, "/mnt/sdcard/test.jpg");
-        uploadPicture(bitmap);*/
-
         ByteArrayOutputStream outstr = new ByteArrayOutputStream();
         Rect rect = new Rect(0, 0, iw, ih);
         YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, iw, ih, null);
@@ -252,45 +238,6 @@ public class ReadSenseEye implements IEye, Camera.PreviewCallback {
 
         stopTakePicture();
         uploadPicture(bitmap);
-
-//        camera.takePicture(null, new Camera.PictureCallback() {
-//            @Override
-//            public void onPictureTaken(byte[] bytes, Camera camera) {
-//                LogUtils.d(TAG, "raw callback data length:" + bytes.length);
-//
-//                Matrix matrix = new Matrix();
-//                matrix.reset();
-//                if (mCameraHelper.getCameraId() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-//                    matrix.postRotate(180);
-//                    matrix.postScale(-1, 1);
-//                }
-//                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-//                String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
-//                BitmapUtil.saveBitmap(bitmap, "/mnt/sdcard/test.jpg");
-//
-//                stopTakePicture();
-//                uploadPicture(bitmap);
-//            }
-//        }, new Camera.PictureCallback() {
-//            @Override
-//            public void onPictureTaken(byte[] bytes, Camera camera) {
-//                LogUtils.d(TAG, "JPEG callback bytes length:" + bytes.length);
-//                Matrix matrix = new Matrix();
-//                matrix.reset();
-//                if (mCameraHelper.getCameraId() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-//                    matrix.postRotate(180);
-//                    matrix.postScale(-1, 1);
-//                }
-//                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-//                String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
-//                BitmapUtil.saveBitmap(bitmap, "/mnt/sdcard/test.jpg");
-//
-//                stopTakePicture();
-//                uploadPicture(bitmap);
-//            }
-//        });
 
 
         busy = false;
