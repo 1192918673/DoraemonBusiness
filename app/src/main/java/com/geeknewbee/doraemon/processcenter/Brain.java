@@ -95,6 +95,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case PLAY_MOVIE:
                 MouthTaskQueue.getInstance().addTask(command);
                 break;
+            case DANCE:
+                LimbsTaskQueue.getInstance().addTask(command);
+                break;
         }
     }
 

@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
+import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class LocalResourceManager extends Thread {
     public static final String NO_ANSWER = "no_answer";
     public static final String ACTION_ARM_MOVE = "arm_move";
     public static final String ACTION_ARM_UP_DOWN_MOVE = "action_arm_up_down_move";
+    public static final String ACTION_THANK_YOU = "action_thank_you";
     private volatile static LocalResourceManager instance;
     private final String[] noAnswerList;
     private final String[] defaultAnswerList;
@@ -46,13 +48,8 @@ public class LocalResourceManager extends Thread {
     /**
      * 初始化本地动作库
      */
-    public synchronized void initLocalAction() {
-        try {
-            if (!isRunning)
-                start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void initLocalAction() {
+        new Thread(this).start();
     }
 
     /**
@@ -77,6 +74,14 @@ public class LocalResourceManager extends Thread {
         if (TextUtils.isEmpty(actionName))
             return null;
         ActionSetCommand command = new ActionSetCommand();
+        command.addSportAction(localActionMap.get(actionName));
+        return command;
+    }
+
+    public DanceCommand getDanceCommand(String actionName) {
+        if (TextUtils.isEmpty(actionName))
+            return null;
+        DanceCommand command = new DanceCommand();
         command.addSportAction(localActionMap.get(actionName));
         return command;
     }
@@ -153,6 +158,9 @@ public class LocalResourceManager extends Thread {
 
         actions = SportActionUtil.parseSportCommand(R.raw.action_arm_up_down_move);
         localActionMap.put(ACTION_ARM_UP_DOWN_MOVE, actions);
+
+        actions = SportActionUtil.parseSportCommand(R.raw.action_thank_you);
+        localActionMap.put(ACTION_THANK_YOU, actions);
 
         final OldSportActionUtil oldSportActionUtil = new OldSportActionUtil();
         actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_scripts);

@@ -207,7 +207,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (input.contains("跳") && (input.contains("舞") || input.contains("苹果"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(new LocalResourceCommand(R.raw.little_apple));
-            commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.XIAO_PING_GUO));
+            commands.add(LocalResourceManager.getInstance().getDanceCommand(LocalResourceManager.XIAO_PING_GUO));
             return commands;
         }
 

@@ -2,6 +2,7 @@ package com.geeknewbee.doraemon.output.queue;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.DanceMusicStopEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
@@ -17,8 +18,10 @@ import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
@@ -97,6 +100,12 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 BluetoothControlFootCommand footCommand = (BluetoothControlFootCommand) command;
                 perform(footCommand);
                 break;
+            case DANCE:
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+                isStopAction = false;
+                isBusy = true;
+                perform((DanceCommand) command);
+                break;
         }
 
         return true;
@@ -162,6 +171,46 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         for (SportAction sportAction : command.sportActions) {
             if (isStopAction) {
                 armsAndHead.reset();
+                if (isUseLeXing)
+                    stopFoot(0);
+                else
+                    stopFootLuGong(0);
+                break;
+            }
+
+            if (!TextUtils.isEmpty(sportAction.expressionName))
+                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 3));
+
+            sendTopCommand(sportAction.topCommand);
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (isUseLeXing) {
+                sendLeXingFootCommand(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
+                stopFoot(sportAction.delayTime);
+            } else {
+                sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
+                stopFootLuGong(sportAction.delayTime);
+            }
+        }
+
+        notifyComplete();
+    }
+
+    private void perform(DanceCommand command) {
+        if (command.sportActions == null || command.sportActions.isEmpty()) {
+            notifyComplete();
+            return;
+        }
+
+        for (SportAction sportAction : command.sportActions) {
+            if (isStopAction) {
+                armsAndHead.reset();
+                Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("谢谢大家!", SoundCommand.InputSource.TIPS));
+                Doraemon.getInstance(App.mContext).addCommand(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_THANK_YOU));
                 if (isUseLeXing)
                     stopFoot(0);
                 else

@@ -119,7 +119,7 @@ public class BluetoothCommand {
                     break;
                 case "dance":
                     commands.add(new LocalResourceCommand(R.raw.little_apple));
-                    commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.XIAO_PING_GUO));
+                    commands.add(LocalResourceManager.getInstance().getDanceCommand(LocalResourceManager.XIAO_PING_GUO));
                     break;
                 case "movie":
                     break;
