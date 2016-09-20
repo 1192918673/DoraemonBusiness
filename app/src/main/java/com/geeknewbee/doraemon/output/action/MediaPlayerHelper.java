@@ -18,6 +18,8 @@ public class MediaPlayerHelper {
             return;
         }
 
+        stop();
+
         mediaPlayer = MediaPlayer.create(context, rawId);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
