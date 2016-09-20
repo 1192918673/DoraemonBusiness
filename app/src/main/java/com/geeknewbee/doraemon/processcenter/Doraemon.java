@@ -89,17 +89,17 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void netWorkStateChanged(NetWorkStateChangeEvent event) {
-        reAuth(event);
-    }
 
-    private void reAuth(NetWorkStateChangeEvent event) {
-        if (!event.isConnected || speechAuth.isAuthed())
+    public void reAuthAndInit(NetWorkStateChangeEvent event) {
+        if (!event.isConnected)
             return;
 
-        speechAuth.auth();
-        ear.reInit();
-        soundInputDevice.reInit();
+        if (!speechAuth.isAuthed()) {
+            speechAuth.auth();
+            ear.reInit();
+            soundInputDevice.reInit();
+        }
+        // 每次重新联网，都重新初始化TTS、XMLY
         MouthTaskQueue.getInstance().reInit();
     }
 
