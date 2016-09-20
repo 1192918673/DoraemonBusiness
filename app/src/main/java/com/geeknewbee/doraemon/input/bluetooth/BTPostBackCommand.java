@@ -14,5 +14,6 @@ public class BTPostBackCommand {
         public boolean isSuccess;
         public boolean hadBound;
         public String content;
+        public String ipAddress;
     }
 }

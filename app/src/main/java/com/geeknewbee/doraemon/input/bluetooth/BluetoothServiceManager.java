@@ -42,6 +42,7 @@ public class BluetoothServiceManager {
     private Doraemon doraemon;
     private Context context;
     private BluetoothChatService mChatService;
+    private SocketService socketService;
     private BlockingQueue<byte[]> audioData = new LinkedBlockingQueue<byte[]>();
     private BluetoothTalkTask talkTask;
     private final Handler mHandler = new Handler() {
@@ -141,6 +142,7 @@ public class BluetoothServiceManager {
 
     private BluetoothServiceManager(Context context) {
         this.context = context;
+        socketService = new SocketService(mHandler);
         EventBus.getDefault().register(this);
     }
 
@@ -174,6 +176,10 @@ public class BluetoothServiceManager {
         }
     }
 
+    private void startSocketService() {
+        socketService.start();
+    }
+
     private void startServer() {
 //        if (mChatService == null) {
 //            startBluetoothServer();
@@ -196,6 +202,11 @@ public class BluetoothServiceManager {
         }
 
         stopAdvertise();
+        stopSocketService();
+    }
+
+    private void stopSocketService() {
+        socketService.stop();
     }
 
     /**
@@ -260,7 +271,12 @@ public class BluetoothServiceManager {
         wifiCallBack.isSuccess = event.isSuccess;
         wifiCallBack.content = event.content;
         wifiCallBack.hadBound = event.hadBound;
+        wifiCallBack.ipAddress = event.ipAddress;
         phoneCommand.setWifiCallBack(wifiCallBack);
+
+        //当设置wifi成功后开启socket service
+        if (event.isSuccess)
+            startSocketService();
 
         if (mChatService != null) {
             mChatService.write(new Gson().toJson(phoneCommand).getBytes());

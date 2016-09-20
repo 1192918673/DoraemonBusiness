@@ -89,7 +89,11 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void reAuthAndInit(NetWorkStateChangeEvent event) {
+    public void netWorkStateChanged(NetWorkStateChangeEvent event) {
+        reAuth(event);
+    }
+
+    private void reAuth(NetWorkStateChangeEvent event) {
         if (!event.isConnected || speechAuth.isAuthed())
             return;
 

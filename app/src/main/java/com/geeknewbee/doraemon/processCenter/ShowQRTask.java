@@ -58,10 +58,11 @@ public class ShowQRTask extends Thread {
                     Response<BaseResponseBody<GetMembersCountResponse>> response = service.getMembersCount(token).execute();
                     if (response.isSuccessful() && response.body().isSuccess()) {
                         if (response.body().getData().count == 0) {
-                            EventBus.getDefault().post(new SetWifiCompleteEvent(true, ssid, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context)));//告知手机端连接成功
+                            EventBus.getDefault().post(new SetWifiCompleteEvent
+                                    (true, ssid, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context), DeviceUtil.getWIFILocalIpAdress(context)));//告知手机端连接成功
                             break;
                         } else {
-                            EventBus.getDefault().post(new SetWifiCompleteEvent(true, ssid, true));//告知手机端连接失败
+                            EventBus.getDefault().post(new SetWifiCompleteEvent(true, ssid, true, DeviceUtil.getWIFILocalIpAdress(context)));//告知手机端连接失败
                             LogUtils.d(TAG, "二次绑定不用显示二维码，绑定用户数：" + response.body().getData().count);
                             break;
                         }

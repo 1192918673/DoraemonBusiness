@@ -8,21 +8,24 @@ public class SetWifiCompleteEvent {
     public String content;
     //是否已经绑定
     public boolean hadBound;
+    public String ipAddress;
 
     public SetWifiCompleteEvent(boolean isSuccess, String ssid) {
         this.isSuccess = isSuccess;
         this.SSID = ssid;
     }
 
-    public SetWifiCompleteEvent(boolean isSuccess, String SSID, String content) {
+    public SetWifiCompleteEvent(boolean isSuccess, String SSID, String content, String ipAddress) {
         this.isSuccess = isSuccess;
         this.SSID = SSID;
         this.content = content;
+        this.ipAddress = ipAddress;
     }
 
-    public SetWifiCompleteEvent(boolean isSuccess, String SSID, boolean hadBound) {
+    public SetWifiCompleteEvent(boolean isSuccess, String SSID, boolean hadBound, String ipAddress) {
         this.isSuccess = isSuccess;
         this.SSID = SSID;
         this.hadBound = hadBound;
+        this.ipAddress = ipAddress;
     }
 }

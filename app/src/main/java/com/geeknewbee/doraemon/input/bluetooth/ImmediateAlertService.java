@@ -24,12 +24,10 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
     private BluetoothDevice bluetoothDevice;
     private BluetoothGattCharacteristic read;
     private BluetoothGattCharacteristic notifyTTS;
-    private BLEDataSender bleDataSender;
     private BLEDataReader bleDataReader;
 
     public ImmediateAlertService(Handler mHandler) {
         this.mHandler = mHandler;
-        bleDataSender = new BLEDataSender();
         bleDataReader = new BLEDataReader();
     }
 
@@ -108,11 +106,9 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                                         int newState) {
         if (newState == BluetoothGattServer.STATE_CONNECTED) {
             bluetoothDevice = device;
-            bleDataSender.init(bluetoothDevice, mGattServer);
             bleDataReader.clearData();
         } else {
             bluetoothDevice = null;
-            bleDataSender.clearAllData();
             bleDataReader.clearData();
         }
 
