@@ -139,8 +139,11 @@ public class SocketService {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
-                    if (bytes < 1)
-                        continue;
+                    if (bytes == -1) {
+                        Log.e(TAG, "disconnected");
+                        cancel();//断开连接
+                        break;
+                    }
                     String readMessage = new String(buffer, 0, bytes);
                     LogUtils.d(TAG, "receive :" + readMessage);
                     List<String> result = socketReader.readData(readMessage);
