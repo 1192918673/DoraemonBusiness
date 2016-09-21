@@ -114,6 +114,10 @@ public class XMLYMusicPlayer implements IMusicPlayer {
         mPlayerManager.addPlayerStatusListener(mPlayerStatusListener);
         mPlayerManager.getPlayerStatus();
 
+        getJokeAlbum();
+    }
+
+    private void getJokeAlbum() {
         Map<String, String> map = new HashMap<String, String>();
         map.put(DTransferConstants.CATEGORY_ID, "4");
         map.put(DTransferConstants.CALC_DIMENSION, "3");
@@ -140,7 +144,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     @Override
     public void reInit() {
-        init();
+        getJokeAlbum();
     }
 
     @Override

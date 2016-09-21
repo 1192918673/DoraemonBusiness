@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.entity.GetMembersCountResponse;
+import com.geeknewbee.doraemon.entity.event.NetWorkStateChangeEvent;
 import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.webservice.ApiService;
@@ -50,6 +51,7 @@ public class ShowQRTask extends Thread {
             if (DeviceUtil.isNetworkConnected(context) && !TextUtils.isEmpty(token)) {
                 if (TTS_TIPS_FLAG) { // 解决配网成功等待扫码时，不断循环多次播报“网络已连接”
                     Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
+                    EventBus.getDefault().post(new NetWorkStateChangeEvent(true));
                     TTS_TIPS_FLAG = false;
                 }
                 Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN, 3000);

@@ -51,10 +51,14 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         return instance;
     }
 
-    public void reInit() {
+    public void reTTS() {
         itts.reInit();
+    }
+
+    public void reMusicPlayer() {
         iMusicPlayer.reInit();
     }
+
 
     @Override
     public Boolean performTask(Command input) {

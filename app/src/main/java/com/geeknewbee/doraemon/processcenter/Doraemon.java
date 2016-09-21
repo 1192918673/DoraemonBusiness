@@ -98,9 +98,10 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
             speechAuth.auth();
             ear.reInit();
             soundInputDevice.reInit();
+            MouthTaskQueue.getInstance().reTTS();
         }
-        // 每次重新联网，都重新初始化TTS、XMLY
-        MouthTaskQueue.getInstance().reInit();
+        // 每次重新联网，都重新初始化XMLY
+        MouthTaskQueue.getInstance().reMusicPlayer();
     }
 
     /**

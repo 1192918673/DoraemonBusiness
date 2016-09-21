@@ -74,19 +74,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".broadcast.BatteryReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BATTERY_CHANGED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".broadcast.NetworkChangeReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-
         <!--  喜马拉雅 配置-->
         <meta-data
             android:name="app_key"

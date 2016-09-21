@@ -1,6 +1,7 @@
 package com.geeknewbee.doraemon.view;
 
 import android.app.Activity;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.Window;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
+import com.geeknewbee.doraemon.broadcast.BatteryReceiver;
+import com.geeknewbee.doraemon.broadcast.NetworkChangeReceiver;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
@@ -40,6 +43,8 @@ public class MainActivity extends Activity {
     private TextView result;
     private RelativeLayout rl_preView;
     private SurfaceView mPreView;
+    private BatteryReceiver receiverBattery;
+    private NetworkChangeReceiver receiverNetWork;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,18 @@ public class MainActivity extends Activity {
 //        test();
         Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
 //        Doraemon.getInstance(getApplicationContext()).startAFR(mPreView);// 开启人脸检测
+        registerReceiver();
+    }
+
+    private void registerReceiver() {
+        IntentFilter filterBattery = new IntentFilter("android.intent.action.BATTERY_CHANGED");
+        receiverBattery = new BatteryReceiver();
+        registerReceiver(receiverBattery, filterBattery);
+
+        IntentFilter filterNewwork = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        filterNewwork.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+        receiverNetWork = new NetworkChangeReceiver();
+        registerReceiver(receiverNetWork, filterNewwork);
     }
 
     private void initView() {
@@ -150,6 +167,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(receiverBattery);
+        unregisterReceiver(receiverNetWork);
         destroy();
         Doraemon.getInstance(getApplicationContext()).destroy();
     }

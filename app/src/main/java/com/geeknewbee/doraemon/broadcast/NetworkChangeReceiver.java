@@ -20,8 +20,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (DeviceUtil.isNetworkConnected(context)) {
             LogUtils.d(TAG, "网络已连接"); // 测试：代码联网没有触发广播
-            Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
-            EventBus.getDefault().post(new NetWorkStateChangeEvent(true));
+//            Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
+//            EventBus.getDefault().post(new NetWorkStateChangeEvent(true));
             DoraemonInfoManager.getInstance(context).requestTokenFromServer();
         } else {
             LogUtils.d(TAG, "网络已断开");
