@@ -107,8 +107,8 @@ public class AISpeechEar implements IEar {
         mASREngine.setWaitCloudTimeout(5000);
         mASREngine.setPauseTime(500);
         mASREngine.setUseConf(true);
-        mASREngine.setNoSpeechTimeOut(20000);//设置无语音超时时长，单位毫秒，默认值为5000ms ；如果达到该设置值时，自动停止录音并放弃请求内核
-        mASREngine.setMaxSpeechTimeS(20);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常`
+        mASREngine.setNoSpeechTimeOut(0);//设置无语音超时时长，单位毫秒，默认值为5000ms ；如果达到该设置值时，自动停止录音并放弃请求内核
+        mASREngine.setMaxSpeechTimeS(10);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常`
         mASREngine.setDeviceId(Util.getIMEI(App.mContext));
         mASREngine.setCloudVadEnable(false);
         mASREngine.setAecCfg(SpeechConstants.ace_cfg);
