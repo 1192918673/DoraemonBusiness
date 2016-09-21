@@ -144,7 +144,8 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                         null);
                 break;
             case BleUuid.CHAR_SET_TTS_STRING:
-                LogUtils.d(TAG, "Get TTS string:" + value.length);
+                String readMessage = new String(value, 0, value.length);
+                LogUtils.d(TAG, "Get TTS string:" + readMessage);
                 if (value.length > 0) {
                     mHandler.obtainMessage(Constants.MESSAGE_BLE_TTS, value.length, -1, value)
                             .sendToTarget();

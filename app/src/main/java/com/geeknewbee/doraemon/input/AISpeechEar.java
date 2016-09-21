@@ -104,7 +104,7 @@ public class AISpeechEar implements IEar {
         mASREngine.setAthThreshold(0.6f);
         mASREngine.setIsRelyOnLocalConf(true);
         mASREngine.setIsPreferCloud(true);
-        mASREngine.setWaitCloudTimeout(5000);
+        mASREngine.setWaitCloudTimeout(8000);
         mASREngine.setPauseTime(500);
         mASREngine.setUseConf(true);
         mASREngine.setNoSpeechTimeOut(0);//设置无语音超时时长，单位毫秒，默认值为5000ms ；如果达到该设置值时，自动停止录音并放弃请求内核
