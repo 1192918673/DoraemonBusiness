@@ -140,6 +140,10 @@ public class BluetoothCommand {
 //                    commands.add(new SoundCommand(Constants.READ_NEWS_TIPS, SoundCommand.InputSource.TIPS));
                     commands.add(new LocalResourceCommand(R.raw.oben_read_news));
                     break;
+                case "sleep":
+                    //进入休眠
+                    commands.add(new Command(CommandType.SLEEP));
+                    break;
                 default:
                     commands.add(LocalResourceManager.getInstance().getActionSetCommand(Arrays.asList(action)));
                     break;

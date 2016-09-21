@@ -98,6 +98,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case DANCE:
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
+            case SLEEP:
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+                break;
         }
     }
 
