@@ -101,6 +101,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case SLEEP:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 break;
+            case LEARN_EN:  //学英语
+                MouthTaskQueue.getInstance().addTask(command);
+                break;
         }
     }
 

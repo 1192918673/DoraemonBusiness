@@ -13,6 +13,7 @@ import com.geeknewbee.doraemon.output.action.IVideoPlayer;
 import com.geeknewbee.doraemon.output.action.MediaPlayerHelper;
 import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
 import com.geeknewbee.doraemon.output.action.YouKuPlayerActivity;
+import com.geeknewbee.doraemon.processcenter.LearnEnglish;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
@@ -31,12 +32,15 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private IMusicPlayer iMusicPlayer;
     private MediaPlayerHelper mediaPlayerHelper;
     private IVideoPlayer videoPlayer;
+    private LearnEnglish learnEnglish;
+
 
     private MouthTaskQueue() {
         super();
         itts = new AISpeechTTS();
         iMusicPlayer = new XMLYMusicPlayer();
         mediaPlayerHelper = new MediaPlayerHelper();
+        learnEnglish = new LearnEnglish();
         EventBus.getDefault().register(this);
     }
 
@@ -93,6 +97,10 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 intent.putExtra(YouKuPlayerActivity.EXTRA_VID, input.getContent());
                 App.mContext.startActivity(intent);
                 break;
+            case LEARN_EN:  //学英语
+                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.CLOSE_ALL));
+                learnEnglish.init();
+                break;
         }
         return true;
     }
@@ -113,6 +121,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     public void stop() {
+        learnEnglish.stop();
         itts.stop();
         iMusicPlayer.stop();
         mediaPlayerHelper.stop();
@@ -127,10 +136,12 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         return itts.isSpeaking()
                 || iMusicPlayer.isPlaying()
                 || mediaPlayerHelper.isPlaying()
-                || (videoPlayer != null && videoPlayer.isPlaying());
+                || (videoPlayer != null && videoPlayer.isPlaying()
+                || learnEnglish.isLearnning());
     }
 
     public void destroy() {
+        learnEnglish.destory();
         itts.destroy();
         iMusicPlayer.destroy();
         mediaPlayerHelper.destroy();

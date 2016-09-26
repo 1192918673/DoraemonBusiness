@@ -4,6 +4,7 @@ import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.GetMembersCountResponse;
 import com.geeknewbee.doraemon.entity.ResponseAppVersion;
+import com.geeknewbee.doraemon.entity.StudyWords;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -15,8 +16,27 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
+import rx.Observable;
 
 public interface ApiService {
+    /**
+     * 获取本日的学习单词
+     *
+     * @param token Token
+     * @return 返回 Observable<BaseResponse<StudyWords>>
+     */
+    @GET("talking/words")
+    Observable<BaseResponseBody<StudyWords>> study_words(@Query("token") String token);
+
+    /**
+     * 英语学习记录
+     *
+     * @param token Token
+     * @return 返回 Observable<BaseResponse>
+     */
+    @FormUrlEncoded
+    @POST("talking/study_record")
+    Observable<BaseResponseBody> study_record(@Field("token") String token, @Field("wid") int wid, @Field("score") int score);
 
     @GET("talking/answer")
     Call<BaseResponseBody<GetAnswerResponse>> getAnswer(@Query("token") String token, @Query("question") String question);
