@@ -21,6 +21,8 @@ import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 任务处理中枢
@@ -29,6 +31,8 @@ import java.util.List;
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
 public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
+    //创建一个切换AddCommand锁对象
+    private Lock addCommandLock = new ReentrantLock();
 
 
     public void translateSound(SoundTranslateInput input) {
@@ -38,6 +42,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     }
 
     public void addCommand(Command command) {
+        addCommandLock.lock();
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
         switch (command.getType()) {
             case SHOW_EXPRESSION: //面部表情
@@ -102,6 +107,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 break;
         }
+        addCommandLock.unlock();
     }
 
     protected void addCommand(List<Command> commands) {

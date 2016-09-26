@@ -59,11 +59,10 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     private IMessageReceive receive;
     private ISoundInputDevice soundInputDevice;
     private Brain brain;
+    //唤醒的角度(思必驰的好像不是角度)
     private double wakePhis = 0;
     //创建一个切换ASR\EDD锁对象
     private Lock switchMonitorLock = new ReentrantLock();
-    //创建一个切换AddCommand锁对象
-    private Lock addCommandLock = new ReentrantLock();
 
     private Doraemon(Context context) {
         this.context = context;
@@ -89,8 +88,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-
-    public void reAuthAndInit(NetWorkStateChangeEvent event) {
+    public void netWorkStateChanged(NetWorkStateChangeEvent event) {
         if (!event.isConnected)
             return;
 
@@ -436,20 +434,20 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      * @param command
      */
     public void addCommand(Command command) {
-        addCommandLock.lock();
         brain.addCommand(command);
-        addCommandLock.unlock();
     }
 
     public void addCommand(List<Command> commands) {
-        addCommandLock.lock();
         brain.addCommand(commands);
-        addCommandLock.unlock();
     }
 
     public void destroy() {
         ear.destroy();
+        eye.stopReadSence();
         soundInputDevice.destroy();
+        inputTimeOutMonitorTask.cancel();
         MouthTaskQueue.getInstance().destroy();
+        EventBus.getDefault().unregister(this);
+        instance = null;
     }
 }

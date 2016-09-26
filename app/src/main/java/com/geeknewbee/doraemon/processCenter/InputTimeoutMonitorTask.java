@@ -21,21 +21,15 @@ public class InputTimeoutMonitorTask extends Thread {
 
     private Context context;
     //上次输入时间
-    private long begintTime;
-
-    //是否正在运行
-    private boolean isRunning = false;
+    private long beginTime;
 
     //检测超时的模式
     private TimeOutMonitorType model;
+    private boolean isExit;
 
     public InputTimeoutMonitorTask(Context context) {
         this.context = context;
-        begintTime = new Date().getTime();
-    }
-
-    private synchronized long getBeginTime() {
-        return begintTime;
+        beginTime = new Date().getTime();
     }
 
     /**
@@ -44,10 +38,12 @@ public class InputTimeoutMonitorTask extends Thread {
      * @param type
      */
     public synchronized void startMonitor(TimeOutMonitorType type) {
-        if (!isRunning)
-            start();
+        beginTime = new Date().getTime();
         model = type;
-        begintTime = new Date().getTime();
+        if (!isAlive()) {
+            isExit = false;
+            start();
+        }
         LogUtils.d(TAG, "Start Timeout Monitor :" + type);
     }
 
@@ -59,20 +55,27 @@ public class InputTimeoutMonitorTask extends Thread {
         LogUtils.d(TAG, "Stop Timeout Monitor ...");
     }
 
+    public void cancel() {
+        isExit = true;
+        interrupt();
+    }
+
     @Override
     public void run() {
         super.run();
-        isRunning = true;
-        while (true) {
-            Date now = new Date();
+        Date now;
+        while (!isExit) {
+            now = new Date();
             switch (model) {
                 case MODEL_WAIT_SOUND_INPUT:
-                    if (now.getTime() - getBeginTime() > WAIT_SOUND_INPUT_OUT_TIME) {
+                    if (now.getTime() - beginTime > WAIT_SOUND_INPUT_OUT_TIME) {
                         //当超过规定的时间要通知停止监听
                         stopMonitor();
                         //添加Sound Command 就会开启到EDD模式，不需要手动切换到EDD
                         Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("不说话，我去休息了", SoundCommand.InputSource.TIPS));
                     }
+                    break;
+                default:
                     break;
             }
             try {
@@ -83,7 +86,7 @@ public class InputTimeoutMonitorTask extends Thread {
         }
     }
 
-    public static enum TimeOutMonitorType {
+    public enum TimeOutMonitorType {
         MODEL_NONE,
         MODEL_WAIT_SOUND_INPUT    // 1:等待说话超时
     }
