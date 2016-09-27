@@ -19,6 +19,8 @@ import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 import com.youku.player.YoukuPlayerBaseConfiguration;
 
 import java.util.Iterator;
@@ -34,6 +36,8 @@ public class App extends BaseApplication {
 
     @Override
     public void onCreate() {
+        //科大讯飞初始化
+        SpeechUtility.createUtility(App.this, SpeechConstant.APPID + "=" + getString(R.string.app_id));
         super.onCreate();
         int pid = android.os.Process.myPid();
         String processAppName = getAppName(pid);

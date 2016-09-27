@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 
 
 ext {
-    TestVersion = '1.0.0.12'
-    TestVersionCode = 1000012
+    TestVersion = '1.0.0.13'
+    TestVersionCode = 1000013
     Version = '1.0.0'
     VersionCode = 10000
     DevURLDOMAIN = '"http://doraemon.babadeyan.com"'
@@ -119,4 +119,7 @@ dependencies {
     compile 'com.facebook.stetho:stetho:1.1.0'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.google.zxing:core:3.2.1'
+
+    compile 'io.reactivex:rxjava:1.0.14'
+    compile 'io.reactivex:rxandroid:1.0.1'
 }
