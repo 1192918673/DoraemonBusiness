@@ -1,8 +1,11 @@
 package com.geeknewbee.doraemon.view;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,6 +20,8 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.input.ReadSenseEye;
+import com.geeknewbee.doraemon.input.ReadSenseService;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
@@ -56,7 +61,8 @@ public class MainActivity extends Activity {
         EventBus.getDefault().register(this);
 //        test();
         Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
-//        Doraemon.getInstance(getApplicationContext()).startAFR(mPreView);// 开启人脸检测
+        LogUtils.d(ReadSenseService.TAG, "MainActivity 调用。。。");
+        Doraemon.getInstance(getApplicationContext()).startAFR();// 开启人脸检测
         registerReceiver();
     }
 
@@ -133,13 +139,13 @@ public class MainActivity extends Activity {
         result.setText(event.input);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    /*@Subscribe(threadMode = ThreadMode.MAIN)
     public void onTakePicture(SwitchMonitorEvent event) {
         //收到ASR的识别结果
         if (event.type == SoundMonitorType.CLOSE_ALL) {
-            Doraemon.getInstance(getApplicationContext()).startAFR(mPreView);// 开启人脸检测
+            Doraemon.getInstance(getApplicationContext()).startAFR();// 开启人脸检测
         }
-    }
+    }*/
 
     /**
      * 当app crash 的时候
@@ -169,8 +175,10 @@ public class MainActivity extends Activity {
         super.onDestroy();
         unregisterReceiver(receiverBattery);
         unregisterReceiver(receiverNetWork);
+//        unbindService(myServiceConnection);
         destroy();
         Doraemon.getInstance(getApplicationContext()).destroy();
+        Doraemon.getInstance(getApplicationContext()).stopAFR();
     }
 
     private void destroy() {
