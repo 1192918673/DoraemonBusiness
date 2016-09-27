@@ -38,6 +38,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <!-- 环信权限 END-->
 
     <application
@@ -73,6 +76,10 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".input.TestService"
+            android:process="com.geeknewbee.doraemon.input" />
 
         <!--  喜马拉雅 配置-->
         <meta-data
