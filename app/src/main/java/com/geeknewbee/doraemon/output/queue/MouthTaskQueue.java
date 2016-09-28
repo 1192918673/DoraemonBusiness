@@ -6,12 +6,12 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.VideoPlayCreate;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
-import com.geeknewbee.doraemon.output.action.AISpeechTTS;
 import com.geeknewbee.doraemon.output.action.IMusicPlayer;
 import com.geeknewbee.doraemon.output.action.ITTS;
 import com.geeknewbee.doraemon.output.action.IVideoPlayer;
 import com.geeknewbee.doraemon.output.action.MediaPlayerHelper;
 import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
+import com.geeknewbee.doraemon.output.action.XfSpeechTTS;
 import com.geeknewbee.doraemon.output.action.YouKuPlayerActivity;
 import com.geeknewbee.doraemon.processcenter.LearnEnglish;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -37,7 +37,8 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     private MouthTaskQueue() {
         super();
-        itts = new AISpeechTTS();
+//        itts = new AISpeechTTS();
+        itts = new XfSpeechTTS();
         iMusicPlayer = new XMLYMusicPlayer();
         mediaPlayerHelper = new MediaPlayerHelper();
         learnEnglish = new LearnEnglish();

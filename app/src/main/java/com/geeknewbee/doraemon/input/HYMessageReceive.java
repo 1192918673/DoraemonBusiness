@@ -101,6 +101,9 @@ public class HYMessageReceive implements IMessageReceive {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case LOGIN_SUCCESS:// 登录成功
+                    //以下两个方法是为了保证进入主页面后本地会话和群组都load完毕
+                    EMClient.getInstance().groupManager().loadAllGroups();
+                    EMClient.getInstance().chatManager().loadAllConversations();
                     // ★★★ 登录成功后，开始监听接受消息
                     EMClient.getInstance().chatManager().addMessageListener(msgListener);
                     break;

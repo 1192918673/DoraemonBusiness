@@ -472,10 +472,7 @@ public class LearnEnglish {
 
     public void stop() {
         if (mTts != null) {
-            mTts.destroy();
-        }
-        if (mIse != null) {
-            mIse.destroy();
+            mTts.stopSpeaking();
         }
     }
 
