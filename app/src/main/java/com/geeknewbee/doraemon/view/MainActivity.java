@@ -1,11 +1,8 @@
 package com.geeknewbee.doraemon.view;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,10 +16,7 @@ import com.geeknewbee.doraemon.broadcast.NetworkChangeReceiver;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
-import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
-import com.geeknewbee.doraemon.input.ReadSenseEye;
 import com.geeknewbee.doraemon.input.ReadSenseService;
-import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
