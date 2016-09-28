@@ -20,4 +20,6 @@ public interface IMessageReceive {
          */
         void onReceivedMessage(List<Command> commands);
     }
+
+    void destroy();
 }

@@ -447,6 +447,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
         soundInputDevice.destroy();
         inputTimeOutMonitorTask.cancel();
         MouthTaskQueue.getInstance().destroy();
+        receive.destroy();
         EventBus.getDefault().unregister(this);
         instance = null;
     }

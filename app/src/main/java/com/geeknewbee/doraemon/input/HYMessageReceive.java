@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
-import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
@@ -47,7 +46,7 @@ public class HYMessageReceive implements IMessageReceive {
     public static final int STATE_CONNECTED = 2;
     public static final int STATE_DISCONNECTED = 3;
     private static HYMessageReceive instance;
-    public String TAG = HYMessageReceive.class.getSimpleName();
+    public static String TAG = HYMessageReceive.class.getSimpleName();
     private Context mContext = BaseApplication.mContext;
     private String authToken = null;
     private String hxUsername;
@@ -102,6 +101,8 @@ public class HYMessageReceive implements IMessageReceive {
             switch (msg.what) {
                 case LOGIN_SUCCESS:// 登录成功
                     // ★★★ 登录成功后，开始监听接受消息
+                    EMClient.getInstance().groupManager().loadAllGroups();
+                    EMClient.getInstance().chatManager().loadAllConversations();
                     EMClient.getInstance().chatManager().addMessageListener(msgListener);
                     break;
                 case LOGIN_FAILED:// 登录失败
@@ -145,18 +146,17 @@ public class HYMessageReceive implements IMessageReceive {
             LogUtils.d(TAG, "收到来自" + from + "的视频呼叫");
 
             // 1.跳转到通话页面
+            EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.CLOSE_ALL));
             Intent intent1 = new Intent(mContext, VideoTalkActivity.class);
             intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent1.putExtra("from", from);
             mContext.startActivity(intent1);
-            // 2.TODO 发送切换成EDD监听 是否再停用EDD监听？视频挂断在启动监听
-            EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-            Doraemon.getInstance(mContext).stopWakeUp();
         }
     };
 
     private HYMessageReceive() {
         EventBus.getDefault().register(this);
+        EMInit();
         initLogin();
     }
 
@@ -176,7 +176,6 @@ public class HYMessageReceive implements IMessageReceive {
         authToken = PrefUtils.getString(mContext, Constants.KEY_TOKEN, null);
         hxUsername = PrefUtils.getString(mContext, Constants.KEY_HX_USERNAME, null);
         hxPassword = PrefUtils.getString(mContext, Constants.KEY_HX_USERPWD, null);
-        LogUtils.d(TAG, "authToken:" + authToken + ",hxUsername:" + hxUsername + ",hxPassword:" + hxPassword);
 
         // 2.注册一个监听连接状态的listener
         EMClient.getInstance().addConnectionListener(new MyEMConnectionListener());
@@ -185,9 +184,6 @@ public class HYMessageReceive implements IMessageReceive {
         if (!isLogined) {
             EMLogin(hxUsername, hxPassword);
         }
-
-        // 3.视频通话广播注册
-        EMInit();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -204,6 +200,8 @@ public class HYMessageReceive implements IMessageReceive {
      * @param pwd
      */
     private void EMLogin(String name, String pwd) {
+        LogUtils.d(TAG, "authToken:" + authToken + ",hxUsername:" + hxUsername + ",hxPassword:" + hxPassword);
+
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(pwd)) {
             mHandler.sendEmptyMessageDelayed(LOGIN_FAILED, 5000);
             return;
@@ -278,9 +276,11 @@ public class HYMessageReceive implements IMessageReceive {
      * 环信视频通话逻辑 初始化操作
      */
     private void EMInit() {
-        IntentFilter callFilter = new IntentFilter(EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
+        String broadcastAction = EMClient.getInstance().callManager().getIncomingCallBroadcastAction();
+        IntentFilter callFilter = new IntentFilter(broadcastAction);
+        callFilter.setPriority(1000);
         mContext.registerReceiver(emIncomingCallReceiver, callFilter);
-        LogUtils.d(TAG, "环信广播接受者注册。。。");
+        LogUtils.d(TAG, "环信广播接受者注册。。。：" + broadcastAction);
     }
 
     /**
@@ -318,5 +318,11 @@ public class HYMessageReceive implements IMessageReceive {
             isLogined = false;
             mHandler.obtainMessage(STATE_DISCONNECTED, error, -1);
         }
+    }
+
+    @Override
+    public void destroy() {
+        logout();
+        mContext.unregisterReceiver(emIncomingCallReceiver);
     }
 }
