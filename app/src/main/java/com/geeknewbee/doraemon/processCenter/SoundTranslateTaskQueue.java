@@ -9,6 +9,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.BLCommand;
@@ -63,6 +64,8 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     @Override
     public List<Command> performTask(SoundTranslateInput input) {
         // 1.当没有解析到声音的时候不做任何输出,重新开启ASR
+        LogUtils.d(AISpeechEar.TAG, "开始我们的结果分析");
+
         if (TextUtils.isEmpty(input.input)) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(LocalResourceManager.getInstance().getNoAnswerString(), SoundCommand.InputSource.SOUND_TRANSLATE));
@@ -74,6 +77,8 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         if (localResponse != null) return localResponse;
 
         // 4.再请求后台，走我们的13万库
+        LogUtils.d(AISpeechEar.TAG, "开始请求我们服务器结果");
+
         Retrofit retrofit = RetrofitUtils.getRetrofit(BuildConfig.URLDOMAIN);
         ApiService service = retrofit.create(ApiService.class);
         try {
@@ -85,6 +90,9 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         } catch (IOException e) {
             LogUtils.d("SoundTranslateTaskQueue", e.getMessage());
         }
+
+        LogUtils.d(AISpeechEar.TAG, "请求我们服务器结果 完成");
+
 
         // 5.如果以上都不能寻找到答案的时候。当思必驰有回复用思必驰的结果，思必驰没有则直接重新开启声音监听
         if (TextUtils.isEmpty(input.asrOutput)) {

@@ -178,7 +178,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
          *
          * 否则需要通过后台服务器进行解析
          */
-        LogUtils.d(AISpeechEar.TAG, input + ":" + asrOutput + ":" + action + ":" + starName + ":" + musicName);
+        LogUtils.d(AISpeechEar.TAG, "思必驰解析结果完成:" + input + ":" + asrOutput + ":" + action + ":" + starName + ":" + musicName);
         if (BuildConfig.SHOW_ASR_RESULT)
             EventBus.getDefault().post(new ReceiveASRResultEvent(input));
         brain.translateSound(new SoundTranslateInput(input, asrOutput, action, starName, musicName));
