@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.List;
 
 public class SocketService {
@@ -144,9 +145,7 @@ public class SocketService {
                         cancel();//断开连接
                         break;
                     }
-                    String readMessage = new String(buffer, 0, bytes);
-                    LogUtils.d(TAG, "receive :" + readMessage);
-                    List<String> result = socketReader.readData(readMessage);
+                    List<String> result = socketReader.readData(Arrays.copyOfRange(buffer, 0, bytes));
                     if (result != null && result.size() > 0) {
                         for (int i = 0; i < result.size(); i++) {
                             mHandler.obtainMessage(Constants.MESSAGE_BLE_ANDROID, result.get(i).length(), -1, result.get(i))

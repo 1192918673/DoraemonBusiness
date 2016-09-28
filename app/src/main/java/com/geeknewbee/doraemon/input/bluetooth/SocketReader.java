@@ -16,7 +16,13 @@ public class SocketReader {
         data = Constants.EMPTY_STRING;
     }
 
-    public synchronized List<String> readData(String value) {
+    public synchronized List<String> readData(byte[] bytes) {
+        String readMessage = new String(bytes);
+        LogUtils.d(SocketService.TAG, "receive :" + readMessage);
+        return readData(readMessage);
+    }
+
+    private synchronized List<String> readData(String value) {
         if (TextUtils.isEmpty(value))
             return null;
 
