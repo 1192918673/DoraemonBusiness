@@ -16,7 +16,6 @@ import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemon.view.VideoTalkActivity;
-import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConnectionListener;
@@ -45,9 +44,9 @@ public class HYMessageReceive implements IMessageReceive {
     public static final int LOGIN_FAILED = 1;
     public static final int STATE_CONNECTED = 2;
     public static final int STATE_DISCONNECTED = 3;
-    private static HYMessageReceive instance;
     public static String TAG = HYMessageReceive.class.getSimpleName();
-    private Context mContext = BaseApplication.mContext;
+    private static HYMessageReceive instance;
+    private Context mContext;
     private String authToken = null;
     private String hxUsername;
     private String hxPassword;
@@ -61,15 +60,16 @@ public class HYMessageReceive implements IMessageReceive {
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             // 收到消息
+            LogUtils.d(TAG, "收到消息");
         }
 
         @Override
         public void onCmdMessageReceived(List<EMMessage> messages) {
-            LogUtils.d(TAG, messages.toString());
+            LogUtils.d(TAG, "收到Cmd消息" + messages.toString());
             // 收到透传消息
 
             if (messages != null && messages.size() > 0) {
-                String str = "收到消息\n";
+                String str = "收到Cmd消息\n";
                 for (int i = 0; i < messages.size(); i++) {
                     String action = ((EMCmdMessageBody) messages.get(i).getBody()).action();
                     str += messages.get(i).getFrom() + " : " + action + "\n";
@@ -82,16 +82,19 @@ public class HYMessageReceive implements IMessageReceive {
         @Override
         public void onMessageReadAckReceived(List<EMMessage> messages) {
             // 收到已读回执
+            LogUtils.d(TAG, "消息已读回执");
         }
 
         @Override
         public void onMessageDeliveryAckReceived(List<EMMessage> message) {
             // 收到已送达回执
+            LogUtils.d(TAG, "收到已送达回执");
         }
 
         @Override
         public void onMessageChanged(EMMessage message, Object change) {
             // 消息状态变动
+            LogUtils.d(TAG, "消息状态变动");
         }
     };
     private Handler mHandler = new Handler() {
@@ -100,6 +103,9 @@ public class HYMessageReceive implements IMessageReceive {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case LOGIN_SUCCESS:// 登录成功
+                    //以下两个方法是为了保证进入主页面后本地会话和群组都load完毕
+                    EMClient.getInstance().groupManager().loadAllGroups();
+                    EMClient.getInstance().chatManager().loadAllConversations();
                     // ★★★ 登录成功后，开始监听接受消息
                     EMClient.getInstance().groupManager().loadAllGroups();
                     EMClient.getInstance().chatManager().loadAllConversations();
@@ -154,17 +160,18 @@ public class HYMessageReceive implements IMessageReceive {
         }
     };
 
-    private HYMessageReceive() {
+    private HYMessageReceive(Context context) {
+        this.mContext = context;
         EventBus.getDefault().register(this);
         EMInit();
         initLogin();
     }
 
-    public static HYMessageReceive getInstance() {
+    public static HYMessageReceive getInstance(Context context) {
         if (instance == null) {
             synchronized (HYMessageReceive.class) {
                 if (instance == null) {
-                    instance = new HYMessageReceive();
+                    instance = new HYMessageReceive(context);
                 }
             }
         }

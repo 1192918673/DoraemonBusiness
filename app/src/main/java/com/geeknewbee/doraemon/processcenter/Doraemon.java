@@ -1,8 +1,10 @@
 package com.geeknewbee.doraemon.processcenter;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.view.SurfaceView;
-
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
@@ -25,10 +27,9 @@ import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.AISpeechSoundInputDevice;
 import com.geeknewbee.doraemon.input.HYMessageReceive;
 import com.geeknewbee.doraemon.input.IEar;
-import com.geeknewbee.doraemon.input.IEye;
 import com.geeknewbee.doraemon.input.IMessageReceive;
 import com.geeknewbee.doraemon.input.ISoundInputDevice;
-import com.geeknewbee.doraemon.input.ReadSenseEye;
+import com.geeknewbee.doraemon.input.ReadSenseService;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
@@ -55,7 +56,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
     private final AISpeechAuth speechAuth;
     private IEar ear;
-    private IEye eye;
+    //    private IEye eye;
     private IMessageReceive receive;
     private ISoundInputDevice soundInputDevice;
     private Brain brain;
@@ -63,13 +64,14 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     private double wakePhis = 0;
     //创建一个切换ASR\EDD锁对象
     private Lock switchMonitorLock = new ReentrantLock();
+    private ReadSenseServiceConnection serviceConnection;
 
     private Doraemon(Context context) {
         this.context = context;
         speechAuth = new AISpeechAuth();
         ear = new AISpeechEar();
-        eye = ReadSenseEye.getInstance();
-        receive = HYMessageReceive.getInstance();
+//        eye = ReadSenseEye.getInstance();
+        receive = HYMessageReceive.getInstance(context);
         brain = new Brain();
         soundInputDevice = new AISpeechSoundInputDevice();
         inputTimeOutMonitorTask = new InputTimeoutMonitorTask(context);
@@ -146,17 +148,22 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     /**
      * 开始自动人脸识别 Automatic face Recognition
      *
-     * @param preView
      */
-    public void startAFR(SurfaceView preView) {
-        eye.startReadSence(preView);
+    public void startAFR() {
+        Intent intent = new Intent(context, ReadSenseService.class);
+        LogUtils.d(ReadSenseService.TAG, "Doraemon 调用。。。");
+//        context.startService(intent);
+        serviceConnection = new ReadSenseServiceConnection();
+        context.bindService(intent, serviceConnection, context.BIND_AUTO_CREATE);
     }
 
     /**
      * 停止自动人脸识别
      */
     public void stopAFR() {
-        eye.stopReadSence();
+        context.unbindService(serviceConnection);
+        /*Intent intent = new Intent(context, ReadSenseService.class);
+        context.stopService(intent);*/
     }
 
     /**
@@ -443,12 +450,27 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
 
     public void destroy() {
         ear.destroy();
-        eye.stopReadSence();
         soundInputDevice.destroy();
         inputTimeOutMonitorTask.cancel();
         MouthTaskQueue.getInstance().destroy();
         receive.destroy();
         EventBus.getDefault().unregister(this);
         instance = null;
+    }
+
+    class ReadSenseServiceConnection implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LogUtils.d(ReadSenseService.TAG, "收到中间人类对象");
+            //通过stub获取中间人对象
+            //myBinder = Stub.asInterface(service);
+        }
+
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
     }
 }

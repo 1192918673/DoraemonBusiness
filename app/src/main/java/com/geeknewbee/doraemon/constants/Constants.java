@@ -132,8 +132,8 @@ public class Constants {
     public static final String HELLO = "大家好";
     public static final String END = "谢谢大家，期待越来越多的朋友帮我变得更聪明";
     public static final String TANG_SHI = "《登鹳雀楼》白日依山尽，黄河入海流。欲穷千里目，更上一层楼。";
-    public static final String TIPS_SET_WIFI = "正在设置WIFI";
-    public static final String TIPS_CONNECT_WIFI_FAIL = "连接WFI失败";
+    public static final String TIPS_SET_WIFI = "正在设置wifi";
+    public static final String TIPS_CONNECT_WIFI_FAIL = "连接wifi失败";
     public static final String TIP_BEFORE_PLAY_MOVIE = "现在开始播放电影，请打开后盖！";
     public static String READ_NEWS_TIPS = "小朋友声音读新闻";
 }
