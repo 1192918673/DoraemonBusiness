@@ -17,7 +17,6 @@ import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemon.view.VideoTalkActivity;
-import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConnectionListener;
@@ -46,9 +45,9 @@ public class HYMessageReceive implements IMessageReceive {
     public static final int LOGIN_FAILED = 1;
     public static final int STATE_CONNECTED = 2;
     public static final int STATE_DISCONNECTED = 3;
+    public static String TAG = HYMessageReceive.class.getSimpleName();
     private static HYMessageReceive instance;
-    public String TAG = HYMessageReceive.class.getSimpleName();
-    private Context mContext = BaseApplication.mContext;
+    private Context mContext;
     private String authToken = null;
     private String hxUsername;
     private String hxPassword;
@@ -62,15 +61,16 @@ public class HYMessageReceive implements IMessageReceive {
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             // 收到消息
+            LogUtils.d(TAG, "收到消息");
         }
 
         @Override
         public void onCmdMessageReceived(List<EMMessage> messages) {
-            LogUtils.d(TAG, messages.toString());
+            LogUtils.d(TAG, "收到Cmd消息" + messages.toString());
             // 收到透传消息
 
             if (messages != null && messages.size() > 0) {
-                String str = "收到消息\n";
+                String str = "收到Cmd消息\n";
                 for (int i = 0; i < messages.size(); i++) {
                     String action = ((EMCmdMessageBody) messages.get(i).getBody()).action();
                     str += messages.get(i).getFrom() + " : " + action + "\n";
@@ -83,16 +83,19 @@ public class HYMessageReceive implements IMessageReceive {
         @Override
         public void onMessageReadAckReceived(List<EMMessage> messages) {
             // 收到已读回执
+            LogUtils.d(TAG, "消息已读回执");
         }
 
         @Override
         public void onMessageDeliveryAckReceived(List<EMMessage> message) {
             // 收到已送达回执
+            LogUtils.d(TAG, "收到已送达回执");
         }
 
         @Override
         public void onMessageChanged(EMMessage message, Object change) {
             // 消息状态变动
+            LogUtils.d(TAG, "消息状态变动");
         }
     };
     private Handler mHandler = new Handler() {
@@ -105,6 +108,8 @@ public class HYMessageReceive implements IMessageReceive {
                     EMClient.getInstance().groupManager().loadAllGroups();
                     EMClient.getInstance().chatManager().loadAllConversations();
                     // ★★★ 登录成功后，开始监听接受消息
+                    EMClient.getInstance().groupManager().loadAllGroups();
+                    EMClient.getInstance().chatManager().loadAllConversations();
                     EMClient.getInstance().chatManager().addMessageListener(msgListener);
                     break;
                 case LOGIN_FAILED:// 登录失败
@@ -158,16 +163,17 @@ public class HYMessageReceive implements IMessageReceive {
         }
     };
 
-    private HYMessageReceive() {
+    private HYMessageReceive(Context context) {
+        this.mContext = context;
         EventBus.getDefault().register(this);
         initLogin();
     }
 
-    public static HYMessageReceive getInstance() {
+    public static HYMessageReceive getInstance(Context context) {
         if (instance == null) {
             synchronized (HYMessageReceive.class) {
                 if (instance == null) {
-                    instance = new HYMessageReceive();
+                    instance = new HYMessageReceive(context);
                 }
             }
         }
@@ -282,6 +288,8 @@ public class HYMessageReceive implements IMessageReceive {
      */
     private void EMInit() {
         IntentFilter callFilter = new IntentFilter(EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
+        LogUtils.d(TAG, "获取到的Action：" + EMClient.getInstance().callManager().getIncomingCallBroadcastAction()); // com.hyphenate.action.incomingcall
+//        IntentFilter callFilter = new IntentFilter("hyphenate.chat.heatbeat.sangebaba#doraemon");
         mContext.registerReceiver(emIncomingCallReceiver, callFilter);
         LogUtils.d(TAG, "环信广播接受者注册。。。");
     }

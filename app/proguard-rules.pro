@@ -44,3 +44,9 @@ public static final int *;
     <init>(java.lang.Throwable);
 }
 #EventBus
+
+
+#环信
+-keep class com.hyphenate.** {*;}
+-dontwarn  com.hyphenate.**
+#环信

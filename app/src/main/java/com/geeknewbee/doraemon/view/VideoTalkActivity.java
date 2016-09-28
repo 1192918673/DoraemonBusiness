@@ -7,6 +7,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.geeknewbee.doraemon.R;
+import com.geeknewbee.doraemon.input.HYMessageReceive;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.hyphenate.chat.EMCallManager;
 import com.hyphenate.chat.EMCallStateChangeListener;
@@ -21,7 +22,7 @@ import com.hyphenate.media.EMOppositeSurfaceView;
  */
 public class VideoTalkActivity extends Activity {
 
-    public static final String TAG = VideoTalkActivity.class.getSimpleName();
+    public static final String TAG = HYMessageReceive.TAG;
     private EMCallStateChangeListener callStateChangeListener = new EMCallStateChangeListener() {
         @Override
         public void onCallStateChanged(EMCallStateChangeListener.CallState

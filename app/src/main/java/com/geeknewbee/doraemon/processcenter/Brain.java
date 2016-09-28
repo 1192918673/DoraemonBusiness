@@ -4,6 +4,7 @@ import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.entity.event.SwitchReadSence;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.FaceManager;
@@ -80,7 +81,8 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case TAKE_PICTURE: //拍照
 //                ReadSenseEye.getInstance().startTakePicture(false);
                 addCommand(new SoundCommand("好的《3》《2》1", SoundCommand.InputSource.TIPS));
-                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.CLOSE_ALL));
+//                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.CLOSE_ALL));
+//                EventBus.getDefault().post(new SwitchReadSence(ReadSenseEye.PHO_FACE));
                 break;
             case WIFI_MESSAGE://设置连接WIFI
                 WifiCommand wifiCommand = (WifiCommand) command;
