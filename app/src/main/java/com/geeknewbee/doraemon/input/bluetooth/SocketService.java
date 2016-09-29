@@ -12,7 +12,6 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.List;
 
 public class SocketService {
 
@@ -145,21 +144,10 @@ public class SocketService {
                         cancel();//断开连接
                         break;
                     }
-                    List<String> result = socketReader.readData2(Arrays.copyOfRange(buffer, 0, bytes));
-                    if (result != null && result.size() > 0) {
-                        for (int i = 0; i < result.size(); i++) {
-                            mHandler.obtainMessage(Constants.MESSAGE_ANDROID_CONTROL, result.get(i).length(), -1, result.get(i))
-                                    .sendToTarget();
-                            //如果一次多个命令则间隔一段时间发送
-                            if (i != result.size() - 1)
-                                try {
-                                    Thread.sleep(50);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                        }
-                    }
-
+                    byte[] result = socketReader.readData2(Arrays.copyOfRange(buffer, 0, bytes));
+                    if (result != null)
+                        mHandler.obtainMessage(Constants.MESSAGE_ANDROID_CONTROL, result.length, -1, result)
+                                .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     cancel();//断开连接

@@ -21,6 +21,7 @@ import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.output.BluetoothTalkTask;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
+import com.geeknewbee.doraemon.processcenter.command.AddFaceCommand;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
@@ -33,6 +34,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -40,13 +42,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class BluetoothServiceManager {
     //远程控制命令
-    public static final int TYPE_CONTROL = 1;
+    public static final byte TYPE_CONTROL = 0x31;
     //开始添加人的功能
-    public static final int TYPE_PERSON_START = 2;
+    public static final byte TYPE_PERSON_START = 0x32;
     //开始添加给人添加人脸
-    public static final int TYPE_PERSON_ADD_FACE = 3;
+    public static final byte TYPE_PERSON_ADD_FACE = 0x33;
     //给人设置名字
-    public static final int TYPE_PERSON_SET_NAME = 4;
+    public static final byte TYPE_PERSON_SET_NAME = 0x34;
 
     private static volatile BluetoothServiceManager instance;
     private BluetoothAdapter mBluetoothAdapter;
@@ -93,10 +95,10 @@ public class BluetoothServiceManager {
                     }
                     break;
                 case Constants.MESSAGE_ANDROID_CONTROL:
-                    String readMessage = (String) msg.obj;
-                    int funCode = 0;
+                    byte[] bytes = (byte[]) msg.obj;
+                    byte funCode = 0;
                     try {
-                        funCode = Integer.valueOf(readMessage.substring(0, 1));
+                        funCode = bytes[0];
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
@@ -104,20 +106,20 @@ public class BluetoothServiceManager {
                         case BluetoothServiceManager.TYPE_CONTROL:
                             Gson gsonSecond = new Gson();
                             try {
-                                BluetoothCommand command = gsonSecond.fromJson(readMessage, BluetoothCommand.class);
+                                BluetoothCommand command = gsonSecond.fromJson(new String(bytes, 1, bytes.length), BluetoothCommand.class);
                                 doraemon.addCommand(command.getCommand());
                             } catch (JsonSyntaxException e) {
                                 e.printStackTrace();
                             }
                             break;
                         case BluetoothServiceManager.TYPE_PERSON_START:
-                            doraemon.addCommand(new Command(CommandType.PERSON_START, readMessage.substring(1)));
+                            doraemon.addCommand(new Command(CommandType.PERSON_START, new String(bytes, 1, bytes.length - 1)));
                             break;
                         case BluetoothServiceManager.TYPE_PERSON_ADD_FACE:
-                            doraemon.addCommand(new Command(CommandType.PERSON_ADD_FACE, readMessage.substring(1)));
+                            doraemon.addCommand(new AddFaceCommand(Arrays.copyOfRange(bytes, 1, bytes.length)));
                             break;
                         case BluetoothServiceManager.TYPE_PERSON_SET_NAME:
-                            doraemon.addCommand(new Command(CommandType.PERSON_SET_NAME, readMessage.substring(1)));
+                            doraemon.addCommand(new Command(CommandType.PERSON_SET_NAME, new String(bytes, 1, bytes.length - 1)));
                             break;
                     }
                     break;

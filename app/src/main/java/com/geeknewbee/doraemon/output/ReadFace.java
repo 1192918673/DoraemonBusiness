@@ -5,11 +5,11 @@ import android.content.Context;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.ReadFaceInitParams;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
+import com.geeknewbee.doraemon.processcenter.command.AddFaceCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,22 +63,12 @@ public class ReadFace {
                 BluetoothServiceManager.getInstance(context).writeToSocket(data);
                 break;
             case PERSON_ADD_FACE:
-                try {
-                    b = addFace(command.getContent().getBytes("ASCII"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                b = addFace(((AddFaceCommand) command).data);
                 data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_ADD_FACE);
                 BluetoothServiceManager.getInstance(context).writeToSocket(data);
                 break;
             case PERSON_SET_NAME:
                 String content = command.getContent();
-                try {
-                    content = new String(content.getBytes("ASCII"), "ASCII");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
                 b = setPersonName(content);
                 data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_SET_NAME);
                 BluetoothServiceManager.getInstance(context).writeToSocket(data);
@@ -86,10 +76,10 @@ public class ReadFace {
         }
     }
 
-    private String getCallbackString(boolean b, int type) {
+    private String getCallbackString(boolean b, byte type) {
         String data = Constants.EMPTY_STRING;
         data += Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET;
-        data += type;
+        data += new String(new byte[]{type});
         data += (b ? 1 : 0);
         data += Constants.COMMAND_ROBOT_SUFFIX_FOR_SOCKET;
         LogUtils.d(TAG, "call back data:" + data);
