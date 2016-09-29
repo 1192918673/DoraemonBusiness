@@ -1,8 +1,12 @@
 package com.geeknewbee.doraemon.input;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -16,11 +20,14 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.RemoteException;
 import android.view.Gravity;
 import android.view.TextureView;
 import android.view.WindowManager;
 
 import com.geeknewbee.doraemon.BuildConfig;
+import com.geeknewbee.doraemon.EyeManager;
+import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemon.webservice.ApiService;
@@ -35,8 +42,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import mobile.ReadFace.YMFace;
 import mobile.ReadFace.YMFaceTrack;
@@ -58,8 +63,13 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     private static final int UPLOAD_SUCCESS = 4;
     private static final int UPLOAD_FAILED = 5;
     public static int FUN_GO = PIC_FACE; // 微笑拍照
-    private ExecutorService executorService = Executors.newFixedThreadPool(5);
     private boolean NEED_TAKE_PICTURE = false;
+    EyeManager.Stub eyeManager = new EyeManager.Stub() {
+        @Override
+        public void takePicture(boolean isAutoTakepicture) throws RemoteException {
+            NEED_TAKE_PICTURE = true;
+        }
+    };
     private long LAST_TAKE_PICTURE_TIME;
     private int TAKE_PICTURE_INTERVAL = 30 * 1000;
     private int frameNumber;
@@ -68,22 +78,29 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     private Camera mCamera;
     private YMFaceTrack faceTrack;
     private Bitmap bitmap;
+    private Intent mIntent;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPLOAD_PICTURE:
-                    uploadPicture(bitmap, msg.arg1 == 0);
+                    uploadPicture(bitmap, msg.arg1 == 1);
                     break;
                 case UPLOAD_SUCCESS:
-
+//                    speak(msg.arg1 == 1 ? "已上传" : "拍好了");
+                    speak("上传成功");
                     break;
                 case UPLOAD_FAILED:
-
+//                    speak(msg.arg1 == 1 ? "上传失败" : "拍好了，上传失败");
+                    speak("上传失败");
                     break;
             }
         }
     };
+    private TakePictureReceiver mTakePictureReceiver;
+    private BroadcastReceiver mBR;
+    private IntentFilter mIF;
+    private PendingIntent pintent;
 
     @Override
     public void onCreate() {
@@ -94,12 +111,22 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
+        Notification notification = new Notification(R.mipmap.ic_launcher,
+                "readSense service is running",
+                System.currentTimeMillis());
+        pintent = PendingIntent.getService(this, 0, intent, 0);
+        notification.setLatestEventInfo(this, "ReadSense Service",
+                "readSense service is running！", pintent);
+
+        //让该service前台运行，避免手机休眠时系统自动杀掉该服务
+        //如果 id 为 0 ，那么状态栏的 notification 将不会显示。
+        startForeground(startId, notification);
+        return START_REDELIVER_INTENT;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return eyeManager;
     }
 
     private void init() {
@@ -127,6 +154,15 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         faceTrack = new YMFaceTrack();
         faceTrack.initTrack(this, YMFaceTrack.FACE_180, YMFaceTrack.RESIZE_WIDTH_640);
         faceTrack.setRecognitionConfidence(80);
+
+        // 4.初始化TIPS广播的Intent
+        mIntent = new Intent(Constants.READSENSE_BROADCAST_TIPS_ACTION);
+
+        // 5.注册切换拍照的广播
+        mTakePictureReceiver = new TakePictureReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.READSENSE_BROADCAST_TAKE_PICTURE_ACTION);
+        registerReceiver(mTakePictureReceiver, intentFilter);
     }
 
     @Override
@@ -165,24 +201,18 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
             LogUtils.d(TAG, "人脸识别。。。");
             List<YMFace> faces = faceTrack.trackMulti(data, iw, ih);
-            if (faces != null && faces.size() != 0) {
+            if (NEED_TAKE_PICTURE) {
                 LogUtils.d(TAG, "检测到人脸。。。");
 
+                takePicture(data, false);
+            } else if (faces != null && faces.size() != 0) {
                 switch (FUN_GO) {
                     case PIC_FACE: // 拍照
                         takePicture(data, true);
                         break;
                 }
-            } else if (NEED_TAKE_PICTURE) {
-                takePicture(data, false);
             }
             revert();
-            /*executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });*/
         }
     }
 
@@ -202,7 +232,6 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         mCamera.setPreviewCallback(this);
         mCamera.setParameters(parameters);
     }
-
 
     private void startPreview() {
         LogUtils.d(TAG, "startPreview mCamera:" + (mCamera == null));
@@ -226,13 +255,14 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
                 LAST_TAKE_PICTURE_TIME = System.currentTimeMillis();
                 LogUtils.d(TAG, "偷拍了你一张照片。。。");
+                speak("偷拍了你一张照片");
                 startTake(data, isAutoTakePicture);
             }
         } else {
             // 2.如果是命令拍照，直接调用拍照
             LogUtils.d(TAG, "Command take picture, take picture now...");
 
-            LogUtils.d(TAG, "好的，3，2，1。。。");
+            LAST_TAKE_PICTURE_TIME = System.currentTimeMillis();
             startTake(data, isAutoTakePicture);
         }
     }
@@ -249,9 +279,8 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         Bitmap bmp = BitmapFactory.decodeByteArray(outstr.toByteArray(), 0, outstr.size());
         bitmap = rotaingImageView(180, bmp);
 
-        takePictureComplement();
-        mHandler.obtainMessage(UPLOAD_PICTURE, 0, 0).sendToTarget();
-        //uploadPicture(bitmap, isAutoTakePicture);
+        //takePictureComplement();
+        mHandler.obtainMessage(UPLOAD_PICTURE, isAutoTakePicture ? 1 : 2, 0).sendToTarget();
     }
 
     /**
@@ -275,7 +304,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
      *
      * @param bitmap
      */
-    private void uploadPicture(Bitmap bitmap, boolean isAutoTakePicture) {
+    private void uploadPicture(Bitmap bitmap, final boolean isAutoTakePicture) {
         LogUtils.d(TAG, "开始上传照片。。。");
         String authToken = PrefUtils.getString(this, Constants.KEY_TOKEN, Constants.EMPTY_STRING);
         File file = new File(Environment.getExternalStorageDirectory(), "robot_doraemon");
@@ -304,11 +333,13 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
             @Override
             public void onSuccess(Object response) {
                 LogUtils.d(TAG, "Upload picture success");
+                mHandler.obtainMessage(UPLOAD_SUCCESS, isAutoTakePicture ? 1 : 2, 0).sendToTarget();
             }
 
             @Override
             public void onFailure(String error) {
                 LogUtils.d(TAG, "Upload picture error :" + error);
+                mHandler.obtainMessage(UPLOAD_FAILED, isAutoTakePicture ? 1 : 2, 0).sendToTarget();
             }
         });
     }
@@ -319,11 +350,29 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         mCamera = null;
     }
 
+    private void speak(String text) {
+        mIntent.putExtra("text", text);
+        sendBroadcast(mIntent);
+        LogUtils.d(TAG, "发送Tips广播。。。");
+    }
+
     @Override
     public void onDestroy() {
         LogUtils.d(TAG, "onDestroy 调用。。。");
         stopPreview();
         faceTrack.onRelease();
+        unregisterReceiver(mTakePictureReceiver);
+        stopForeground(true);
         super.onDestroy();
+    }
+
+    class TakePictureReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            LogUtils.d(TAG, "收到拍照的命令广播。。。");
+
+            NEED_TAKE_PICTURE = true;
+        }
     }
 }

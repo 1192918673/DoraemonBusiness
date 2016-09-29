@@ -13,7 +13,8 @@ public class Constants {
     public static final String TAG_SOUND = "ROBOT_SOUND";
     public static final String TAG_MUSIC = "ROBOT_MUSIC";
     public static final String EMPTY_STRING = "";
-
+    public static final String READSENSE_BROADCAST_TIPS_ACTION = "com.geeknewbee.doraemon.READ_SENSE_TIPS";
+    public static final String READSENSE_BROADCAST_TAKE_PICTURE_ACTION = "com.geeknewbee.doraemon.READ_SENSE_TAKE_PICTURE";
 
     // Message types sent from the BluetoothChatService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;

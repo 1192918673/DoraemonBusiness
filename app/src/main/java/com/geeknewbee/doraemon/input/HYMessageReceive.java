@@ -24,6 +24,7 @@ import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMOptions;
 import com.hyphenate.util.NetUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -185,6 +186,16 @@ public class HYMessageReceive implements IMessageReceive {
         hxPassword = PrefUtils.getString(mContext, Constants.KEY_HX_USERPWD, null);
 
         // 2.注册一个监听连接状态的listener
+        if (null == EMClient.getInstance()) {
+            EMOptions options = new EMOptions();
+            // 默认添加好友时，是不需要验证的，改成需要验证
+            options.setAcceptInvitationAlways(true);
+            options.setAutoLogin(true);
+            //初始化
+            EMClient.getInstance().init(mContext, options);
+            //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
+            EMClient.getInstance().setDebugMode(false);
+        }
         EMClient.getInstance().addConnectionListener(new MyEMConnectionListener());
 
         // 2.登录
@@ -310,6 +321,12 @@ public class HYMessageReceive implements IMessageReceive {
         });
     }
 
+    @Override
+    public void destroy() {
+        logout();
+        mContext.unregisterReceiver(emIncomingCallReceiver);
+    }
+
     /**
      * 环信连接状态监听
      */
@@ -325,11 +342,5 @@ public class HYMessageReceive implements IMessageReceive {
             isLogined = false;
             mHandler.obtainMessage(STATE_DISCONNECTED, error, -1);
         }
-    }
-
-    @Override
-    public void destroy() {
-        logout();
-        mContext.unregisterReceiver(emIncomingCallReceiver);
     }
 }

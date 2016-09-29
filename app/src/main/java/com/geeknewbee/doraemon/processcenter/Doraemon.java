@@ -1,11 +1,12 @@
 package com.geeknewbee.doraemon.processcenter;
 
-import android.content.ComponentName;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
+import android.content.IntentFilter;
+
 import com.geeknewbee.doraemon.BuildConfig;
+import com.geeknewbee.doraemon.EyeManager;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.ASRResultEvent;
@@ -64,7 +65,9 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     private double wakePhis = 0;
     //创建一个切换ASR\EDD锁对象
     private Lock switchMonitorLock = new ReentrantLock();
-    private ReadSenseServiceConnection serviceConnection;
+    private ReadSenseTTSReceiver TTSReceiver;
+    //    private ReadSenseServiceConnection serviceConnection;
+    private EyeManager mEyeManager;
 
     private Doraemon(Context context) {
         this.context = context;
@@ -152,18 +155,35 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
     public void startAFR() {
         Intent intent = new Intent(context, ReadSenseService.class);
         LogUtils.d(ReadSenseService.TAG, "Doraemon 调用。。。");
-//        context.startService(intent);
-        serviceConnection = new ReadSenseServiceConnection();
-        context.bindService(intent, serviceConnection, context.BIND_AUTO_CREATE);
+        context.startService(intent);
+//        serviceConnection = new ReadSenseServiceConnection();
+//        context.bindService(intent, serviceConnection, context.BIND_AUTO_CREATE);
+        registerTTSReceiver();
     }
 
     /**
      * 停止自动人脸识别
      */
     public void stopAFR() {
-        context.unbindService(serviceConnection);
-        /*Intent intent = new Intent(context, ReadSenseService.class);
-        context.stopService(intent);*/
+//        context.unbindService(serviceConnection);
+        Intent intent = new Intent(context, ReadSenseService.class);
+        context.stopService(intent);
+        unRegisterTTSReceiver();
+    }
+
+    /**
+     * 启动命令拍照
+     */
+    public void startTakePicture() {
+        // 方式一：AIDL方式获取中间对象来控制
+        /*try {
+            mEyeManager.takePicture(false);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }*/
+
+        // 方式二：往服务里发送广播来控制
+        context.sendBroadcast(new Intent(Constants.READSENSE_BROADCAST_TAKE_PICTURE_ACTION));
     }
 
     /**
@@ -458,19 +478,48 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
         instance = null;
     }
 
-    class ReadSenseServiceConnection implements ServiceConnection {
+    /*class ReadSenseServiceConnection implements ServiceConnection {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             LogUtils.d(ReadSenseService.TAG, "收到中间人类对象");
-            //通过stub获取中间人对象
-            //myBinder = Stub.asInterface(service);
+
+            mEyeManager = EyeManager.Stub.asInterface(service);
         }
 
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            LogUtils.d(ReadSenseService.TAG, "断开服务连接");
+        }
+    }*/
 
+    /**
+     * 注册接受ReadSenseService的TTS的广播
+     */
+    private void registerTTSReceiver() {
+        TTSReceiver = new ReadSenseTTSReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.READSENSE_BROADCAST_TIPS_ACTION);
+        context.registerReceiver(TTSReceiver, intentFilter);
+        LogUtils.d(ReadSenseService.TAG, "注册接受播报广播");
+    }
+
+    /**
+     * 解除接受ReadSenseService的TTS的广播
+     */
+    private void unRegisterTTSReceiver() {
+        context.unregisterReceiver(TTSReceiver);
+        LogUtils.d(ReadSenseService.TAG, "解除注册接受播报广播");
+    }
+
+    class ReadSenseTTSReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            LogUtils.d(ReadSenseService.TAG, "收到ReadSense的播报广播");
+
+            addCommand(new SoundCommand(intent.getStringExtra("text"), SoundCommand.InputSource.TIPS));
         }
     }
 }
