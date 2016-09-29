@@ -145,10 +145,10 @@ public class SocketService {
                         cancel();//断开连接
                         break;
                     }
-                    List<String> result = socketReader.readData(Arrays.copyOfRange(buffer, 0, bytes));
+                    List<String> result = socketReader.readData2(Arrays.copyOfRange(buffer, 0, bytes));
                     if (result != null && result.size() > 0) {
                         for (int i = 0; i < result.size(); i++) {
-                            mHandler.obtainMessage(Constants.MESSAGE_BLE_ANDROID, result.get(i).length(), -1, result.get(i))
+                            mHandler.obtainMessage(Constants.MESSAGE_ANDROID_CONTROL, result.get(i).length(), -1, result.get(i))
                                     .sendToTarget();
                             //如果一次多个命令则间隔一段时间发送
                             if (i != result.size() - 1)

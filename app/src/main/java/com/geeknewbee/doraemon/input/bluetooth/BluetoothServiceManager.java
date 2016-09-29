@@ -22,6 +22,8 @@ import com.geeknewbee.doraemon.output.BluetoothTalkTask;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
+import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
@@ -37,6 +39,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class BluetoothServiceManager {
+    //远程控制命令
+    public static final int TYPE_CONTROL = 1;
+    //开始添加人的功能
+    public static final int TYPE_PERSON_START = 2;
+    //开始添加给人添加人脸
+    public static final int TYPE_PERSON_ADD_FACE = 3;
+    //给人设置名字
+    public static final int TYPE_PERSON_SET_NAME = 4;
+
     private static volatile BluetoothServiceManager instance;
     private BluetoothAdapter mBluetoothAdapter;
     private Doraemon doraemon;
@@ -81,11 +92,40 @@ public class BluetoothServiceManager {
                         e.printStackTrace();
                     }
                     break;
-                case Constants.MESSAGE_BLE_ANDROID:
+                case Constants.MESSAGE_ANDROID_CONTROL:
                     String readMessage = (String) msg.obj;
+                    int funCode = 0;
+                    try {
+                        funCode = Integer.valueOf(readMessage.substring(0, 1));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                    switch (funCode) {
+                        case BluetoothServiceManager.TYPE_CONTROL:
+                            Gson gsonSecond = new Gson();
+                            try {
+                                BluetoothCommand command = gsonSecond.fromJson(readMessage, BluetoothCommand.class);
+                                doraemon.addCommand(command.getCommand());
+                            } catch (JsonSyntaxException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case BluetoothServiceManager.TYPE_PERSON_START:
+                            doraemon.addCommand(new Command(CommandType.PERSON_START, readMessage.substring(1)));
+                            break;
+                        case BluetoothServiceManager.TYPE_PERSON_ADD_FACE:
+                            doraemon.addCommand(new Command(CommandType.PERSON_ADD_FACE, readMessage.substring(1)));
+                            break;
+                        case BluetoothServiceManager.TYPE_PERSON_SET_NAME:
+                            doraemon.addCommand(new Command(CommandType.PERSON_SET_NAME, readMessage.substring(1)));
+                            break;
+                    }
+                    break;
+                case Constants.MESSAGE_BLE_CONTROL:
+                    String message = (String) msg.obj;
                     Gson gsonSecond = new Gson();
                     try {
-                        BluetoothCommand command = gsonSecond.fromJson(readMessage, BluetoothCommand.class);
+                        BluetoothCommand command = gsonSecond.fromJson(message, BluetoothCommand.class);
                         doraemon.addCommand(command.getCommand());
                     } catch (JsonSyntaxException e) {
                         e.printStackTrace();
@@ -300,6 +340,12 @@ public class BluetoothServiceManager {
             if (ias != null) {
                 ias.sendTTSNotification("END");
             }
+        }
+    }
+
+    public void writeToSocket(String data) {
+        if (socketService != null) {
+            socketService.write(data);
         }
     }
 }

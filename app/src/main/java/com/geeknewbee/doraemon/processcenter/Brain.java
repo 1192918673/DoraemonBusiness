@@ -1,13 +1,14 @@
 package com.geeknewbee.doraemon.processcenter;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
-import com.geeknewbee.doraemon.entity.event.SwitchReadSence;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.FaceManager;
+import com.geeknewbee.doraemon.output.ReadFace;
 import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
@@ -110,6 +111,11 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case LEARN_EN:  //学英语
                 MouthTaskQueue.getInstance().addTask(command);
+                break;
+            case PERSON_START:
+            case PERSON_ADD_FACE:
+            case PERSON_SET_NAME:
+                ReadFace.getInstance(App.mContext).addCommand(command);
                 break;
         }
         addCommandLock.unlock();

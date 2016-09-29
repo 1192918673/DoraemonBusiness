@@ -23,8 +23,9 @@ public class Constants {
     public static final int MESSAGE_TOAST = 5;
     public static final int MESSAGE_READ_SOUND = 6;
     public static final int MESSAGE_READ_COMMAND = 7;
-    public static final int MESSAGE_BLE_ANDROID = 8;
+    public static final int MESSAGE_ANDROID_CONTROL = 8;
     public static final int MESSAGE_BLE_TTS = 9;
+    public static final int MESSAGE_BLE_CONTROL = 10;
 
     //Http
     public static final String API_SECRET = "l5+z87&&szj_^$$7";
@@ -41,6 +42,8 @@ public class Constants {
 //    public static final String COMMAND_ROBOT_SUFFIX = "DRC_SUFFIX";
     public static final String COMMAND_ROBOT_PREFIX = new String(new byte[]{0x02});
     public static final String COMMAND_ROBOT_SUFFIX = new String(new byte[]{0x03});
+    public static final String COMMAND_ROBOT_PREFIX_FOR_SOCKET = "ROBOT_PREFIX";
+    public static final String COMMAND_ROBOT_SUFFIX_FOR_SOCKET = "ROBOT_SUFFIX";
     public static final String MOJI_WEATHER_API_TOKEN = "c4adee396b1260222696";
     //墨迹天气
     public static final String MOJI_WEATHER_API_PWD = "mojisgbb20151207";

@@ -139,7 +139,7 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         switch (characteristic.getUuid().toString()) {
             case BleUuid.CHAR_SET_WIFI_STRING:
             case BleUuid.CHAR_SET_CONTROL_STRING:
-                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_ANDROID);
+                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
                 mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                         null);
                 break;
