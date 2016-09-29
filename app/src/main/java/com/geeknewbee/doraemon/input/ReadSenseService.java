@@ -98,8 +98,6 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         }
     };
     private TakePictureReceiver mTakePictureReceiver;
-    private BroadcastReceiver mBR;
-    private IntentFilter mIF;
     private PendingIntent pintent;
 
     @Override
