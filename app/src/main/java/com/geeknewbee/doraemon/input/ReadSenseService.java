@@ -149,9 +149,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         wm.addView(previewTexture, ballWmParams);// 添加显示
 
         // 3.初始化ReadFace
-        faceTrack = new YMFaceTrack();
-        faceTrack.initTrack(this, YMFaceTrack.FACE_180, YMFaceTrack.RESIZE_WIDTH_640);
-        faceTrack.setRecognitionConfidence(80);
+        initFaceTrack();
 
         // 4.初始化TIPS广播的Intent
         mIntent = new Intent(Constants.READSENSE_BROADCAST_TIPS_ACTION);
@@ -160,7 +158,14 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         mTakePictureReceiver = new TakePictureReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.READSENSE_BROADCAST_TAKE_PICTURE_ACTION);
+        intentFilter.addAction(Constants.ACTION_DORAEMON_REINIT_FACE_TRACK);
         registerReceiver(mTakePictureReceiver, intentFilter);
+    }
+
+    private void initFaceTrack() {
+        faceTrack = new YMFaceTrack();
+        faceTrack.initTrack(this, YMFaceTrack.FACE_180, YMFaceTrack.RESIZE_WIDTH_640);
+        faceTrack.setRecognitionConfidence(80);
     }
 
     @Override
@@ -200,23 +205,23 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     public void onPreviewFrame(final byte[] data, Camera camera) {
         frameNumber++;
         // 每20帧开始检测人脸
-        if (!busy && frameNumber > 20) {
+        if (!busy && frameNumber > 20 && faceTrack != null) {
             busy = true;
 
             LogUtils.d(TAG, "人脸识别。。。");
             List<YMFace> faces = faceTrack.trackMulti(data, iw, ih);
             if (NEED_TAKE_PICTURE) {
+                takePicture(data, false);
+            } else if (faces != null && faces.size() != 0) {
                 LogUtils.d(TAG, "检测到人脸。。。");
                 int person = faceTrack.identifyPerson(0);
                 if (person != -111) {
                     Intent intent = new Intent(Constants.ACTION_DORAEMON_DISCOVERY_PERSON);
                     intent.putExtra(Constants.EXTRA_PERSON_ID, person);
                     sendBroadcast(intent);
-                    LogUtils.d(TAG, "检测到具体人。。。");
                 }
+                LogUtils.d(TAG, "检测到具体人。。。" + person);
 
-                takePicture(data, false);
-            } else if (faces != null && faces.size() != 0) {
                 switch (FUN_GO) {
                     case PIC_FACE: // 拍照
                         takePicture(data, true);
@@ -240,8 +245,10 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
         Camera.Parameters parameters = mCamera.getParameters();
         parameters.setPreviewSize(iw, ih);
+        parameters.set("rotation", "180");
         mCamera.setPreviewCallback(this);
         mCamera.setParameters(parameters);
+        mCamera.setDisplayOrientation(180);
     }
 
     private void startPreview() {
@@ -389,9 +396,18 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            LogUtils.d(TAG, "收到拍照的命令广播。。。");
-
-            NEED_TAKE_PICTURE = true;
+            switch (intent.getAction()) {
+                case Constants.READSENSE_BROADCAST_TAKE_PICTURE_ACTION:
+                    LogUtils.d(TAG, "收到拍照的命令广播。。。");
+                    NEED_TAKE_PICTURE = true;
+                    break;
+                case Constants.ACTION_DORAEMON_REINIT_FACE_TRACK:
+                    LogUtils.d(TAG, "收到ReInit faceTrack");
+                    faceTrack.onRelease();
+                    faceTrack = null;
+                    initFaceTrack();
+                    break;
+            }
         }
     }
 }

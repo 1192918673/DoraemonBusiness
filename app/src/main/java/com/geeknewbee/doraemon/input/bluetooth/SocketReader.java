@@ -14,15 +14,16 @@ public class SocketReader {
     public synchronized byte[] readData2(byte[] bytes) {
         if (bytes == null || bytes.length < 1)
             return null;
-        String receiveData = new String(bytes);
+        String receiveDataStr = new String(bytes, 0, Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET.length());
         //收到一个新开始的命令的时候 舍弃以前的数据
-        if (receiveData.startsWith(Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET))
+        if (receiveDataStr.equals(Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET))
             result = bytes;
         else
             result = BytesUtils.concat(result, bytes);
 
         String startStr = new String(result, 0, Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET.length());
-        if (startStr.equals(Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET) && receiveData.endsWith(Constants.COMMAND_ROBOT_SUFFIX_FOR_SOCKET)) {
+        String endStr = new String(result, result.length - Constants.COMMAND_ROBOT_SUFFIX_FOR_SOCKET.length(), Constants.COMMAND_ROBOT_SUFFIX_FOR_SOCKET.length());
+        if (startStr.equals(Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET) && endStr.equals(Constants.COMMAND_ROBOT_SUFFIX_FOR_SOCKET)) {
             //存在同时接收到多条的情况
 //            String readMessage = Constants.EMPTY_STRING;
 //            try {
