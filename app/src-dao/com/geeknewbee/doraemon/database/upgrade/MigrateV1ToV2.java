@@ -2,15 +2,17 @@ package com.geeknewbee.doraemon.database.upgrade;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import com.geeknewbee.doraemon.database.PersonDao;
+
 
 public class MigrateV1ToV2 extends MigrationImpl {
 
     @Override
     public int applyMigration(SQLiteDatabase db,
                               int currentVersion) {
-        prepareMigration(db, currentVersion);
+        super.prepareMigration(db, currentVersion);
 //        db.execSQL("ALTER TABLE DELIVERY_ORDER ADD COLUMN LAST_REMINDER_TIME TEXT");
-        //TODO v1 dao v2 变化
+        PersonDao.createTable(db, true);
         return getMigratedVersion();
     }
 

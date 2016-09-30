@@ -117,7 +117,7 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
     @Override
     public Long readKey(Cursor cursor, int offset) {
         return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
-    }
+    }    
 
     /** @inheritdoc */
     @Override
@@ -133,7 +133,7 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
         );
         return entity;
     }
-
+     
     /** @inheritdoc */
     @Override
     public void readEntity(Cursor cursor, Weather_City entity, int offset) {
@@ -144,15 +144,15 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
         entity.setNamePy(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setProvince(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setWeatherCnId(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-    }
-
+     }
+    
     /** @inheritdoc */
     @Override
     protected Long updateKeyAfterInsert(Weather_City entity, long rowId) {
         entity.setId(rowId);
         return rowId;
     }
-
+    
     /** @inheritdoc */
     @Override
     public Long getKey(Weather_City entity) {
@@ -163,9 +163,7 @@ public class Weather_CityDao extends AbstractDao<Weather_City, Long> {
         }
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     @Override    
     protected boolean isEntityUpdateable() {
         return true;

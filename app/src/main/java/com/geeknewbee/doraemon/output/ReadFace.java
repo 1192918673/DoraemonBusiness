@@ -2,11 +2,16 @@ package com.geeknewbee.doraemon.output;
 
 import android.content.Context;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.database.Person;
+import com.geeknewbee.doraemon.database.PersonDao;
 import com.geeknewbee.doraemon.entity.ReadFaceInitParams;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.AddFaceCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 
@@ -37,7 +42,10 @@ public class ReadFace {
         faces = new ArrayList<>();
         persons = new HashMap<>();
         this.context = context;
-        //TODO 初始化persons 数据 from DB
+        List<Person> list = App.instance.getDaoSession().getPersonDao().queryBuilder().list();
+        for (Person p : list) {
+            persons.put(String.valueOf(p.getPersonId()), p.getName());
+        }
     }
 
     public static ReadFace getInstance(Context context) {
@@ -118,6 +126,7 @@ public class ReadFace {
         faceTrack.setRecognitionConfidence(80);
         this.iw = iw;
         this.ih = ih;
+        Doraemon.getInstance(context).addCommand(new SoundCommand("开始添加认识的人", SoundCommand.InputSource.TIPS));
         return true;
     }
 
@@ -134,8 +143,10 @@ public class ReadFace {
             return false;
 
         YMFace face = faceTrack.track(bytes, iw, ih);
-        if (face != null)
+        if (face != null) {
             faces.add(bytes);
+            Doraemon.getInstance(context).addCommand(new SoundCommand("添加了一张人脸", SoundCommand.InputSource.TIPS));
+        }
         return face != null;
     }
 
@@ -156,7 +167,8 @@ public class ReadFace {
             //说明已经添加过，则覆盖
             faceTrack.deletePerson(personId);
             persons.remove(String.valueOf(personId));
-            //TODO 删除 数据 from DB
+            App.instance.getDaoSession().getPersonDao().queryBuilder().
+                    where(PersonDao.Properties.PersonId.eq(personId)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
         personId = faceTrack.addPerson(0);
         if (personId == INCOGNIZANT)
@@ -170,7 +182,11 @@ public class ReadFace {
         persons.put(String.valueOf(personId), name);
         faceTrack.onRelease();
         faceTrack = null;
-        //TODO 保存 数据 to DB
+        Person entity = new Person();
+        entity.setName(name);
+        entity.setPersonId((long) personId);
+        App.instance.getDaoSession().getPersonDao().insert(entity);
+        Doraemon.getInstance(context).addCommand(new SoundCommand("成功添加了" + name + "的人脸", SoundCommand.InputSource.TIPS));
         return true;
     }
 }

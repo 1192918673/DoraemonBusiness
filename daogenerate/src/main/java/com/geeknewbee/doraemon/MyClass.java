@@ -7,7 +7,7 @@ import de.greenrobot.daogenerator.Schema;
 
 public class MyClass {
     public static void main(String args[]) throws Exception {
-        Schema schema = new Schema(1, "com.geeknewbee.doraemon.database");// 数据库版本，生成的类的命名空间
+        Schema schema = new Schema(2, "com.geeknewbee.doraemon.database");// 数据库版本，生成的类的命名空间
 
         schema.enableKeepSectionsByDefault();//保留生存类中自己的代码
         schema.enableActiveEntitiesByDefault();
@@ -29,5 +29,10 @@ public class MyClass {
         city.addStringProperty("namePy");
         city.addStringProperty("province");
         city.addStringProperty("weatherCnId");
+
+        Entity Person = schema.addEntity("Person");
+        Person.addIdProperty().autoincrement().primaryKey();
+        Person.addLongProperty("personId");
+        Person.addStringProperty("name");
     }
 }

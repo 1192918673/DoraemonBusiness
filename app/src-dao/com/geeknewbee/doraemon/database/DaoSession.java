@@ -19,8 +19,10 @@ import de.greenrobot.dao.internal.DaoConfig;
 public class DaoSession extends AbstractDaoSession {
 
     private final DaoConfig weather_CityDaoConfig;
+    private final DaoConfig personDaoConfig;
 
     private final Weather_CityDao weather_CityDao;
+    private final PersonDao personDao;
 
     public DaoSession(SQLiteDatabase db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
             daoConfigMap) {
@@ -29,17 +31,27 @@ public class DaoSession extends AbstractDaoSession {
         weather_CityDaoConfig = daoConfigMap.get(Weather_CityDao.class).clone();
         weather_CityDaoConfig.initIdentityScope(type);
 
+        personDaoConfig = daoConfigMap.get(PersonDao.class).clone();
+        personDaoConfig.initIdentityScope(type);
+
         weather_CityDao = new Weather_CityDao(weather_CityDaoConfig, this);
+        personDao = new PersonDao(personDaoConfig, this);
 
         registerDao(Weather_City.class, weather_CityDao);
+        registerDao(Person.class, personDao);
     }
 
     public void clear() {
         weather_CityDaoConfig.getIdentityScope().clear();
+        personDaoConfig.getIdentityScope().clear();
     }
 
     public Weather_CityDao getWeather_CityDao() {
         return weather_CityDao;
+    }
+
+    public PersonDao getPersonDao() {
+        return personDao;
     }
 
 }
