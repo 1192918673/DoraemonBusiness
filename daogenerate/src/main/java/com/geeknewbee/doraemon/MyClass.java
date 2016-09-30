@@ -32,7 +32,7 @@ public class MyClass {
 
         Entity Person = schema.addEntity("Person");
         Person.addIdProperty().autoincrement().primaryKey();
-        Person.addLongProperty("personId");
+        Person.addIntProperty("personId");
         Person.addStringProperty("name");
     }
 }

@@ -6,14 +6,13 @@ import de.greenrobot.dao.DaoException;
 
 // KEEP INCLUDES - put your custom includes here
 // KEEP INCLUDES END
-
 /**
  * Entity mapped to table "PERSON".
  */
 public class Person {
 
     private Long id;
-    private Long personId;
+    private Integer personId;
     private String name;
 
     /**
@@ -21,9 +20,7 @@ public class Person {
      */
     private transient DaoSession daoSession;
 
-    /**
-     * Used for active entity operations.
-     */
+    /** Used for active entity operations. */
     private transient PersonDao myDao;
 
 
@@ -37,15 +34,13 @@ public class Person {
         this.id = id;
     }
 
-    public Person(Long id, Long personId, String name) {
+    public Person(Long id, Integer personId, String name) {
         this.id = id;
         this.personId = personId;
         this.name = name;
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
+    /** called by internal mechanisms, do not call yourself. */
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getPersonDao() : null;
@@ -59,11 +54,11 @@ public class Person {
         this.id = id;
     }
 
-    public Long getPersonId() {
+    public Integer getPersonId() {
         return personId;
     }
 
-    public void setPersonId(Long personId) {
+    public void setPersonId(Integer personId) {
         this.personId = personId;
     }
 
@@ -75,33 +70,27 @@ public class Person {
         this.name = name;
     }
 
-    /**
-     * Convenient call for {@link AbstractDao#delete(Object)}. Entity must attached to an entity context.
-     */
+    /** Convenient call for {@link AbstractDao#delete(Object)}. Entity must attached to an entity context. */
     public void delete() {
         if (myDao == null) {
             throw new DaoException("Entity is detached from DAO context");
-        }
+        }    
         myDao.delete(this);
     }
 
-    /**
-     * Convenient call for {@link AbstractDao#update(Object)}. Entity must attached to an entity context.
-     */
+    /** Convenient call for {@link AbstractDao#update(Object)}. Entity must attached to an entity context. */
     public void update() {
         if (myDao == null) {
             throw new DaoException("Entity is detached from DAO context");
-        }
+        }    
         myDao.update(this);
     }
 
-    /**
-     * Convenient call for {@link AbstractDao#refresh(Object)}. Entity must attached to an entity context.
-     */
+    /** Convenient call for {@link AbstractDao#refresh(Object)}. Entity must attached to an entity context. */
     public void refresh() {
         if (myDao == null) {
             throw new DaoException("Entity is detached from DAO context");
-        }
+        }    
         myDao.refresh(this);
     }
 

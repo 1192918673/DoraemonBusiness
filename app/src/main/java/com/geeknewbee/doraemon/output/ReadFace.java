@@ -33,7 +33,7 @@ public class ReadFace {
     public static volatile ReadFace instance;
     private final Context context;
     private List<byte[]> faces;
-    private Map<String, String> persons;
+    private Map<Integer, String> persons;
     private YMFaceTrack faceTrack;
     private int iw;
     private int ih;
@@ -44,7 +44,7 @@ public class ReadFace {
         this.context = context;
         List<Person> list = App.instance.getDaoSession().getPersonDao().queryBuilder().list();
         for (Person p : list) {
-            persons.put(String.valueOf(p.getPersonId()), p.getName());
+            persons.put(p.getPersonId(), p.getName());
         }
     }
 
@@ -100,7 +100,7 @@ public class ReadFace {
      * @param personID
      * @return
      */
-    public String getPersonName(String personID) {
+    public String getPersonName(int personID) {
         return persons.get(personID);
     }
 
@@ -179,12 +179,12 @@ public class ReadFace {
             faceTrack.updatePerson(personId, 0);
         }
         faces.clear();
-        persons.put(String.valueOf(personId), name);
+        persons.put(personId, name);
         faceTrack.onRelease();
         faceTrack = null;
         Person entity = new Person();
         entity.setName(name);
-        entity.setPersonId((long) personId);
+        entity.setPersonId(personId);
         App.instance.getDaoSession().getPersonDao().insert(entity);
         Doraemon.getInstance(context).addCommand(new SoundCommand("成功添加了" + name + "的人脸", SoundCommand.InputSource.TIPS));
         return true;

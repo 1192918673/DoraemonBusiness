@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
@@ -31,6 +32,7 @@ import com.geeknewbee.doraemon.input.IMessageReceive;
 import com.geeknewbee.doraemon.input.ISoundInputDevice;
 import com.geeknewbee.doraemon.input.ReadSenseService;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
+import com.geeknewbee.doraemon.output.ReadFace;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.InputTimeoutMonitorTask.TimeOutMonitorType;
@@ -498,6 +500,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
         TTSReceiver = new ReadSenseTTSReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.READSENSE_BROADCAST_TIPS_ACTION);
+        intentFilter.addAction(Constants.ACTION_DORAEMON_DISCOVERY_PERSON);
         context.registerReceiver(TTSReceiver, intentFilter);
         LogUtils.d(ReadSenseService.TAG, "注册接受播报广播");
     }
@@ -507,6 +510,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      */
     private void unRegisterTTSReceiver() {
         context.unregisterReceiver(TTSReceiver);
+        TTSReceiver = null;
         LogUtils.d(ReadSenseService.TAG, "解除注册接受播报广播");
     }
 
@@ -514,9 +518,18 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            LogUtils.d(ReadSenseService.TAG, "收到ReadSense的播报广播");
-
-            addCommand(new SoundCommand(intent.getStringExtra("text"), SoundCommand.InputSource.TIPS));
+            switch (intent.getAction()) {
+                case Constants.ACTION_DORAEMON_DISCOVERY_PERSON:
+                    int personId = intent.getIntExtra(Constants.EXTRA_PERSON_ID, 0);
+                    String personName = ReadFace.getInstance(context).getPersonName(personId);
+                    if (!TextUtils.isEmpty(personName))
+                        addCommand(new SoundCommand(personName + "你好!", SoundCommand.InputSource.TIPS));
+                    break;
+                case Constants.READSENSE_BROADCAST_TIPS_ACTION:
+                    LogUtils.d(ReadSenseService.TAG, "收到ReadSense的播报广播");
+                    addCommand(new SoundCommand(intent.getStringExtra("text"), SoundCommand.InputSource.TIPS));
+                    break;
+            }
         }
     }
 }

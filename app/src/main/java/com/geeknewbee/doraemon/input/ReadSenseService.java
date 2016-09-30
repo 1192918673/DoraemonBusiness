@@ -168,9 +168,15 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         LogUtils.d(TAG, "onSurfaceTextureAvailable");
 
         // 4.打开相机：设置监听、设置参数、开启预览
-        mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
-        configAndRelayout();
-        startPreview();
+        try {
+            mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+            configAndRelayout();
+            startPreview();
+            LogUtils.d(TAG, "open Camera success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtils.d(TAG, "open Camera fail");
+        }
     }
 
     @Override
@@ -206,6 +212,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                     Intent intent = new Intent(Constants.ACTION_DORAEMON_DISCOVERY_PERSON);
                     intent.putExtra(Constants.EXTRA_PERSON_ID, person);
                     sendBroadcast(intent);
+                    LogUtils.d(TAG, "检测到具体人。。。");
                 }
 
                 takePicture(data, false);
@@ -355,9 +362,11 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     }
 
     private void stopPreview() {
-        mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
     }
 
     private void speak(String text) {
