@@ -2,6 +2,7 @@ package com.geeknewbee.doraemon.output;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
@@ -33,14 +34,14 @@ public class ReadFace {
 
     public static volatile ReadFace instance;
     private final Context context;
-    private List<byte[]> faces;
+    private List<Face> facesNew;
     private Map<Integer, String> persons;
     private YMFaceTrack faceTrack;
     private int iw;
     private int ih;
 
     private ReadFace(Context context) {
-        faces = new ArrayList<>();
+        facesNew = new ArrayList<>();
         persons = new HashMap<>();
         this.context = context;
         List<Person> list = App.instance.getDaoSession().getPersonDao().queryBuilder().list();
@@ -72,7 +73,7 @@ public class ReadFace {
                 BluetoothServiceManager.getInstance(context).writeToSocket(data);
                 break;
             case PERSON_ADD_FACE:
-                b = addFace(((AddFaceCommand) command).data);
+                b = addFace((AddFaceCommand) command);
                 data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_ADD_FACE);
                 BluetoothServiceManager.getInstance(context).writeToSocket(data);
                 break;
@@ -120,7 +121,7 @@ public class ReadFace {
             faceTrack.onRelease();
             faceTrack = null;
         }
-        faces.clear();
+        facesNew.clear();
         faceTrack = new YMFaceTrack();
         //此处默认初始化，initCameraMsg()处会根据设备设置自动更改设置
         faceTrack.initTrack(context, orientation, resizeScale);
@@ -134,21 +135,25 @@ public class ReadFace {
     /**
      * 添加人脸数据
      *
-     * @param bytes
+     * @param
      * @return
      */
-    private boolean addFace(byte[] bytes) {
+    private boolean addFace(AddFaceCommand command) {
         LogUtils.d(TAG, "addFace");
 
         if (faceTrack == null)
             return false;
+        List<YMFace> face = null;
+        if (command.faceType == AddFaceType.YUV)
+            face = faceTrack.trackMulti(command.data, iw, ih);
+        else if (command.faceType == AddFaceType.IMAGE)
+            face = faceTrack.detectMultiBitmap(BitmapFactory.decodeByteArray(command.data, 0, command.data.length));
 
-        YMFace face = faceTrack.track(bytes, iw, ih);
-        if (face != null) {
-            faces.add(bytes);
+        if (face != null && face.size() > 0) {
+            facesNew.add(new Face(command.faceType, command.data));
             Doraemon.getInstance(context).addCommand(new SoundCommand("添加了一张人脸", SoundCommand.InputSource.TIPS));
         }
-        return face != null;
+        return face != null && face.size() > 0;
     }
 
     /**
@@ -160,9 +165,14 @@ public class ReadFace {
     private boolean setPersonName(String name) {
         LogUtils.d(TAG, "setPersonName:" + name);
 
-        if (faces.isEmpty() || faceTrack == null) return false;
+        if (facesNew.isEmpty() || faceTrack == null) return false;
 
-        faceTrack.track(faces.get(0), iw, ih);
+        Face face = facesNew.get(0);
+        if (face.faceType == AddFaceType.YUV)
+            faceTrack.track(face.data, iw, ih);
+        else if (face.faceType == AddFaceType.IMAGE) {
+            faceTrack.detectMultiBitmap(BitmapFactory.decodeByteArray(face.data, 0, face.data.length));
+        }
         int personId = faceTrack.identifyPerson(0);
         if (personId != INCOGNIZANT) {
             //说明已经添加过，则覆盖
@@ -175,11 +185,16 @@ public class ReadFace {
         if (personId == INCOGNIZANT)
             return false;
 
-        for (int i = 1; i < faces.size(); i++) {
-            faceTrack.track(faces.get(i), iw, ih);
+        for (int i = 1; i < facesNew.size(); i++) {
+            face = facesNew.get(i);
+            if (face.faceType == AddFaceType.YUV)
+                faceTrack.track(face.data, iw, ih);
+            else if (face.faceType == AddFaceType.IMAGE) {
+                faceTrack.detectMultiBitmap(BitmapFactory.decodeByteArray(face.data, 0, face.data.length));
+            }
             faceTrack.updatePerson(personId, 0);
         }
-        faces.clear();
+        facesNew.clear();
         persons.put(personId, name);
         faceTrack.onRelease();
         faceTrack = null;
@@ -190,5 +205,15 @@ public class ReadFace {
         Doraemon.getInstance(context).addCommand(new SoundCommand("成功添加了" + name + "的人脸", SoundCommand.InputSource.TIPS));
         context.sendBroadcast(new Intent(Constants.ACTION_DORAEMON_REINIT_FACE_TRACK));
         return true;
+    }
+
+    class Face {
+        public AddFaceType faceType;
+        public byte[] data;
+
+        public Face(AddFaceType faceType, byte[] data) {
+            this.faceType = faceType;
+            this.data = data;
+        }
     }
 }

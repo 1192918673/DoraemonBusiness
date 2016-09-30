@@ -135,13 +135,14 @@
             android:value="41f7de29e11269942c794c1e79ab8537" />
         <!--优酷-->
 
-        <!-- 移动统计分析 -->
+        <!-- 科大讯飞分析 -->
         <meta-data
             android:name="IFLYTEK_APPKEY"
             android:value="'566a8400'" />
         <meta-data
             android:name="IFLYTEK_CHANNEL"
             android:value="doraemon" />
+        <!-- 科大讯飞分析 -->
 
     </application>
 

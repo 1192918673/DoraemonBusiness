@@ -18,6 +18,7 @@ import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
+import com.geeknewbee.doraemon.output.AddFaceType;
 import com.geeknewbee.doraemon.output.BluetoothTalkTask;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
@@ -46,10 +47,12 @@ public class BluetoothServiceManager {
     public static final byte TYPE_CONTROL = 0x31;
     //开始添加人的功能
     public static final byte TYPE_PERSON_START = 0x32;
-    //开始添加给人添加人脸
+    //开始添加给人添加人脸(通过camera 获取数据)
     public static final byte TYPE_PERSON_ADD_FACE = 0x33;
     //给人设置名字
     public static final byte TYPE_PERSON_SET_NAME = 0x34;
+    //开始添加给人添加人脸(通过 image 获取数据)
+    public static final byte TYPE_PERSON_ADD_FACE_IMAGE = 0x35;
 
     private static volatile BluetoothServiceManager instance;
     private BluetoothAdapter mBluetoothAdapter;
@@ -117,7 +120,10 @@ public class BluetoothServiceManager {
                             doraemon.addCommand(new Command(CommandType.PERSON_START, new String(bytes, 1, bytes.length - 1)));
                             break;
                         case BluetoothServiceManager.TYPE_PERSON_ADD_FACE:
-                            doraemon.addCommand(new AddFaceCommand(Arrays.copyOfRange(bytes, 1, bytes.length)));
+                            doraemon.addCommand(new AddFaceCommand(AddFaceType.YUV, Arrays.copyOfRange(bytes, 1, bytes.length)));
+                            break;
+                        case BluetoothServiceManager.TYPE_PERSON_ADD_FACE_IMAGE:
+                            doraemon.addCommand(new AddFaceCommand(AddFaceType.IMAGE, Arrays.copyOfRange(bytes, 1, bytes.length)));
                             break;
                         case BluetoothServiceManager.TYPE_PERSON_SET_NAME:
                             doraemon.addCommand(new Command(CommandType.PERSON_SET_NAME, new String(bytes, 1, bytes.length - 1)));
