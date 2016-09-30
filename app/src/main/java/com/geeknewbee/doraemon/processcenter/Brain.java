@@ -16,8 +16,8 @@ import com.geeknewbee.doraemon.processcenter.command.BLCommand;
 import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
-import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
+import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -80,10 +80,8 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 LimbsTaskQueue.getInstance().stop();
                 break;
             case TAKE_PICTURE: //拍照
-//                ReadSenseEye.getInstance().startTakePicture(false);
-                addCommand(new SoundCommand("好的《3》《2》1", SoundCommand.InputSource.TIPS));
-//                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.CLOSE_ALL));
-//                EventBus.getDefault().post(new SwitchReadSence(ReadSenseEye.PHO_FACE));
+//                addCommand(new SoundCommand("好的《3》《2》1。。。拍好了", SoundCommand.InputSource.TIPS));
+                Doraemon.getInstance(BaseApplication.mContext).startTakePicture();
                 break;
             case WIFI_MESSAGE://设置连接WIFI
                 WifiCommand wifiCommand = (WifiCommand) command;

@@ -76,8 +76,8 @@
         </receiver>
 
         <service
-            android:name=".input.TestService"
-            android:process="com.geeknewbee.doraemon.input" />
+            android:name=".input.ReadSenseService"
+            android:process=":ReadSense" />
 
         <!--  喜马拉雅 配置-->
         <meta-data
