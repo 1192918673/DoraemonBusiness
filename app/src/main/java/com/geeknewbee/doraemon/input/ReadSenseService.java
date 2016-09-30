@@ -167,6 +167,12 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
             List<YMFace> faces = faceTrack.trackMulti(data, iw, ih);
             if (faces != null && faces.size() != 0) {
                 LogUtils.d(TAG, "检测到人脸。。。");
+                int person = faceTrack.identifyPerson(0);
+                if (person != -111) {
+                    Intent intent = new Intent(Constants.ACTION_DORAEMON_DISCOVERY_PERSON);
+                    intent.putExtra(Constants.EXTRA_PERSON_ID, person);
+                    sendBroadcast(intent);
+                }
 
                 switch (FUN_GO) {
                     case PIC_FACE: // 拍照

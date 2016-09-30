@@ -138,5 +138,7 @@ public class Constants {
     public static final String TIPS_SET_WIFI = "正在设置wifi";
     public static final String TIPS_CONNECT_WIFI_FAIL = "连接wifi失败";
     public static final String TIP_BEFORE_PLAY_MOVIE = "现在开始播放电影，请打开后盖！";
+    public static final String EXTRA_PERSON_ID = "Extra_Person_ID";
+    public static final String ACTION_DORAEMON_DISCOVERY_PERSON = "Action_Doraemon_discovery_person";
     public static String READ_NEWS_TIPS = "小朋友声音读新闻";
 }
