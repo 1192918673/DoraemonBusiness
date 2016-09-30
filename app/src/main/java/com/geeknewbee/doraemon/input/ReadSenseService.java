@@ -29,6 +29,7 @@ import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.EyeManager;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.output.SysSettingManager;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.RetrofitCallBack;
@@ -71,7 +72,9 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         }
     };
     private long LAST_TAKE_PICTURE_TIME;
-    private int TAKE_PICTURE_INTERVAL = 30 * 1000;
+    private int TAKE_PICTURE_INTERVAL = 30 * 1000; // 拍照时间戳半分钟
+    private long TTS_PICTURE_START;
+    private long TTS_PICTURE_INTERVAL = 2 * 1000; // TTS时间戳2秒
     private int frameNumber;
     private boolean busy = false; // 是否正在检测
     private TextureView previewTexture;
@@ -87,11 +90,9 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                     uploadPicture(bitmap, msg.arg1 == 1);
                     break;
                 case UPLOAD_SUCCESS:
-//                    speak(msg.arg1 == 1 ? "已上传" : "拍好了");
                     speak("上传成功");
                     break;
                 case UPLOAD_FAILED:
-//                    speak(msg.arg1 == 1 ? "上传失败" : "拍好了，上传失败");
                     speak("上传失败");
                     break;
             }
@@ -253,6 +254,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
                 LAST_TAKE_PICTURE_TIME = System.currentTimeMillis();
                 LogUtils.d(TAG, "偷拍了你一张照片。。。");
+                TTS_PICTURE_START = System.currentTimeMillis();
                 speak("偷拍了你一张照片");
                 startTake(data, isAutoTakePicture);
             }
@@ -260,6 +262,8 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
             // 2.如果是命令拍照，直接调用拍照
             LogUtils.d(TAG, "Command take picture, take picture now...");
 
+            TTS_PICTURE_START = System.currentTimeMillis();
+            speak("好的，《3》《2》1，。。。拍好了");
             LAST_TAKE_PICTURE_TIME = System.currentTimeMillis();
             startTake(data, isAutoTakePicture);
         }
@@ -331,13 +335,16 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
             @Override
             public void onSuccess(Object response) {
                 LogUtils.d(TAG, "Upload picture success");
-                mHandler.obtainMessage(UPLOAD_SUCCESS, isAutoTakePicture ? 1 : 2, 0).sendToTarget();
+                long tts_interval = TTS_PICTURE_INTERVAL - TTS_PICTURE_START;
+                mHandler.sendEmptyMessageDelayed(UPLOAD_SUCCESS, tts_interval > 0 ? tts_interval : 0);
+
             }
 
             @Override
             public void onFailure(String error) {
                 LogUtils.d(TAG, "Upload picture error :" + error);
-                mHandler.obtainMessage(UPLOAD_FAILED, isAutoTakePicture ? 1 : 2, 0).sendToTarget();
+                long tts_interval = TTS_PICTURE_INTERVAL - TTS_PICTURE_START;
+                mHandler.sendEmptyMessageDelayed(UPLOAD_FAILED, tts_interval > 0 ? tts_interval : 0);
             }
         });
     }

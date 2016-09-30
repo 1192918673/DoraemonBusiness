@@ -80,7 +80,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 LimbsTaskQueue.getInstance().stop();
                 break;
             case TAKE_PICTURE: //拍照
-                addCommand(new SoundCommand("好的《3》《2》1。。。拍好了", SoundCommand.InputSource.TIPS));
+//                addCommand(new SoundCommand("好的《3》《2》1。。。拍好了", SoundCommand.InputSource.TIPS));
                 Doraemon.getInstance(BaseApplication.mContext).startTakePicture();
                 break;
             case WIFI_MESSAGE://设置连接WIFI
