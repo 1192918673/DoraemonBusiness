@@ -146,7 +146,7 @@ public class SocketService {
                     }
                     byte[] result = socketReader.readData2(Arrays.copyOfRange(buffer, 0, bytes));
                     if (result != null)
-                        mHandler.obtainMessage(Constants.MESSAGE_ANDROID_CONTROL, result.length, -1, result)
+                        mHandler.obtainMessage(Constants.MESSAGE_SOCKET_CONTROL, result.length, -1, result)
                                 .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);

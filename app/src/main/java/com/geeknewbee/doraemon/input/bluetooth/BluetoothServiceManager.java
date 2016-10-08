@@ -100,7 +100,7 @@ public class BluetoothServiceManager {
                         e.printStackTrace();
                     }
                     break;
-                case Constants.MESSAGE_ANDROID_CONTROL:
+                case Constants.MESSAGE_SOCKET_CONTROL:
                     byte[] bytes = (byte[]) msg.obj;
                     byte funCode = 0;
                     try {
