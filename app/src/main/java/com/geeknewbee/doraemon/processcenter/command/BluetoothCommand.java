@@ -96,7 +96,7 @@ public class BluetoothCommand {
         }
 
         if (sportActions != null && !sportActions.isEmpty()) {
-            commands.add(new ActionSetCommand(sportActions));
+            commands.add(new SportActionSetCommand(sportActions));
         }
 
         if (!TextUtils.isEmpty(danceName)) {

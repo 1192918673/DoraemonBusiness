@@ -11,7 +11,6 @@ import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
-import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.BLCommand;
 import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -20,6 +19,7 @@ import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.LearnEnCommand;
 import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
+import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
@@ -119,9 +119,9 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
         //现在的动作是固定的几个动作，以后改成服务器生成动作脚步，直接执行
         if (data.getAction() != null && data.getAction().size() > 0) {
-            ActionSetCommand actionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(data.getAction());
-            if (actionSetCommand != null)
-                commandList.add(actionSetCommand);
+            SportActionSetCommand sportActionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(data.getAction());
+            if (sportActionSetCommand != null)
+                commandList.add(sportActionSetCommand);
         }
 
         // 博联的遥控设备

@@ -6,15 +6,15 @@ import java.util.List;
 /**
  * 舞蹈命令
  */
-public class ActionSetCommand extends Command {
+public class SportActionSetCommand extends Command {
     public List<SportAction> sportActions;
 
-    public ActionSetCommand(List<SportAction> sportActions) {
+    public SportActionSetCommand(List<SportAction> sportActions) {
         super(CommandType.ACTIONSET, "");
         this.sportActions = sportActions;
     }
 
-    public ActionSetCommand() {
+    public SportActionSetCommand() {
         super(CommandType.ACTIONSET);
         sportActions = new ArrayList<>();
     }

@@ -34,7 +34,7 @@ public class BluetoothIOSCommand {
             for (String line : lines) {
                 sportActions.add(SportActionUtil.parseSportCommand(line));
             }
-            commands.add(new ActionSetCommand(sportActions));
+            commands.add(new SportActionSetCommand(sportActions));
         }
         return commands;
     }

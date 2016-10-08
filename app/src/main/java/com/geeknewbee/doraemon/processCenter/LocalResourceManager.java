@@ -4,9 +4,9 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
-import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
+import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,10 +58,10 @@ public class LocalResourceManager extends Thread {
      * @param actionNameList
      * @return
      */
-    public ActionSetCommand getActionSetCommand(List<String> actionNameList) {
+    public SportActionSetCommand getActionSetCommand(List<String> actionNameList) {
         if (actionNameList == null || actionNameList.isEmpty())
             return null;
-        ActionSetCommand command = new ActionSetCommand();
+        SportActionSetCommand command = new SportActionSetCommand();
         for (String action : actionNameList) {
             if (localActionMap.containsKey(action)) {
                 command.addSportAction(localActionMap.get(action));
@@ -70,10 +70,10 @@ public class LocalResourceManager extends Thread {
         return command;
     }
 
-    public ActionSetCommand getActionSetCommand(String actionName) {
+    public SportActionSetCommand getActionSetCommand(String actionName) {
         if (TextUtils.isEmpty(actionName))
             return null;
-        ActionSetCommand command = new ActionSetCommand();
+        SportActionSetCommand command = new SportActionSetCommand();
         command.addSportAction(localActionMap.get(actionName));
         return command;
     }

@@ -1,7 +1,7 @@
 package com.geeknewbee.doraemon.processcenter;
 
-import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
+import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 
 import java.io.BufferedReader;
@@ -80,7 +80,7 @@ public class ParseDanceCommandTask {
             }
 
             if (!isStop)
-                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ActionSetCommand(commands));
+                Doraemon.getInstance(BaseApplication.mContext).addCommand(new SportActionSetCommand(commands));
         }
 
         public void cancel() {

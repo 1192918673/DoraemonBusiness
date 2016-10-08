@@ -15,7 +15,6 @@ import com.geeknewbee.doraemon.output.action.LeXingFoot;
 import com.geeknewbee.doraemon.output.action.SDArmsAndHead;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
-import com.geeknewbee.doraemon.processcenter.command.ActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
@@ -23,6 +22,7 @@ import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
+import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.BytesUtils;
@@ -81,7 +81,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 isStopAction = false;
                 isBusy = true;
-                perform((ActionSetCommand) command);
+                perform((SportActionSetCommand) command);
                 break;
             case MECHANICAL_MOVEMENT:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
@@ -162,7 +162,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
 
-    private void perform(ActionSetCommand command) {
+    private void perform(SportActionSetCommand command) {
         if (command.sportActions == null || command.sportActions.isEmpty()) {
             notifyComplete();
             return;
@@ -357,10 +357,10 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
      */
     private class ArmMoveThread extends Thread {
         private boolean isStopMoveArm = false;
-        private final ActionSetCommand actionSetCommand;
+        private final SportActionSetCommand sportActionSetCommand;
 
         public ArmMoveThread() {
-            actionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_ARM_MOVE);
+            sportActionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_ARM_MOVE);
         }
 
         @Override
@@ -368,7 +368,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             LogUtils.d(ImmediateAlertService.TAG, "ArmMoveThread start run");
             super.run();
             while (!isStopMoveArm) {
-                performArmMove(actionSetCommand);
+                performArmMove(sportActionSetCommand);
             }
             armsAndHead.reset();
             LogUtils.d(ImmediateAlertService.TAG, "ArmMoveThread complete");
@@ -384,7 +384,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             isStopMoveArm = true;
         }
 
-        private void performArmMove(ActionSetCommand command) {
+        private void performArmMove(SportActionSetCommand command) {
             for (SportAction sportAction : command.sportActions) {
                 if (isStopMoveArm)
                     break;
