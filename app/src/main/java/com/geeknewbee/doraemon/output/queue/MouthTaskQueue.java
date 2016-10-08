@@ -12,7 +12,6 @@ import com.geeknewbee.doraemon.output.action.ITTS;
 import com.geeknewbee.doraemon.output.action.IVideoPlayer;
 import com.geeknewbee.doraemon.output.action.MediaPlayerHelper;
 import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
-import com.geeknewbee.doraemon.output.action.XfSpeechTTS;
 import com.geeknewbee.doraemon.output.action.YouKuPlayerActivity;
 import com.geeknewbee.doraemon.processcenter.LearnEnglish;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -30,17 +29,14 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private volatile static MouthTaskQueue instance;
     private ITTS itts;
-    private ITTS ittsKDXF;
     private IMusicPlayer iMusicPlayer;
     private MediaPlayerHelper mediaPlayerHelper;
     private IVideoPlayer videoPlayer;
     private LearnEnglish learnEnglish;
 
-
     private MouthTaskQueue() {
         super();
         itts = new AISpeechTTS();
-        ittsKDXF = new XfSpeechTTS();
         iMusicPlayer = new XMLYMusicPlayer();
         mediaPlayerHelper = new MediaPlayerHelper();
         learnEnglish = new LearnEnglish();
@@ -60,7 +56,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     public void reTTS() {
         itts.reInit();
-        ittsKDXF.reInit();
     }
 
     public void reMusicPlayer() {
@@ -77,11 +72,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                         && soundCommand.inputSource != SoundCommand.InputSource.AFTER_WAKE_UP)
                     EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
 
-                //商业版本的采用科大讯飞的TTS
-                if (soundCommand.inputSource == SoundCommand.InputSource.IOS_BUSINESS)
-                    ittsKDXF.talk(soundCommand.getContent(), soundCommand.inputSource);
-                else
-                    itts.talk(soundCommand.getContent(), soundCommand.inputSource);
+                itts.talk(soundCommand.getContent(), soundCommand.inputSource);
                 break;
             case PLAY_MUSIC:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
@@ -131,7 +122,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     public void stop() {
         learnEnglish.stop();
         itts.stop();
-        ittsKDXF.stop();
         iMusicPlayer.stop();
         mediaPlayerHelper.stop();
         if (videoPlayer != null) {
@@ -143,7 +133,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     public synchronized boolean isBusy() {
         return itts.isSpeaking()
-                || ittsKDXF.isSpeaking()
                 || iMusicPlayer.isPlaying()
                 || mediaPlayerHelper.isPlaying()
                 || (videoPlayer != null && videoPlayer.isPlaying()
@@ -153,7 +142,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     public void destroy() {
         learnEnglish.destory();
         itts.destroy();
-        ittsKDXF.destroy();
         iMusicPlayer.destroy();
         mediaPlayerHelper.destroy();
         if (videoPlayer != null) {
