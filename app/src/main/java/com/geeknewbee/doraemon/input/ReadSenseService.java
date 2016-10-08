@@ -52,19 +52,16 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     public static final String TAG = ReadSenseService.class.getSimpleName();
     public static final String PHOTOTYPE_AUTO = "1";
     public static final String PHOTOTYPE_HANDLE = "2";
-    public static final int PIC_FACE = 2; // 拍照
     public static final int iw = 640;
     public static final int ih = 480;
     private static final int UPLOAD_PICTURE = 3;
     private static final int UPLOAD_SUCCESS = 4;
     private static final int UPLOAD_FAILED = 5;
-    public static int FUN_GO = PIC_FACE; // 微笑拍照
     private boolean NEED_TAKE_PICTURE = false;
     private long LAST_TAKE_PICTURE_TIME;
     private int TAKE_PICTURE_INTERVAL = 30 * 1000; // 拍照时间戳半分钟
     private long TTS_PICTURE_START;
     private long TTS_PICTURE_INTERVAL = 2 * 1000; // TTS时间戳2秒
-    private int frameNumber;
     private boolean busy = false; // 是否正在检测
     private TextureView previewTexture;
     private Camera mCamera;
@@ -79,10 +76,10 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                     uploadPicture(bitmap, msg.arg1 == 1);
                     break;
                 case UPLOAD_SUCCESS:
-                    speak("上传成功");
+                    LogUtils.d(TAG, "上传成功");
                     break;
                 case UPLOAD_FAILED:
-                    speak("上传失败");
+                    LogUtils.d(TAG, "上传失败");
                     break;
             }
         }
@@ -193,16 +190,17 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
     @Override
     public void onPreviewFrame(final byte[] data, Camera camera) {
-        frameNumber++;
-        // 每20帧开始检测人脸
-        if (!busy && frameNumber > 20 && faceTrack != null) {
+        if (!busy && faceTrack != null) {
             busy = true;
 
             LogUtils.d(TAG, "人脸识别。。。");
             List<YMFace> faces = faceTrack.trackMulti(data, iw, ih);
             if (NEED_TAKE_PICTURE) {
+                NEED_TAKE_PICTURE = false;
                 takePicture(data, false);
-            } else if (faces != null && faces.size() != 0) {
+            }
+
+            if (faces != null && faces.size() != 0) {
                 LogUtils.d(TAG, "检测到人脸。。。");
                 int person = faceTrack.identifyPerson(0);
                 if (person != -111) {
@@ -211,22 +209,10 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                     sendBroadcast(intent);
                 }
                 LogUtils.d(TAG, "检测到具体人。。。" + person);
-
-                switch (FUN_GO) {
-                    case PIC_FACE: // 拍照
-                        takePicture(data, true);
-                        break;
-                }
+                takePicture(data, true);
             }
-            revert();
+            busy = false;
         }
-    }
-
-    private void revert() {
-        busy = false;
-        FUN_GO = PIC_FACE;
-        NEED_TAKE_PICTURE = false;
-        frameNumber = 0;
     }
 
     private void configAndRelayout() {
@@ -264,7 +250,6 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                 LAST_TAKE_PICTURE_TIME = System.currentTimeMillis();
                 LogUtils.d(TAG, "偷拍了你一张照片。。。");
                 TTS_PICTURE_START = System.currentTimeMillis();
-                speak("偷拍了你一张照片");
                 startTake(data, isAutoTakePicture);
             }
         } else {
@@ -272,14 +257,11 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
             LogUtils.d(TAG, "Command take picture, take picture now...");
 
             TTS_PICTURE_START = System.currentTimeMillis();
-            speak("好的，《3》《2》1，。。。拍好了");
+            LogUtils.d(TAG, "主动拍了一张照片。。。");
+            speak("照片拍好了");
             LAST_TAKE_PICTURE_TIME = System.currentTimeMillis();
             startTake(data, isAutoTakePicture);
         }
-    }
-
-    private void takePictureComplement() {
-        revert();
     }
 
     private void startTake(byte[] data, boolean isAutoTakePicture) {
@@ -290,7 +272,6 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         Bitmap bmp = BitmapFactory.decodeByteArray(outstr.toByteArray(), 0, outstr.size());
         bitmap = rotaingImageView(180, bmp);
 
-        //takePictureComplement();
         mHandler.obtainMessage(UPLOAD_PICTURE, isAutoTakePicture ? 1 : 2, 0).sendToTarget();
     }
 
@@ -344,16 +325,13 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
             @Override
             public void onSuccess(Object response) {
                 LogUtils.d(TAG, "Upload picture success");
-                long tts_interval = TTS_PICTURE_INTERVAL - TTS_PICTURE_START;
-                mHandler.sendEmptyMessageDelayed(UPLOAD_SUCCESS, tts_interval > 0 ? tts_interval : 0);
-
+                mHandler.sendEmptyMessage(UPLOAD_SUCCESS);
             }
 
             @Override
             public void onFailure(String error) {
                 LogUtils.d(TAG, "Upload picture error :" + error);
-                long tts_interval = TTS_PICTURE_INTERVAL - TTS_PICTURE_START;
-                mHandler.sendEmptyMessageDelayed(UPLOAD_FAILED, tts_interval > 0 ? tts_interval : 0);
+                mHandler.sendEmptyMessage(UPLOAD_FAILED);
             }
         });
     }
