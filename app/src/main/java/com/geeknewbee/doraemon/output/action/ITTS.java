@@ -15,5 +15,7 @@ public interface ITTS {
 
     boolean stop();
 
+    void addSoundCommand(SoundCommand command, boolean isOverwrite);
+
     void destroy();
 }

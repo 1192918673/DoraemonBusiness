@@ -6,6 +6,9 @@ package com.geeknewbee.doraemon.processcenter.command;
 public class SoundCommand extends Command {
     public InputSource inputSource;
 
+    //是否覆盖正在tts的语音
+    public boolean isOverwrite;
+
     public SoundCommand(String content, InputSource inputSource) {
         super(CommandType.PLAY_SOUND, content);
         this.inputSource = inputSource;

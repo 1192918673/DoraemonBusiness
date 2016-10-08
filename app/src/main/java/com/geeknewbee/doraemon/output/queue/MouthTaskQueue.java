@@ -72,7 +72,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                         && soundCommand.inputSource != SoundCommand.InputSource.AFTER_WAKE_UP)
                     EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
 
-                itts.talk(soundCommand.getContent(), soundCommand.inputSource);
+                itts.addSoundCommand(soundCommand, soundCommand.isOverwrite);
                 break;
             case PLAY_MUSIC:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));

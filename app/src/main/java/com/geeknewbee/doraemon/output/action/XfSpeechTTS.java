@@ -165,6 +165,11 @@ public class XfSpeechTTS implements ITTS {
     }
 
     @Override
+    public void addSoundCommand(SoundCommand command, boolean isOverwrite) {
+        talk(command.getContent(), command.inputSource);
+    }
+
+    @Override
     public void destroy() {
         if (mTts != null) {
             mTts.destroy();

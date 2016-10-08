@@ -16,6 +16,9 @@ import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 /**
  * 思必驰 实现 mouth
  */
@@ -26,6 +29,8 @@ public class AISpeechTTS implements ITTS {
     //是否正在讲话
     private boolean isSpeaking;
     private SoundCommand.InputSource inputSource;
+    private BlockingQueue<SoundCommand> soundCommands;
+    private SoundCommand activeCommand;
 
     public AISpeechTTS() {
         init();
@@ -37,6 +42,7 @@ public class AISpeechTTS implements ITTS {
         if (mTTSEngine != null) {
             mTTSEngine.destroy();
         }
+        soundCommands = new ArrayBlockingQueue<SoundCommand>(5);
         mTTSEngine = AILocalTTSEngine.createInstance();//创建实例
         mTTSEngine.setResource("qianran.v2.4.8.bin");//设置使用的合成资源模型名
         mTTSEngine.setDictDbName("aitts_sent_dict_v3.5.db");
@@ -78,6 +84,20 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
+    public void addSoundCommand(SoundCommand command, boolean isOverwrite) {
+        if (isOverwrite) {
+            //清空TTS队列
+            soundCommands.clear();
+            activeCommand = null;
+        }
+
+        soundCommands.offer(command);
+        if (activeCommand == null)
+            scheduleNext();
+    }
+
+
+    @Override
     public void destroy() {
         if (mTTSEngine != null) {
             mTTSEngine.destroy();
@@ -95,8 +115,15 @@ public class AISpeechTTS implements ITTS {
         return isSpeaking;
     }
 
+    private void scheduleNext() {
+        if ((activeCommand = soundCommands.poll()) != null) {
+            talk(activeCommand.getContent(), activeCommand.inputSource);
+        }
+    }
+
     private void notifyComplete() {
         isSpeaking = false;
+        scheduleNext();
         EventBus.getDefault().post(new TTSCompleteEvent(inputSource));
     }
 
