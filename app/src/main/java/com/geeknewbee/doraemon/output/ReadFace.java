@@ -161,7 +161,7 @@ public class ReadFace {
 
         if (face != null && face.size() > 0) {
             facesNew.add(new Face(command.faceType, command.data));
-            Doraemon.getInstance(context).addCommand(new SoundCommand("添加了一张人脸", SoundCommand.InputSource.TIPS));
+            Doraemon.getInstance(context).addCommand(new SoundCommand("添加了一张照片", SoundCommand.InputSource.TIPS));
         }
         return face != null && face.size() > 0;
     }
