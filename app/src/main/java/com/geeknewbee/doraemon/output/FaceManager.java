@@ -80,7 +80,12 @@ public class FaceManager {
             public void run() {
                 if (faceActivity.gifView == null) return;
 
-                int imageResId = BaseApplication.mContext.getResources().getIdentifier(name, "drawable", BaseApplication.mContext.getPackageName());
+                int imageResId = 0;
+                try {
+                    imageResId = BaseApplication.mContext.getResources().getIdentifier(name, "drawable", BaseApplication.mContext.getPackageName());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 if (imageResId > 0) {
                     try {
                         if (!name.equals(lastName) || gifFromResource == null) {
