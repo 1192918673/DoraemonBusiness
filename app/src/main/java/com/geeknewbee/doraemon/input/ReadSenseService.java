@@ -20,13 +20,11 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.view.Gravity;
 import android.view.TextureView;
 import android.view.WindowManager;
 
 import com.geeknewbee.doraemon.BuildConfig;
-import com.geeknewbee.doraemon.EyeManager;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.utils.PrefUtils;
@@ -54,8 +52,6 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     public static final String TAG = ReadSenseService.class.getSimpleName();
     public static final String PHOTOTYPE_AUTO = "1";
     public static final String PHOTOTYPE_HANDLE = "2";
-    public static final int ADD_FACE = 0; // 添加人脸
-    public static final int REC_FACE = 1; // 人脸识别
     public static final int PIC_FACE = 2; // 拍照
     public static final int iw = 640;
     public static final int ih = 480;
@@ -64,12 +60,6 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     private static final int UPLOAD_FAILED = 5;
     public static int FUN_GO = PIC_FACE; // 微笑拍照
     private boolean NEED_TAKE_PICTURE = false;
-    EyeManager.Stub eyeManager = new EyeManager.Stub() {
-        @Override
-        public void takePicture(boolean isAutoTakepicture) throws RemoteException {
-            NEED_TAKE_PICTURE = true;
-        }
-    };
     private long LAST_TAKE_PICTURE_TIME;
     private int TAKE_PICTURE_INTERVAL = 30 * 1000; // 拍照时间戳半分钟
     private long TTS_PICTURE_START;
@@ -124,7 +114,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
     @Override
     public IBinder onBind(Intent intent) {
-        return eyeManager;
+        return null;
     }
 
     private void init() {
