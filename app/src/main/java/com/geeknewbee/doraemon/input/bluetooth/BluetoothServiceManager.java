@@ -24,7 +24,6 @@ import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.command.AddFaceCommand;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
-import com.geeknewbee.doraemon.processcenter.command.BluetoothIOSCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
@@ -140,19 +139,6 @@ public class BluetoothServiceManager {
                     Gson gsonSecond = new Gson();
                     try {
                         BluetoothCommand command = gsonSecond.fromJson(message, BluetoothCommand.class);
-                        doraemon.addCommand(command.getCommand());
-                    } catch (JsonSyntaxException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case Constants.MESSAGE_BLE_TTS:
-//                    byte[] ttsBuf = (byte[]) msg.obj;
-//                    String ttsString = new String(ttsBuf, 0, ttsBuf.length);
-//                    doraemon.addCommand(new SoundCommand(ttsString, SoundCommand.InputSource.IOS_BUSINESS));
-                    String bleMessage = (String) msg.obj;
-                    Gson gsonThree = new Gson();
-                    try {
-                        BluetoothIOSCommand command = gsonThree.fromJson(bleMessage, BluetoothIOSCommand.class);
                         doraemon.addCommand(command.getCommand());
                     } catch (JsonSyntaxException e) {
                         e.printStackTrace();

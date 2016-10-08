@@ -139,18 +139,8 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
         switch (characteristic.getUuid().toString()) {
             case BleUuid.CHAR_SET_WIFI_STRING:
             case BleUuid.CHAR_SET_CONTROL_STRING:
-                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
-                mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                        null);
-                break;
             case BleUuid.CHAR_SET_TTS_STRING:
-//                String readMessage = new String(value, 0, value.length);
-//                LogUtils.d(TAG, "Get TTS string:" + readMessage);
-//                if (value.length > 0) {
-//                    mHandler.obtainMessage(Constants.MESSAGE_BLE_TTS, value.length, -1, value)
-//                            .sendToTarget();
-//                }
-                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_TTS);
+                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
                 mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                         null);
                 break;

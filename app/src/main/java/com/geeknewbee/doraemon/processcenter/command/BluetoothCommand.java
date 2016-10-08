@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
+import com.geeknewbee.doraemon.processcenter.SportActionUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +62,16 @@ public class BluetoothCommand {
     private FootCommand bluetoothFootCommand;
 
     /**
+     * 声音(IOS_BUSINESS 类型 Sound ios 商业端，需要给它回复TTS完成)
+     */
+    private String tts;
+
+    /**
+     * 动作脚本
+     */
+    private List<String> lines;
+
+    /**
      * 根据蓝牙指令获取对应的Command
      *
      * @return
@@ -108,6 +119,20 @@ public class BluetoothCommand {
 
         if (bluetoothFootCommand != null) {
             commands.add(new BluetoothControlFootCommand(bluetoothFootCommand.v, bluetoothFootCommand.w));
+        }
+
+        if (!TextUtils.isEmpty(tts)) {
+            commands.add(new SoundCommand(tts, SoundCommand.InputSource.IOS_BUSINESS));
+        }
+
+        if (lines != null && !lines.isEmpty()) {
+            List<SportAction> sportActions = new ArrayList<>();
+            for (String line : lines) {
+                SportAction sportAction = SportActionUtil.parseSportCommand(line);
+                if (sportAction != null)
+                    sportActions.add(sportAction);
+            }
+            commands.add(new SportActionSetCommand(sportActions));
         }
 
         if (!TextUtils.isEmpty(action)) {
