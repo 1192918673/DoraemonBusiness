@@ -97,7 +97,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
             }
         }
     };
-    private TakePictureReceiver mTakePictureReceiver;
+    private ReadSenseReceiver mReadSenseReceiver;
     private PendingIntent pintent;
 
     @Override
@@ -155,11 +155,11 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         mIntent = new Intent(Constants.READSENSE_BROADCAST_TIPS_ACTION);
 
         // 5.注册切换拍照的广播
-        mTakePictureReceiver = new TakePictureReceiver();
+        mReadSenseReceiver = new ReadSenseReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.READSENSE_BROADCAST_TAKE_PICTURE_ACTION);
         intentFilter.addAction(Constants.ACTION_DORAEMON_REINIT_FACE_TRACK);
-        registerReceiver(mTakePictureReceiver, intentFilter);
+        registerReceiver(mReadSenseReceiver, intentFilter);
     }
 
     private void initFaceTrack() {
@@ -387,12 +387,12 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         LogUtils.d(TAG, "onDestroy 调用。。。");
         stopPreview();
         faceTrack.onRelease();
-        unregisterReceiver(mTakePictureReceiver);
+        unregisterReceiver(mReadSenseReceiver);
         stopForeground(true);
         super.onDestroy();
     }
 
-    class TakePictureReceiver extends BroadcastReceiver {
+    class ReadSenseReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
