@@ -113,6 +113,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case PERSON_START:
             case PERSON_ADD_FACE:
             case PERSON_SET_NAME:
+            case PERSON_DELETE_ALL:
                 ReadFace.getInstance(App.mContext).addCommand(command);
                 break;
         }

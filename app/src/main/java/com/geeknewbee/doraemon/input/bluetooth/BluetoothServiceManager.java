@@ -53,6 +53,8 @@ public class BluetoothServiceManager {
     public static final byte TYPE_PERSON_SET_NAME = 0x34;
     //开始添加给人添加人脸(通过 image 获取数据)
     public static final byte TYPE_PERSON_ADD_FACE_IMAGE = 0x35;
+    //删除已经添加的所有的人
+    public static final byte TYPE_PERSON_DELETE_ALL = 0x36;
 
     private static volatile BluetoothServiceManager instance;
     private BluetoothAdapter mBluetoothAdapter;
@@ -127,6 +129,9 @@ public class BluetoothServiceManager {
                             break;
                         case BluetoothServiceManager.TYPE_PERSON_SET_NAME:
                             doraemon.addCommand(new Command(CommandType.PERSON_SET_NAME, new String(bytes, 1, bytes.length - 1)));
+                            break;
+                        case BluetoothServiceManager.TYPE_PERSON_DELETE_ALL:
+                            doraemon.addCommand(new Command(CommandType.PERSON_DELETE_ALL, new String(bytes, 1, bytes.length - 1)));
                             break;
                     }
                     break;

@@ -62,19 +62,24 @@ public class ReadFace {
     }
 
     public void addCommand(Command command) {
-        String data;
+        String data = "";
         boolean b = false;
+        Gson gson;
         switch (command.getType()) {
             case PERSON_START:
-                Gson gson = new Gson();
+                gson = new Gson();
                 ReadFaceInitParams initParams = gson.fromJson(command.getContent(), ReadFaceInitParams.class);
                 b = startAddFace(initParams.orientation, initParams.resizeScale, initParams.iw, initParams.ih);
                 data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_START);
                 BluetoothServiceManager.getInstance(context).writeToSocket(data);
                 break;
             case PERSON_ADD_FACE:
-                b = addFace((AddFaceCommand) command);
-                data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_ADD_FACE);
+                AddFaceCommand faceCommand = (AddFaceCommand) command;
+                b = addFace(faceCommand);
+                if (faceCommand.faceType == AddFaceType.YUV)
+                    data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_ADD_FACE);
+                else if (faceCommand.faceType == AddFaceType.IMAGE)
+                    data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_ADD_FACE_IMAGE);
                 BluetoothServiceManager.getInstance(context).writeToSocket(data);
                 break;
             case PERSON_SET_NAME:
@@ -82,6 +87,11 @@ public class ReadFace {
                 b = setPersonName(content);
                 data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_SET_NAME);
                 BluetoothServiceManager.getInstance(context).writeToSocket(data);
+                break;
+            case PERSON_DELETE_ALL:
+                gson = new Gson();
+                ReadFaceInitParams initParams2 = gson.fromJson(command.getContent(), ReadFaceInitParams.class);
+                deleteAddPerson(initParams2.orientation, initParams2.resizeScale);
                 break;
         }
     }
@@ -205,6 +215,21 @@ public class ReadFace {
         Doraemon.getInstance(context).addCommand(new SoundCommand("成功添加了" + name + "的人脸", SoundCommand.InputSource.TIPS));
         context.sendBroadcast(new Intent(Constants.ACTION_DORAEMON_REINIT_FACE_TRACK));
         return true;
+    }
+
+    private boolean deleteAddPerson(int orientation, int resizeScale) {
+        if (faceTrack == null) {
+            faceTrack = new YMFaceTrack();
+            //此处默认初始化，initCameraMsg()处会根据设备设置自动更改设置
+            faceTrack.initTrack(context, orientation, resizeScale);
+            faceTrack.setRecognitionConfidence(80);
+        }
+        boolean result = faceTrack.resetAlbum() > -1;
+        faceTrack.onRelease();
+        faceTrack = null;
+        Doraemon.getInstance(context).addCommand(new SoundCommand("删除了所有认识的人", SoundCommand.InputSource.TIPS));
+        context.sendBroadcast(new Intent(Constants.ACTION_DORAEMON_REINIT_FACE_TRACK));
+        return result;
     }
 
     class Face {
