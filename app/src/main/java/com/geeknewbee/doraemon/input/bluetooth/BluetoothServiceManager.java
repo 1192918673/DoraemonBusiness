@@ -111,7 +111,7 @@ public class BluetoothServiceManager {
                         case BluetoothServiceManager.TYPE_CONTROL:
                             Gson gsonSecond = new Gson();
                             try {
-                                BluetoothCommand command = gsonSecond.fromJson(new String(bytes, 1, bytes.length), BluetoothCommand.class);
+                                BluetoothCommand command = gsonSecond.fromJson(new String(bytes, 1, bytes.length - 1), BluetoothCommand.class);
                                 doraemon.addCommand(command.getCommand());
                             } catch (JsonSyntaxException e) {
                                 e.printStackTrace();

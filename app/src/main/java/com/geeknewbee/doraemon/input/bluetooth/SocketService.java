@@ -71,13 +71,13 @@ public class SocketService {
         public void run() {
             LogUtils.d(TAG, "Socket BEGIN mAcceptThread" + this);
 
-            while (serverSocket != null) {
+            while (serverSocket != null && !serverSocket.isClosed()) {
                 try {
                     // This is a blocking call and will only return on a
                     // successful connection or an exception
                     Socket client = serverSocket.accept();
                     connectClient(client);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Log.e(TAG, "Socket accept() failed", e);
                     break;
                 }
