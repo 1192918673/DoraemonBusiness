@@ -215,7 +215,7 @@ public class BluetoothServiceManager {
         talkTask = new BluetoothTalkTask(audioData);
 
         if (mBluetoothAdapter != null)
-            mBluetoothAdapter.setName(Constants.BLUETOOTH_NAME);
+            mBluetoothAdapter.setName(BuildConfig.BLUETOOTH_NAME);
     }
 
     public void start() {

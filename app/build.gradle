@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+def Properties localProps = new Properties()
+try {
+    localProps.load(new FileInputStream(file('local.properties')))
+} catch (Exception e) {
+}
 
 ext {
     TestVersion = '1.0.0.16'
@@ -31,6 +36,8 @@ android {
         buildConfigField "boolean", "HAVE_SPEECH_DEVCE", "true"
         buildConfigField "boolean", "NEED_START_BLE", "true"
         buildConfigField "boolean", "SHOW_ASR_RESULT", "true"
+        buildConfigField "String", "BLUETOOTH_NAME", localProps["bluetoothName"] == null ? "Doraemon" : localProps["bluetoothName"]
+        println "BLUETOOTH_NAME:" + (localProps["bluetoothName"] == null ? "Doraemon" : localProps["bluetoothName"])
     }
 
     sourceSets {

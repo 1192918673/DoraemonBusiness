@@ -164,10 +164,6 @@ public class BluetoothCommand {
                     commands.add(new ExpressionCommand("wei_xiao", 3));
                     commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_ARM_UP_DOWN_MOVE));
                     break;
-                case "read_news":
-//                    commands.add(new SoundCommand(Constants.READ_NEWS_TIPS, SoundCommand.InputSource.TIPS));
-                    commands.add(new LocalResourceCommand(R.raw.oben_read_news));
-                    break;
                 case "sleep":
                     //进入休眠
                     commands.add(new Command(CommandType.SLEEP));
