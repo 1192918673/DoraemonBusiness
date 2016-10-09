@@ -17,6 +17,7 @@ ext {
 
     DevUMengAppKey = "57a9406be0f55a4be60038ba"
     OnlineUMengAppKey = "57a9405267e58e073100057e"
+    BLNAME = "Doraemon"
 }
 
 android {
@@ -37,7 +38,7 @@ android {
         buildConfigField "boolean", "NEED_START_BLE", "true"
         buildConfigField "boolean", "SHOW_ASR_RESULT", "true"
         buildConfigField "String", "BLUETOOTH_NAME", localProps["bluetoothName"] == null ? "Doraemon" : localProps["bluetoothName"]
-        println "BLUETOOTH_NAME:" + (localProps["bluetoothName"] == null ? "Doraemon" : localProps["bluetoothName"])
+        println "BLUETOOTH_NAME:" + (localProps["bluetoothName"] == null ? BLNAME : localProps["bluetoothName"])
     }
 
     sourceSets {
@@ -62,7 +63,9 @@ android {
             zipAlignEnabled true
             shrinkResources true // 是否去除无效的资源文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "BLUETOOTH_NAME", BLNAME
         }
+
         debug {
             signingConfig signingConfigs.myConfig
             minifyEnabled false
