@@ -69,6 +69,11 @@ public class BluetoothCommand {
     private List<String> lines;
 
     /**
+     * tts ,动作是否覆盖正在进行的
+     */
+    private boolean isOverwrite;
+
+    /**
      * 根据蓝牙指令获取对应的Command
      *
      * @return
@@ -80,7 +85,7 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(sound)) {
-            commands.add(new SoundCommand(sound, SoundCommand.InputSource.TIPS));
+            commands.add(new SoundCommand(sound, SoundCommand.InputSource.TIPS, isOverwrite));
         }
 
         if (!TextUtils.isEmpty(musicName)) {
@@ -100,7 +105,7 @@ public class BluetoothCommand {
         }
 
         if (sportActions != null && !sportActions.isEmpty()) {
-            commands.add(new SportActionSetCommand(sportActions));
+            commands.add(new SportActionSetCommand(sportActions, isOverwrite));
         }
 
         if (!TextUtils.isEmpty(danceName)) {
@@ -115,7 +120,7 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(tts)) {
-            commands.add(new SoundCommand(tts, SoundCommand.InputSource.IOS_BUSINESS));
+            commands.add(new SoundCommand(tts, SoundCommand.InputSource.IOS_BUSINESS, isOverwrite));
         }
 
         if (lines != null && !lines.isEmpty()) {
@@ -125,7 +130,7 @@ public class BluetoothCommand {
                 if (sportAction != null)
                     sportActions.add(sportAction);
             }
-            commands.add(new SportActionSetCommand(sportActions));
+            commands.add(new SportActionSetCommand(sportActions, isOverwrite));
         }
 
         if (!TextUtils.isEmpty(action)) {

@@ -34,7 +34,7 @@ public class XfSpeechTTS implements ITTS {
     // 引擎类型，在线合成或离线合成
     private String mEngineType = SpeechConstant.TYPE_LOCAL;
     // 默认发音人
-    private String voicer = "xiaolin";
+    private String voicer = "nannan";
 
     private SoundCommand.InputSource inputSource;
 

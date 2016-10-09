@@ -14,6 +14,11 @@ public class SoundCommand extends Command {
         this.inputSource = inputSource;
     }
 
+    public SoundCommand(String content, InputSource inputSource, boolean isOverwrite) {
+        super(CommandType.PLAY_SOUND, content);
+        this.inputSource = inputSource;
+        this.isOverwrite = isOverwrite;
+    }
 
     public static enum InputSource {
         //播放声音的来源 SOUND_TRANSLATE：解析音频，TTS后需要开启ARS  TIPS：播放些提示类的声音，播放完成不需要开启ASR

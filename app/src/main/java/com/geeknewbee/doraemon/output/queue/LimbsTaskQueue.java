@@ -17,7 +17,6 @@ import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
-import com.geeknewbee.doraemon.processcenter.command.LeXingCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
@@ -72,6 +71,17 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     @Override
+    public synchronized void addTask(Command command) {
+        if (command instanceof SportActionSetCommand) {
+            //添加Task 会覆盖以前当前执行的和任务队列中的任务
+            if (((SportActionSetCommand) command).isOverwrite) {
+                stop();
+            }
+        }
+        super.addTask(command);
+    }
+
+    @Override
     public Boolean performTask(Command command) {
         switch (command.getType()) {
             case SPORT_ACTION_SET:
@@ -80,13 +90,6 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 isBusy = true;
                 perform((SportActionSetCommand) command);
                 break;
-            case FOOT:
-                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-                isStopAction = false;
-                isBusy = true;
-                LeXingCommand leXingCommand = (LeXingCommand) command;
-                perform(leXingCommand);
-                break;
             case BLUETOOTH_CONTROL_FOOT:
                 BluetoothControlFootCommand footCommand = (BluetoothControlFootCommand) command;
                 perform(footCommand);
@@ -94,21 +97,6 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         }
 
         return true;
-    }
-
-    private void perform(LeXingCommand command) {
-        if (isUseLeXing)
-            sendLeXingFootCommand(command.v, command.w);
-        else
-            sendLeXingFootCommandByLuGong(command.v, command.w);
-
-        if (command.duration != 0) {
-            if (isUseLeXing)
-                stopFoot(command.duration);
-            else
-                stopFootLuGong(command.duration);
-        }
-        notifyComplete();
     }
 
     private void perform(BluetoothControlFootCommand command) {
