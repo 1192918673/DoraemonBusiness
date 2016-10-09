@@ -74,6 +74,11 @@ public class BluetoothCommand {
     private boolean isOverwrite;
 
     /**
+     * 表情的循环次数
+     */
+    private int loop;
+
+    /**
      * 根据蓝牙指令获取对应的Command
      *
      * @return
@@ -81,7 +86,7 @@ public class BluetoothCommand {
     public List<Command> getCommand() {
         List<Command> commands = new ArrayList<>();
         if (!TextUtils.isEmpty(faceName)) {
-            commands.add(new ExpressionCommand(faceName, 1));
+            commands.add(new ExpressionCommand(faceName, loop <= 0 ? 1 : loop));
         }
 
         if (!TextUtils.isEmpty(sound)) {
@@ -105,7 +110,7 @@ public class BluetoothCommand {
         }
 
         if (sportActions != null && !sportActions.isEmpty()) {
-            commands.add(new SportActionSetCommand(sportActions, isOverwrite));
+            commands.add(new SportActionSetCommand(sportActions, isOverwrite, SportActionSetCommand.InputSource.REMOTE_CONTROL));
         }
 
         if (!TextUtils.isEmpty(danceName)) {
@@ -130,7 +135,7 @@ public class BluetoothCommand {
                 if (sportAction != null)
                     sportActions.add(sportAction);
             }
-            commands.add(new SportActionSetCommand(sportActions, isOverwrite));
+            commands.add(new SportActionSetCommand(sportActions, isOverwrite, SportActionSetCommand.InputSource.REMOTE_CONTROL));
         }
 
         if (!TextUtils.isEmpty(action)) {

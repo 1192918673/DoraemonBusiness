@@ -39,6 +39,7 @@ import com.geeknewbee.doraemon.processcenter.InputTimeoutMonitorTask.TimeOutMoni
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
+import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -272,8 +273,8 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLimbActionComplete(LimbActionCompleteEvent event) {
-        //完成后开启语音监听
-        if (isOutputBusy())
+        //完成后开启语音监听  正在有执行的任务或者是远程控制的 不需要切换到ASR
+        if (isOutputBusy() || event.inputSource == SportActionSetCommand.InputSource.REMOTE_CONTROL)
             return;
 
         switchSoundMonitor(SoundMonitorType.ASR);

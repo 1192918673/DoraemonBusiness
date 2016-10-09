@@ -12,15 +12,18 @@ public class SportActionSetCommand extends Command {
     //是否覆盖正在tts的语音
     public boolean isOverwrite;
 
+    public InputSource inputSource = InputSource.REMOTE_CONTROL;
+
     public SportActionSetCommand(List<SportAction> sportActions) {
         super(CommandType.SPORT_ACTION_SET, "");
         this.sportActions = sportActions;
     }
 
-    public SportActionSetCommand(List<SportAction> sportActions, boolean isOverwrite) {
+    public SportActionSetCommand(List<SportAction> sportActions, boolean isOverwrite, InputSource source) {
         super(CommandType.SPORT_ACTION_SET, "");
         this.sportActions = sportActions;
         this.isOverwrite = isOverwrite;
+        this.inputSource = source;
     }
 
     public SportActionSetCommand() {
@@ -31,5 +34,10 @@ public class SportActionSetCommand extends Command {
     public void addSportAction(List<SportAction> actions) {
         if (actions != null)
             sportActions.addAll(actions);
+    }
+
+    public enum InputSource {
+        //命令的来源,INTERNAL:内部  REMOTE_CONTROL:远程控制（完成后不需要开始ASR）
+        INTERNAL, REMOTE_CONTROL
     }
 }

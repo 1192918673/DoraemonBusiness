@@ -46,6 +46,8 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private ArmMoveThread armMoveThread;
     private ReentrantLock reentrantLock = new ReentrantLock();
 
+    private SportActionSetCommand.InputSource inputSource;
+
     private LimbsTaskQueue() {
         super();
         armsAndHead = new SDArmsAndHead();
@@ -137,10 +139,11 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     private void perform(SportActionSetCommand command) {
         if (command.sportActions == null || command.sportActions.isEmpty()) {
+            inputSource = null;
             notifyComplete();
             return;
         }
-
+        inputSource = command.inputSource;
         for (SportAction sportAction : command.sportActions) {
             if (isStopAction) {
                 armsAndHead.reset();
@@ -187,7 +190,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     private void notifyComplete() {
         isBusy = false;
-        EventBus.getDefault().post(new LimbActionCompleteEvent());
+        EventBus.getDefault().post(new LimbActionCompleteEvent(inputSource));
     }
 
     private void sendLeXingFootCommand(String footCommand) {
@@ -238,11 +241,6 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         char[] contentChar = new char[]{charV[0], charV[1], charV[2], charV[3], charW[0], charW[1], charW[2], charW[3], 0x00, 0x00, 0x00};
         boolean send = armsAndHead.send(funcationCode, contentChar);
         return send;
-    }
-
-    private void perform(String s) {
-        sendTopCommand(s);
-        notifyComplete();
     }
 
     private Boolean sendTopCommand(String s) {
