@@ -1,6 +1,7 @@
 package com.geeknewbee.doraemonsdk.utils;
 
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.text.TextUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.lang.reflect.Method;
 
 public class DeviceUtil {
     /**
@@ -139,5 +141,20 @@ public class DeviceUtil {
                 ((ipAdress >> 8) & 0xFF) + "." +
                 ((ipAdress >> 16) & 0xFF) + "." +
                 (ipAdress >> 24 & 0xFF);
+    }
+
+    public static void setDiscoverableTimeout(int timeout) {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        try {
+            Method setDiscoverableTimeout = BluetoothAdapter.class.getMethod("setDiscoverableTimeout", int.class);
+            setDiscoverableTimeout.setAccessible(true);
+            Method setScanMode = BluetoothAdapter.class.getMethod("setScanMode", int.class, int.class);
+            setScanMode.setAccessible(true);
+
+            setDiscoverableTimeout.invoke(adapter, timeout);
+            setScanMode.invoke(adapter, BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE, timeout);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

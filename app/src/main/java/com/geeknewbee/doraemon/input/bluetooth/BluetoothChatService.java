@@ -33,7 +33,6 @@ import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -106,8 +105,6 @@ public class BluetoothChatService {
      */
     public synchronized void start() {
         LogUtils.d(TAG, "start");
-        setDiscoverableTimeout(1000 * 60 * 60);
-
         // Cancel any thread currently running a connection
 //        for (ConnectedThread mConnectedThread : connectedThreadList)
 //            if (mConnectedThread != null) {
@@ -200,21 +197,6 @@ public class BluetoothChatService {
 
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
-    }
-
-    public void setDiscoverableTimeout(int timeout) {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        try {
-            Method setDiscoverableTimeout = BluetoothAdapter.class.getMethod("setDiscoverableTimeout", int.class);
-            setDiscoverableTimeout.setAccessible(true);
-            Method setScanMode = BluetoothAdapter.class.getMethod("setScanMode", int.class, int.class);
-            setScanMode.setAccessible(true);
-
-            setDiscoverableTimeout.invoke(adapter, timeout);
-            setScanMode.invoke(adapter, BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE, timeout);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
