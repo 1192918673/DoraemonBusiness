@@ -63,16 +63,13 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case PLAY_LOCAL_RESOURCE: //播放本地音频
                 MouthTaskQueue.getInstance().addTask(command);
                 break;
-            case MECHANICAL_MOVEMENT: //肢体运动
-                LimbsTaskQueue.getInstance().addTask(command);
-                break;
-            case LE_XING_FOOT://乐行Foot
+            case FOOT://乐行Foot
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
             case BLUETOOTH_CONTROL_FOOT: //蓝牙控制脚步
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
-            case ACTIONSET: //舞蹈动作
+            case SPORT_ACTION_SET: //舞蹈动作
                 LimbsTaskQueue.getInstance().addTask(command);
                 break;
             case STOP:
@@ -100,9 +97,6 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 break;
             case PLAY_MOVIE:
                 MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case DANCE:
-                LimbsTaskQueue.getInstance().addTask(command);
                 break;
             case SLEEP:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));

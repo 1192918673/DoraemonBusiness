@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
-import com.geeknewbee.doraemon.processcenter.command.DanceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 
@@ -78,10 +77,10 @@ public class LocalResourceManager extends Thread {
         return command;
     }
 
-    public DanceCommand getDanceCommand(String actionName) {
+    public SportActionSetCommand getDanceCommand(String actionName) {
         if (TextUtils.isEmpty(actionName))
             return null;
-        DanceCommand command = new DanceCommand();
+        SportActionSetCommand command = new SportActionSetCommand();
         command.addSportAction(localActionMap.get(actionName));
         return command;
     }

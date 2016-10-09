@@ -35,10 +35,7 @@ public class BluetoothCommand {
      * 声音
      */
     private String sound;
-    /**
-     * 肢体运动命令
-     */
-    private LimbCommand limbCommand;
+
     /**
      * 歌曲名称
      */
@@ -84,10 +81,6 @@ public class BluetoothCommand {
 
         if (!TextUtils.isEmpty(sound)) {
             commands.add(new SoundCommand(sound, SoundCommand.InputSource.TIPS));
-        }
-
-        if (limbCommand != null) {
-            commands.addAll(limbCommand.getCommand());
         }
 
         if (!TextUtils.isEmpty(musicName)) {
@@ -182,49 +175,6 @@ public class BluetoothCommand {
         public int type;
         public String SSID;
         public String pwd;
-    }
-
-    private static class LimbCommand {
-        /**
-         * 肢体动作命令
-         */
-        private List<String> limbData;
-
-        /**
-         * 脚步动作
-         */
-        private FootCommand footCommand;
-
-        public List<Command> getCommand() {
-            List<Command> result = new ArrayList<>();
-            if (limbData != null && !limbData.isEmpty()) {
-                for (String s : limbData) {
-                    result.add(new Command(CommandType.MECHANICAL_MOVEMENT, s));
-                }
-            }
-
-            if (footCommand != null) {
-                LeXingCommand command = new LeXingCommand(footCommand.v, footCommand.w, footCommand.duration);
-                result.add(command);
-            }
-            return result;
-        }
-
-        private static class FootCommand {
-            /**
-             * 线速度
-             */
-            public int v;
-            /**
-             * 角速度
-             */
-            public int w;
-
-            /**
-             * 持续时间 ms
-             */
-            public int duration = 0;
-        }
     }
 
     public static class FootCommand {
