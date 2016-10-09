@@ -231,7 +231,8 @@ public class BluetoothServiceManager {
     }
 
     private void startServer() {
-        DeviceUtil.setDiscoverableTimeout(Integer.MAX_VALUE);
+        LogUtils.d(ImmediateAlertService.TAG, "startServer");
+        DeviceUtil.setDiscoverableTimeout(1000 * 60 * 60 * 24 * 7);
 //        if (mChatService == null) {
 //            startBluetoothServer();
 //        }
@@ -301,6 +302,7 @@ public class BluetoothServiceManager {
     }
 
     private void stopAdvertise() {
+        LogUtils.d(ImmediateAlertService.TAG, "stopAdvertise");
         if (mGattServer != null) {
             mGattServer.clearServices();
             mGattServer.close();
