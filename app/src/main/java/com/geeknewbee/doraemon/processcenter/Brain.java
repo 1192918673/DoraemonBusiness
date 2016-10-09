@@ -16,6 +16,7 @@ import com.geeknewbee.doraemon.processcenter.command.BLCommand;
 import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -80,7 +81,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
                 LimbsTaskQueue.getInstance().stop();
                 break;
             case TAKE_PICTURE: //拍照
-//                addCommand(new SoundCommand("好的《3》《2》1。。。拍好了", SoundCommand.InputSource.TIPS));
+                addCommand(new SoundCommand("好的", SoundCommand.InputSource.TIPS));
                 Doraemon.getInstance(BaseApplication.mContext).startTakePicture();
                 break;
             case WIFI_MESSAGE://设置连接WIFI

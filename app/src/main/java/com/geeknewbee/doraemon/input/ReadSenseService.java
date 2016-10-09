@@ -190,6 +190,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
     @Override
     public void onPreviewFrame(final byte[] data, Camera camera) {
+        LogUtils.d(TAG, "相机回调");
         if (!busy && faceTrack != null) {
             busy = true;
 
