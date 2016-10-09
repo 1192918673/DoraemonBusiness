@@ -96,6 +96,11 @@ public class App extends BaseApplication {
     protected void init() {
         boolean result = new AISpeechAuth().auth();
         LogUtils.d(TAG, "AISpeech auth result:" + result);
+
+//        AIConstant.openLog();
+//        AIConstant.setSpiChannelsGainData(new byte[]{0, 0, 0, 0, 0, 0, 0, 0});
+//        LogUtils.d(TAG, "1设置spi方式下，录音机的增益");
+
         configuration = new YoukuPlayerBaseConfiguration(this) {
             /**
              * 通过覆写该方法，返回“正在缓存视频信息的界面”，

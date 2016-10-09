@@ -243,7 +243,6 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     private void takePicture(byte[] data, boolean isAutoTakePicture) {
         if (isAutoTakePicture) {
             // 1.如果是自动拍照，再判断距上次拍照是不是够半分钟
-            LogUtils.d(TAG, "拍照间隔未到。。。");
             if (System.currentTimeMillis() - LAST_TAKE_PICTURE_TIME > TAKE_PICTURE_INTERVAL) {
                 LogUtils.d(TAG, "Auto take picture, 0.5-minute intervals time out, take picture now...");
 
@@ -251,7 +250,8 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                 LogUtils.d(TAG, "偷拍了你一张照片。。。");
                 TTS_PICTURE_START = System.currentTimeMillis();
                 startTake(data, isAutoTakePicture);
-            }
+            } else
+                LogUtils.d(TAG, "拍照间隔未到。。。");
         } else {
             // 2.如果是命令拍照，直接调用拍照
             LogUtils.d(TAG, "Command take picture, take picture now...");
