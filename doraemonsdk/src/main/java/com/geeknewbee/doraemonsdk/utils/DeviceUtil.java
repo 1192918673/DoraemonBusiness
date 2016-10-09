@@ -143,6 +143,11 @@ public class DeviceUtil {
                 (ipAdress >> 24 & 0xFF);
     }
 
+    /**
+     * 打开蓝牙的可见性(timeout值并没有起到作用，可见性是一直保持的)
+     *
+     * @param timeout
+     */
     public static void setDiscoverableTimeout(int timeout) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         try {
@@ -153,6 +158,24 @@ public class DeviceUtil {
 
             setDiscoverableTimeout.invoke(adapter, timeout);
             setScanMode.invoke(adapter, BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE, timeout);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 关闭蓝牙的可见性
+     */
+    public static void closeDiscoverableTimeout() {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        try {
+            Method setDiscoverableTimeout = BluetoothAdapter.class.getMethod("setDiscoverableTimeout", int.class);
+            setDiscoverableTimeout.setAccessible(true);
+            Method setScanMode = BluetoothAdapter.class.getMethod("setScanMode", int.class, int.class);
+            setScanMode.setAccessible(true);
+
+            setDiscoverableTimeout.invoke(adapter, 1);
+            setScanMode.invoke(adapter, BluetoothAdapter.SCAN_MODE_CONNECTABLE, 1);
         } catch (Exception e) {
             e.printStackTrace();
         }

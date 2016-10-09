@@ -29,6 +29,7 @@ public class AISpeechTTS implements ITTS {
     //是否正在讲话
     private boolean isSpeaking;
     private SoundCommand.InputSource inputSource;
+
     private BlockingQueue<SoundCommand> soundCommands;
     private SoundCommand activeCommand;
 
@@ -102,6 +103,8 @@ public class AISpeechTTS implements ITTS {
         if (mTTSEngine != null) {
             mTTSEngine.destroy();
         }
+        soundCommands.clear();
+        activeCommand = null;
     }
 
     @Override

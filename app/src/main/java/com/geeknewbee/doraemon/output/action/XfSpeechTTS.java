@@ -19,6 +19,9 @@ import com.iflytek.cloud.SynthesizerListener;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 /**
  * Created by GYY on 2016/9/26.
  */
@@ -34,6 +37,9 @@ public class XfSpeechTTS implements ITTS {
     private String voicer = "xiaolin";
 
     private SoundCommand.InputSource inputSource;
+
+    private BlockingQueue<SoundCommand> soundCommands;
+    private SoundCommand activeCommand;
 
     //  是否初始化完成
     private boolean isInit;
@@ -61,6 +67,7 @@ public class XfSpeechTTS implements ITTS {
         mTts = SpeechSynthesizer.createSynthesizer(App.mContext, mTtsInitListener);
         mSharedPreferences = App.mContext.getSharedPreferences(TtsSettings.PREFER_NAME, App.mContext.MODE_PRIVATE);
         setParamSynthesis();
+        soundCommands = new ArrayBlockingQueue<SoundCommand>(5);
     }
 
     @Override
@@ -166,7 +173,21 @@ public class XfSpeechTTS implements ITTS {
 
     @Override
     public void addSoundCommand(SoundCommand command, boolean isOverwrite) {
-        talk(command.getContent(), command.inputSource);
+        if (isOverwrite) {
+            //清空TTS队列
+            soundCommands.clear();
+            activeCommand = null;
+        }
+
+        soundCommands.offer(command);
+        if (activeCommand == null)
+            scheduleNext();
+    }
+
+    private void scheduleNext() {
+        if ((activeCommand = soundCommands.poll()) != null) {
+            talk(activeCommand.getContent(), activeCommand.inputSource);
+        }
     }
 
     @Override
@@ -174,6 +195,8 @@ public class XfSpeechTTS implements ITTS {
         if (mTts != null) {
             mTts.destroy();
         }
+        soundCommands.clear();
+        activeCommand = null;
     }
 
     /**
