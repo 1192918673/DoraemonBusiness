@@ -27,6 +27,7 @@ import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
+import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -209,8 +210,10 @@ public class BluetoothServiceManager {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         context.registerReceiver(mReceiver, filter);
+
         doraemon = Doraemon.getInstance(context);
         talkTask = new BluetoothTalkTask(audioData);
+
         if (mBluetoothAdapter != null)
             mBluetoothAdapter.setName(Constants.BLUETOOTH_NAME);
     }
@@ -218,7 +221,6 @@ public class BluetoothServiceManager {
     public void start() {
         if (!mBluetoothAdapter.isEnabled()) {
             mBluetoothAdapter.enable();
-            // Otherwise, setup the chat session
         } else {
             startServer();
         }
@@ -229,6 +231,7 @@ public class BluetoothServiceManager {
     }
 
     private void startServer() {
+        DeviceUtil.setDiscoverableTimeout(Integer.MAX_VALUE);
 //        if (mChatService == null) {
 //            startBluetoothServer();
 //        }

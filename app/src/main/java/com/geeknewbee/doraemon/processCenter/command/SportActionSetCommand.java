@@ -10,12 +10,12 @@ public class SportActionSetCommand extends Command {
     public List<SportAction> sportActions;
 
     public SportActionSetCommand(List<SportAction> sportActions) {
-        super(CommandType.ACTIONSET, "");
+        super(CommandType.SPORT_ACTION_SET, "");
         this.sportActions = sportActions;
     }
 
     public SportActionSetCommand() {
-        super(CommandType.ACTIONSET);
+        super(CommandType.SPORT_ACTION_SET);
         sportActions = new ArrayList<>();
     }
 

@@ -16,7 +16,7 @@ public class LeXingCommand extends Command {
     public int duration = 0;
 
     public LeXingCommand() {
-        super(CommandType.LE_XING_FOOT, "");
+        super(CommandType.FOOT, "");
     }
 
     public LeXingCommand(int v, int w) {

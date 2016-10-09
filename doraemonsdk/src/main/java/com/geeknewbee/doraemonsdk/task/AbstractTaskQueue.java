@@ -48,6 +48,16 @@ public abstract class AbstractTaskQueue<Input, Result> {
     }
 
     /**
+     * 添加Task 会覆盖以前当前执行的和任务队列中的任务
+     *
+     * @param input
+     */
+    public synchronized void addOverwriteTask(final Input input) {
+        clearTasks();
+        addTask(Priority.DEFAULT, input);
+    }
+
+    /**
      * 添加Task
      *
      * @param priority 优先级
@@ -71,9 +81,9 @@ public abstract class AbstractTaskQueue<Input, Result> {
         WorkerFuture mFuture = new WorkerFuture<Result>(mWorker) {
             @Override
             protected void done() {
-                lock.lock();
                 LogUtils.d(TAG, this.getClass().getSimpleName() + "future done");
                 try {
+                    lock.lock();
                     postResultIfNotInvoked(get());
                 } catch (InterruptedException e) {
                     android.util.Log.w(TAG, e);
