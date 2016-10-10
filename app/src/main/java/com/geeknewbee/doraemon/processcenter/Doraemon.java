@@ -79,6 +79,7 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
         brain = new Brain();
         soundInputDevice = new AISpeechSoundInputDevice();
         inputTimeOutMonitorTask = new InputTimeoutMonitorTask(context);
+        inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_NONE);
         EventBus.getDefault().register(this);
     }
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
+import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.util.Date;
@@ -78,6 +79,9 @@ public class InputTimeoutMonitorTask extends Thread {
                 default:
                     break;
             }
+            //这里测试蓝牙4.0经常找不到的问题 能否激活
+            DeviceUtil.closeDiscoverableTimeout();
+            DeviceUtil.setDiscoverableTimeout(1000 * 60 * 60);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

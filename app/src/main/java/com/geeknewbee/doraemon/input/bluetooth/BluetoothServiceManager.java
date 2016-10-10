@@ -27,7 +27,6 @@ import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
-import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -232,7 +231,7 @@ public class BluetoothServiceManager {
 
     private void startServer() {
         LogUtils.d(ImmediateAlertService.TAG, "startServer");
-        DeviceUtil.setDiscoverableTimeout(1000 * 60 * 60 * 24 * 7);
+//        DeviceUtil.setDiscoverableTimeout(1000 * 60 * 60 * 24 * 7);
 //        if (mChatService == null) {
 //            startBluetoothServer();
 //        }
