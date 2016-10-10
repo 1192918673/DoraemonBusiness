@@ -86,6 +86,7 @@ public class AISpeechTTS implements ITTS {
 
     @Override
     public void addSoundCommand(SoundCommand command, boolean isOverwrite) {
+        //思必驰有问题暂时不能采用队列，因为会出现tts 不出声没有回调的情况
         if (isOverwrite) {
             //清空TTS队列
             soundCommands.clear();

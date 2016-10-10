@@ -69,9 +69,9 @@ public class BluetoothCommand {
     private List<String> lines;
 
     /**
-     * tts ,动作是否覆盖正在进行的
+     * tts ,动作是否覆盖正在进行的  1/0
      */
-    private boolean isOverwrite;
+    private int isOverwrite;
 
     /**
      * 表情的循环次数
@@ -90,7 +90,7 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(sound)) {
-            commands.add(new SoundCommand(sound, SoundCommand.InputSource.TIPS, isOverwrite));
+            commands.add(new SoundCommand(sound, SoundCommand.InputSource.TIPS, isOverwrite == 1));
         }
 
         if (!TextUtils.isEmpty(musicName)) {
@@ -110,7 +110,8 @@ public class BluetoothCommand {
         }
 
         if (sportActions != null && !sportActions.isEmpty()) {
-            commands.add(new SportActionSetCommand(sportActions, isOverwrite, SportActionSetCommand.InputSource.REMOTE_CONTROL));
+            commands.add(new SportActionSetCommand(sportActions, isOverwrite == 1,
+                    SportActionSetCommand.InputSource.REMOTE_CONTROL));
         }
 
         if (!TextUtils.isEmpty(danceName)) {
@@ -125,7 +126,7 @@ public class BluetoothCommand {
         }
 
         if (!TextUtils.isEmpty(tts)) {
-            commands.add(new SoundCommand(tts, SoundCommand.InputSource.IOS_BUSINESS, isOverwrite));
+            commands.add(new SoundCommand(tts, SoundCommand.InputSource.IOS_BUSINESS, isOverwrite == 1));
         }
 
         if (lines != null && !lines.isEmpty()) {
@@ -135,7 +136,8 @@ public class BluetoothCommand {
                 if (sportAction != null)
                     sportActions.add(sportAction);
             }
-            commands.add(new SportActionSetCommand(sportActions, isOverwrite, SportActionSetCommand.InputSource.REMOTE_CONTROL));
+            commands.add(new SportActionSetCommand(sportActions, isOverwrite == 1,
+                    SportActionSetCommand.InputSource.REMOTE_CONTROL));
         }
 
         if (!TextUtils.isEmpty(action)) {

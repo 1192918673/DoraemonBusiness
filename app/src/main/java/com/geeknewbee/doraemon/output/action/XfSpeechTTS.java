@@ -160,6 +160,7 @@ public class XfSpeechTTS implements ITTS {
     }
 
     private void notifyComplete() {
+        scheduleNext();
         EventBus.getDefault().post(new TTSCompleteEvent(inputSource));
     }
 
@@ -177,6 +178,14 @@ public class XfSpeechTTS implements ITTS {
             //清空TTS队列
             soundCommands.clear();
             activeCommand = null;
+            if (mTts != null && mTts.isSpeaking()) {
+                mTts.stopSpeaking();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         soundCommands.offer(command);
@@ -218,7 +227,7 @@ public class XfSpeechTTS implements ITTS {
         // 设置合成发音人
         mTts.setParameter(SpeechConstant.VOICE_NAME, voicer);
         //设置合成语速
-        mTts.setParameter(SpeechConstant.SPEED, mSharedPreferences.getString("speed_preference", "50"));
+        mTts.setParameter(SpeechConstant.SPEED, mSharedPreferences.getString("speed_preference", "100"));
         //设置合成音调
         mTts.setParameter(SpeechConstant.PITCH, mSharedPreferences.getString("pitch_preference", "50"));
         //设置合成音量
