@@ -89,11 +89,16 @@ public class FaceManager {
                 if (imageResId > 0) {
                     try {
                         if (!name.equals(lastName) || gifFromResource == null) {
-                            if (gifFromResource != null)
+                            if (gifFromResource != null) {
+                                gifFromResource.removeAnimationListener(animationListener);
                                 gifFromResource.recycle();
+                            }
                             gifFromResource = new GifDrawable(BaseApplication.mContext.getResources(), imageResId);
-                        } else
+                        } else {
                             gifFromResource.removeAnimationListener(animationListener);
+                            gifFromResource.stop();
+                            gifFromResource.reset();
+                        }
 
                         synchronized (FaceManager.this) {
                             FaceManager.this.loopNumber = loopNumber;
@@ -103,6 +108,7 @@ public class FaceManager {
                         gifFromResource.addAnimationListener(animationListener);
                         gifFromResource.setLoopCount(loopNumber);
                         faceActivity.gifView.setImageDrawable(gifFromResource);
+                        gifFromResource.start();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

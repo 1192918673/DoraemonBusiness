@@ -20,7 +20,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.17'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.2'
     compile project(path: ':navipacksdk')
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
