@@ -269,7 +269,6 @@ public class AISpeechEar implements IEar {
         @Override
         public void onResults(AIResult results) {
             setListerStatue(false);
-            EventBus.getDefault().post(new ASRResultEvent(true));
             LogUtils.d(TAG, results.getResultObject().toString());
 
             EventManager.sendBeginningOfDealWithEvent();
@@ -306,8 +305,7 @@ public class AISpeechEar implements IEar {
                 }
             }
 
-            if (asrListener != null)
-                asrListener.onASRResult(originSoundString, outputString, action, star_name, music_name);
+            EventBus.getDefault().post(new ASRResultEvent(true, originSoundString, outputString, action, star_name, music_name));
         }
 
         @Override
@@ -321,7 +319,7 @@ public class AISpeechEar implements IEar {
             LogUtils.d(TAG, "识别发生错误:" + error.getErrId());
             mASREngine.cancel();
             mASREngine.stopRecording();
-            EventBus.getDefault().post(new ASRResultEvent(false));
+            EventBus.getDefault().post(new ASRResultEvent(false, "", "", "", "", ""));
         }
 
         @Override

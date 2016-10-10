@@ -53,7 +53,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 哆啦A梦 单利模式
  */
-public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListener {
+public class Doraemon implements IMessageReceive.MessageListener {
     private volatile static Doraemon instance;
     private final Context context;
     private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
@@ -137,7 +137,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      */
     private void startASR() {
         ear.startRecognition(wakePhis);
-        ear.setASRListener(this);
         addCommand(new ExpressionCommand(Constants.LISTENNING_GIF, 0));
     }
 
@@ -156,8 +155,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
         Intent intent = new Intent(context, ReadSenseService.class);
         LogUtils.d(ReadSenseService.TAG, "Doraemon 调用。。。");
         context.startService(intent);
-//        serviceConnection = new ReadSenseServiceConnection();
-//        context.bindService(intent, serviceConnection, context.BIND_AUTO_CREATE);
         registerTTSReceiver();
     }
 
@@ -165,7 +162,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      * 停止自动人脸识别
      */
     public void stopAFR() {
-//        context.unbindService(serviceConnection);
         Intent intent = new Intent(context, ReadSenseService.class);
         context.stopService(intent);
         unRegisterTTSReceiver();
@@ -176,11 +172,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      */
     public void startTakePicture() {
         // 方式一：AIDL方式获取中间对象来控制
-        /*try {
-            mEyeManager.takePicture(false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }*/
 
         // 方式二：往服务里发送广播来控制
         context.sendBroadcast(new Intent(Constants.READSENSE_BROADCAST_TAKE_PICTURE_ACTION));
@@ -191,24 +182,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
      */
     public void startReceive() {
         receive.setMessageListener(this);
-    }
-
-    /**
-     * 语音识别结果
-     *
-     * @param input     语音识别到的输入文本
-     * @param asrOutput 三方的响应结果(如思必驰的库给出的响应信息)
-     */
-    @Override
-    public void onASRResult(String input, String asrOutput, String action, String starName, String musicName) {
-        /**
-         *
-         * 否则需要通过后台服务器进行解析
-         */
-        LogUtils.d(AISpeechEar.TAG, "思必驰解析结果完成:" + input + ":" + asrOutput + ":" + action + ":" + starName + ":" + musicName);
-        if (BuildConfig.SHOW_ASR_RESULT)
-            EventBus.getDefault().post(new ReceiveASRResultEvent(input));
-        brain.translateSound(new SoundTranslateInput(input, asrOutput, action, starName, musicName));
     }
 
     /**
@@ -337,6 +310,11 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
             //如果ASR监听过程出现错误,停止输入操作监听，并重新开启ASR模式
             inputTimeOutMonitorTask.stopMonitor();
             switchSoundMonitor(SoundMonitorType.ASR);
+        } else {
+            LogUtils.d(AISpeechEar.TAG, "思必驰解析结果完成:" + event.input + ":" + event.asrOutput + ":" + event.action + ":" + event.starName + ":" + event.musicName);
+            if (BuildConfig.SHOW_ASR_RESULT)
+                EventBus.getDefault().post(new ReceiveASRResultEvent(event.input));
+            brain.translateSound(new SoundTranslateInput(event.input, event.asrOutput, event.action, event.starName, event.musicName));
         }
     }
 
@@ -477,22 +455,6 @@ public class Doraemon implements IEar.ASRListener, IMessageReceive.MessageListen
         EventBus.getDefault().unregister(this);
         instance = null;
     }
-
-    /*class ReadSenseServiceConnection implements ServiceConnection {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            LogUtils.d(ReadSenseService.TAG, "收到中间人类对象");
-
-            mEyeManager = EyeManager.Stub.asInterface(service);
-        }
-
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            LogUtils.d(ReadSenseService.TAG, "断开服务连接");
-        }
-    }*/
 
     /**
      * 注册接受ReadSenseService的TTS的广播
