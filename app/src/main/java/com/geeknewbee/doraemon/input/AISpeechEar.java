@@ -264,6 +264,7 @@ public class AISpeechEar implements IEar {
         @Override
         public void onEndOfSpeech() {
             LogUtils.d(TAG, "检测到语音停止，开始识别...");
+            EventManager.sendBeginningOfDealWithEvent();
         }
 
         @Override
@@ -272,7 +273,6 @@ public class AISpeechEar implements IEar {
             EventBus.getDefault().post(new ASRResultEvent(true));
             LogUtils.d(TAG, results.getResultObject().toString());
 
-            EventManager.sendBeginningOfDealWithEvent();
             JSONResultParser parser = new JSONResultParser(results.getResultObject().toString());
             String outputString = parser.getResult().optString("output", (String) null);
             String sds = parser.getResult().optString("sds", "");
