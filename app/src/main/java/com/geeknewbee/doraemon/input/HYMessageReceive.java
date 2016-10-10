@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
+import com.geeknewbee.doraemon.entity.event.ASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
@@ -278,6 +279,64 @@ public class HYMessageReceive implements IMessageReceive {
                     messageListener.onReceivedMessage(commands);
                 } else if (type == 4) {// 透传动作控制
                 } else if (type == 5) {// 手机识别
+                    if ("_open".equals(pushData.getString("data"))) {
+                        LogUtils.d(TAG, "透传：_open");
+                    } else if ("_close".equals(pushData.getString("data"))) {
+                        LogUtils.d(TAG, "透传：_close");
+                    } else {
+                        String input = "";
+                        String output = "";
+                        String originJson = "";
+                        String inputAndOutput = pushData.getString("data");
+                        if (inputAndOutput != null && !"".equals(inputAndOutput)) {
+                            String inputAndOutputs[] = inputAndOutput.split("｜");
+                            input = inputAndOutputs[0]; // 1.input
+                            if (inputAndOutputs.length > 1) {
+                                output = inputAndOutputs[1]; // 2.asrOutput
+                            }
+                            originJson = pushData.optString("json"); // 3.json
+                        }
+                        LogUtils.d(TAG, "input:" + input + ",asrOutput:" + output);
+                        LogUtils.d(TAG, "json:" + originJson);
+
+                        String asrAction = "";
+                        String star_name = "";
+                        String music_name = "";
+                        JSONObject result = null;
+                        if (!TextUtils.isEmpty(originJson)) {
+                            result = new JSONObject(originJson).optJSONObject("result"); // 4.result
+                            if (result != null) {
+                                JSONObject info = result.optJSONObject("info"); // 5.info
+                                if (info != null) {
+                                    String resultType = info.optString("type"); // 6.type
+                                    if ("music".equalsIgnoreCase(resultType)) {
+                                        JSONObject semantics = result.optJSONObject("semantics"); // 7.semantics
+                                        if (semantics != null) {
+                                            JSONObject request = semantics.optJSONObject("request"); // 7.request
+                                            if (request != null) {
+                                                asrAction = request.optString("action"); // 8.action
+                                                if ("播放音乐".equalsIgnoreCase(asrAction)) {
+                                                    JSONObject param = request.optJSONObject("param"); // 9.param
+                                                    star_name = param.optString("歌手");
+                                                    music_name = param.optString("歌曲");
+                                                } else
+                                                    LogUtils.d(TAG, "手机识别：request字段中的action不等于‘播放音乐’或没有action字段！");
+                                            } else
+                                                LogUtils.d(TAG, "手机识别：semantics中没有request字段！");
+                                        } else
+                                            LogUtils.d(TAG, "手机识别：result中没有semantics字段！");
+                                    } else
+                                        LogUtils.d(TAG, "手机识别：info中type字段不是music或者没有type字段！");
+                                } else
+                                    LogUtils.d(TAG, "手机识别：result中没有info字段！");
+                            } else
+                                LogUtils.d(TAG, "手机识别：没有result字段！");
+                        } else
+                            LogUtils.d(TAG, "手机识别：整个json串为空！");
+
+                        LogUtils.d(TAG, "input:" + input + ",output:" + output + ",action:" + asrAction + ",starName:" + star_name + ",musicName:" + music_name);
+                        EventBus.getDefault().post(new ASRResultEvent(true, true, input, output, asrAction, star_name, music_name));
+                    }
                 }
             }
         } catch (Exception e) {
