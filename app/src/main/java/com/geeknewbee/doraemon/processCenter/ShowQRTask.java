@@ -50,7 +50,7 @@ public class ShowQRTask extends Thread {
             String token = DoraemonInfoManager.getInstance(context).getToken();
             if (DeviceUtil.isNetworkConnected(context) && !TextUtils.isEmpty(token)) {
                 if (TTS_TIPS_FLAG) { // 解决配网成功等待扫码时，不断循环多次播报“网络已连接”
-                    Doraemon.getInstance(context).addCommand(new SoundCommand("网络已连接", SoundCommand.InputSource.TIPS));
+                    Doraemon.getInstance(context).addCommand(new SoundCommand("网络连接成功", SoundCommand.InputSource.TIPS));
                     EventBus.getDefault().post(new NetWorkStateChangeEvent(true));
                     TTS_TIPS_FLAG = false;
                 }
