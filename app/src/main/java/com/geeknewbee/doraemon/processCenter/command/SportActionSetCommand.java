@@ -12,7 +12,8 @@ public class SportActionSetCommand extends Command {
     //是否覆盖正在tts的语音
     public boolean isOverwrite;
 
-    public InputSource inputSource = InputSource.REMOTE_CONTROL;
+
+    public InputSource inputSource = InputSource.INTERNAL;
 
     public SportActionSetCommand(List<SportAction> sportActions) {
         super(CommandType.SPORT_ACTION_SET, "");

@@ -79,6 +79,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
         brain = new Brain();
         soundInputDevice = new AISpeechSoundInputDevice();
         inputTimeOutMonitorTask = new InputTimeoutMonitorTask(context);
+        inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_NONE);
         EventBus.getDefault().register(this);
     }
 

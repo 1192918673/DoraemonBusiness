@@ -102,10 +102,10 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     private void perform(BluetoothControlFootCommand command) {
-        if (command.v == 0 && command.w == 0) {
-            stopMoveThread();
-        } else
-            startMoveThread();
+//        if (command.v == 0 && command.w == 0) {
+//            stopMoveThread();
+//        } else
+//            startMoveThread();
 
         if (isUseLeXing)
             sendLeXingFootCommand(command.v, command.w);

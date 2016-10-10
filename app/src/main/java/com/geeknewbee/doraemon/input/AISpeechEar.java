@@ -104,22 +104,19 @@ public class AISpeechEar implements IEar {
         mASREngine.setAthThreshold(0.6f);
         mASREngine.setIsRelyOnLocalConf(true);
         mASREngine.setIsPreferCloud(true);
-        mASREngine.setWaitCloudTimeout(8000);
+        mASREngine.setWaitCloudTimeout(6000);
         mASREngine.setPauseTime(500);
         mASREngine.setUseConf(true);
-        mASREngine.setNoSpeechTimeOut(0);//设置无语音超时时长，单位毫秒，默认值为5000ms ；如果达到该设置值时，自动停止录音并放弃请求内核
-        mASREngine.setMaxSpeechTimeS(10);// 设置音频最大录音时长，达到该值将取消语音引擎并抛出异常`
-        mASREngine.setDeviceId(Util.getIMEI(App.mContext));
+        mASREngine.setNoSpeechTimeOut(0);
+        mASREngine.setDeviceId(Util.getIMEI(App.instance));
         mASREngine.setCloudVadEnable(false);
         mASREngine.setAecCfg(SpeechConstants.ace_cfg);
-        mASREngine.setConfigName(SpeechConstants.uca_config); //环形麦的配置
-//        mAsrEngine.setConfigName(SampleConstants.ula_config);//线性麦的配置
-//        mASREngine.setEchoEnable(true);
-//        mASREngine.setEchoWavePath(Environment.getExternalStorageDirectory().getPath());
-        mASREngine.setUcaParamMode(2);
-        mASREngine.setEchoEnable(true);
+        mASREngine.setConfigName(SpeechConstants.uca_config);//环形麦的配置
+//        mASREngine.setConfigName(SampleConstants.ula_config);//线性麦的配置
+        mASREngine.setUcaParamMode(1);
+        mASREngine.setEchoEnable(false);
         mASREngine.setCloudVadEnable(true);
-        mASREngine.init(App.mContext, new AIASRListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
+        mASREngine.init(App.instance, new AIASRListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);
         mASREngine.setUseCloud(true);//该方法必须在init之后
         mASREngine.setCoreType("cn.sds");
         return mASREngine;
@@ -264,6 +261,7 @@ public class AISpeechEar implements IEar {
         @Override
         public void onEndOfSpeech() {
             LogUtils.d(TAG, "检测到语音停止，开始识别...");
+            EventManager.sendBeginningOfDealWithEvent();
         }
 
         @Override
@@ -271,7 +269,6 @@ public class AISpeechEar implements IEar {
             setListerStatue(false);
             LogUtils.d(TAG, results.getResultObject().toString());
 
-            EventManager.sendBeginningOfDealWithEvent();
             JSONResultParser parser = new JSONResultParser(results.getResultObject().toString());
             String outputString = parser.getResult().optString("output", (String) null);
             String sds = parser.getResult().optString("sds", "");
