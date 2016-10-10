@@ -4,7 +4,7 @@ public class SoundTranslateInput {
 
     // 输入的语音 string
     public String input;
-    // 第三方语音解析库 返回的 output
+    // 第三方语音解析库 返回的 asrOutput
     public String asrOutput;
     // 动作类型
     public String action;

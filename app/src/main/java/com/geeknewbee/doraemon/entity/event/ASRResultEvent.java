@@ -6,7 +6,18 @@ public class ASRResultEvent {
      */
     public boolean isSuccess;
 
-    public ASRResultEvent(boolean isSuccess) {
+    public String input;
+    public String asrOutput;
+    public String action;
+    public String starName;
+    public String musicName;
+
+    public ASRResultEvent(boolean isSuccess, String input, String asrOutput, String action, String starName, String musicName) {
         this.isSuccess = isSuccess;
+        this.input = input;
+        this.asrOutput = asrOutput;
+        this.action = action;
+        this.starName = starName;
+        this.musicName = musicName;
     }
 }
