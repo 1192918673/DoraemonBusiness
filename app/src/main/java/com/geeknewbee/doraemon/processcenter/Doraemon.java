@@ -314,7 +314,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
             LogUtils.d(AISpeechEar.TAG, "思必驰解析结果完成:" + event.input + ":" + event.asrOutput + ":" + event.action + ":" + event.starName + ":" + event.musicName);
             if (BuildConfig.SHOW_ASR_RESULT)
                 EventBus.getDefault().post(new ReceiveASRResultEvent(event.input));
-            brain.translateSound(new SoundTranslateInput(event.input, event.asrOutput, event.action, event.starName, event.musicName));
+            brain.translateSound(new SoundTranslateInput(event.isFromPhone, event.input, event.asrOutput, event.action, event.starName, event.musicName));
         }
     }
 
