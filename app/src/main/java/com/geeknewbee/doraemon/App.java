@@ -63,8 +63,8 @@ public class App extends BaseApplication {
         LogUtils.LOG_DEBUG = BuildConfig.NEED_DEBUG;
 //        Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(this));
         AIConstant.setUseSpi(true);
-        AIConstant.closeLog();
-        AIConstant.setEchoEnable(true);
+//        AIConstant.closeLog();
+//        AIConstant.setEchoEnable(true);
         //方便调试
         if (BuildConfig.NEED_DEBUG)
             Stetho.initialize(Stetho.newInitializerBuilder(this).

@@ -78,7 +78,7 @@
 
         <service
             android:name=".input.ReadSenseService"
-            android:process=":ReadSense" />
+            android:process="com.geeknewbee.doraeon.ReadSense" />
 
         <!--  喜马拉雅 配置-->
         <meta-data
