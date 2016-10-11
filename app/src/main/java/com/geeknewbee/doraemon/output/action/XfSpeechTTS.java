@@ -178,6 +178,7 @@ public class XfSpeechTTS implements ITTS {
             //清空TTS队列
             soundCommands.clear();
             activeCommand = null;
+            //覆盖上一个tts，需要间隔1000ms
             if (mTts != null && mTts.isSpeaking()) {
                 mTts.stopSpeaking();
                 try {
