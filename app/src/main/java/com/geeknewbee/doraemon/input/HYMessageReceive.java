@@ -341,7 +341,7 @@ public class HYMessageReceive implements IMessageReceive {
                             LogUtils.d(TAG, "手机识别：整个json串为空！");
 
                         LogUtils.d(TAG, "input:" + input + ",output:" + output + ",action:" + asrAction + ",starName:" + star_name + ",musicName:" + music_name);
-                        EventBus.getDefault().post(new ASRResultEvent(true, true, input, output, asrAction, star_name, music_name));
+                        EventBus.getDefault().post(new ASRResultEvent(true, input, output, asrAction, star_name, music_name));
                     }
                 }
             }
