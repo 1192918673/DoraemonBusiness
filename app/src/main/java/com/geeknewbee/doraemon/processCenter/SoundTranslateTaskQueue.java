@@ -97,11 +97,11 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         // 5.如果以上都不能寻找到答案的时候。当思必驰有回复用思必驰的结果，思必驰没有则直接重新开启声音监听
         if (TextUtils.isEmpty(input.asrOutput)) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand(LocalResourceManager.getInstance().getDefaultString(), SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(LocalResourceManager.getInstance().getDefaultString(), input.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         } else {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand(input.asrOutput, SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(input.asrOutput, input.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
     }
@@ -119,7 +119,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
         //现在的动作是固定的几个动作，以后改成服务器生成动作脚步，直接执行
         if (data.getAction() != null && data.getAction().size() > 0) {
-            SportActionSetCommand sportActionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(data.getAction());
+            SportActionSetCommand sportActionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(isFromPhone, data.getAction());
             if (sportActionSetCommand != null)
                 commandList.add(sportActionSetCommand);
         }
@@ -210,7 +210,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
         if (input.contains("举手") || input.contains("伸胳膊") || input.contains("抬头")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(LocalResourceManager.getInstance().getActionSetCommand(Arrays.asList("l_arm_up", "r_arm_up")));
+            commands.add(LocalResourceManager.getInstance().getActionSetCommand(soundTranslateInput.isFromPhone, Arrays.asList("l_arm_up", "r_arm_up")));
             return commands;
         }
         if (input.contains("跳") && (input.contains("舞") || input.contains("苹果"))) {

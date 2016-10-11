@@ -54,13 +54,19 @@ public class LocalResourceManager extends Thread {
     /**
      * 获取对应的动作集合命令
      *
+     * @param isFromPhone
      * @param actionNameList
      * @return
      */
-    public SportActionSetCommand getActionSetCommand(List<String> actionNameList) {
+    public SportActionSetCommand getActionSetCommand(boolean isFromPhone, List<String> actionNameList) {
         if (actionNameList == null || actionNameList.isEmpty())
             return null;
-        SportActionSetCommand command = new SportActionSetCommand();
+        SportActionSetCommand command;
+        if (isFromPhone) {
+            command = new SportActionSetCommand(SportActionSetCommand.InputSource.REMOTE_CONTROL);
+        } else {
+            command = new SportActionSetCommand();
+        }
         for (String action : actionNameList) {
             if (localActionMap.containsKey(action)) {
                 command.addSportAction(localActionMap.get(action));
