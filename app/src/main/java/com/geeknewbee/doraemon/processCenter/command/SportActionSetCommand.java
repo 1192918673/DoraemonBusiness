@@ -27,12 +27,6 @@ public class SportActionSetCommand extends Command {
         this.inputSource = source;
     }
 
-    public SportActionSetCommand(InputSource source) {
-        super(CommandType.SPORT_ACTION_SET);
-        this.inputSource = source;
-        sportActions = new ArrayList<>();
-    }
-
     public SportActionSetCommand() {
         super(CommandType.SPORT_ACTION_SET);
         sportActions = new ArrayList<>();

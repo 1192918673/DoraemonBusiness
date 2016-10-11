@@ -171,7 +171,7 @@ public class BluetoothCommand {
                     commands.add(new Command(CommandType.SLEEP));
                     break;
                 default:
-                    commands.add(LocalResourceManager.getInstance().getActionSetCommand(true, Arrays.asList(action)));
+                    commands.add(LocalResourceManager.getInstance().getActionSetCommand(Arrays.asList(action)));
                     break;
             }
         }
