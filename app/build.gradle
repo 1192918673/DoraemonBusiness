@@ -7,8 +7,8 @@ try {
 }
 
 ext {
-    TestVersion = '1.0.0.17'
-    TestVersionCode = 1000017
+    TestVersion = '1.0.0.18'
+    TestVersionCode = 1000018
     Version = '1.0.0'
     VersionCode = 10000
     DevURLDOMAIN = '"http://doraemon.babadeyan.com"'

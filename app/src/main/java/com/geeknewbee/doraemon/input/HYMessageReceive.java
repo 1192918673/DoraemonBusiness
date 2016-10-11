@@ -11,7 +11,9 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.entity.event.ASRResultEvent;
+import com.geeknewbee.doraemon.entity.event.SwitchControlTypeEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.processcenter.ControlType;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
@@ -281,8 +283,12 @@ public class HYMessageReceive implements IMessageReceive {
                 } else if (type == 5) {// 手机识别
                     if ("_open".equals(pushData.getString("data"))) {
                         LogUtils.d(TAG, "透传：_open");
+                        //推出远程控制模式可以唤醒
+                        EventBus.getDefault().post(new SwitchControlTypeEvent(ControlType.LOCAL));
                     } else if ("_close".equals(pushData.getString("data"))) {
                         LogUtils.d(TAG, "透传：_close");
+                        //进入远程控制模式不能唤醒和监听对话
+                        EventBus.getDefault().post(new SwitchControlTypeEvent(ControlType.REMOTE));
                     } else {
                         String input = "";
                         String output = "";

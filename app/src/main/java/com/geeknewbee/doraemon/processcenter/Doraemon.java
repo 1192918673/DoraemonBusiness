@@ -18,6 +18,7 @@ import com.geeknewbee.doraemon.entity.event.NetWorkStateChangeEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
+import com.geeknewbee.doraemon.entity.event.SwitchControlTypeEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
@@ -68,7 +69,8 @@ public class Doraemon implements IMessageReceive.MessageListener {
     //创建一个切换ASR\EDD锁对象
     private Lock switchMonitorLock = new ReentrantLock();
     private ReadSenseTTSReceiver TTSReceiver;
-    //    private ReadSenseServiceConnection serviceConnection;
+    //控制模式 默认本地控制
+    private ControlType controlType = ControlType.LOCAL;
 
     private Doraemon(Context context) {
         this.context = context;
@@ -402,11 +404,25 @@ public class Doraemon implements IMessageReceive.MessageListener {
         switchSoundMonitor(event.type);
     }
 
+    /**
+     * 控制模式发生变化
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSwitchControlType(SwitchControlTypeEvent event) {
+        this.controlType = event.type;
+        if (controlType == ControlType.REMOTE)
+            switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
+        else if (controlType == ControlType.LOCAL)
+            switchSoundMonitor(SoundMonitorType.EDD);
+    }
+
     private void switchSoundMonitor(SoundMonitorType type) {
         inputTimeOutMonitorTask.stopMonitor();
         switch (type) {
             case ASR:
-                if (BuildConfig.HAVE_SPEECH_DEVCE) {
+                if (BuildConfig.HAVE_SPEECH_DEVCE && controlType == ControlType.LOCAL) {
                     switchMonitorLock.lock();
                     stopWakeUp();
                     stopASR();
@@ -415,7 +431,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
                 }
                 break;
             case EDD:
-                if (BuildConfig.HAVE_SPEECH_DEVCE) {
+                if (BuildConfig.HAVE_SPEECH_DEVCE && controlType == ControlType.LOCAL) {
                     switchMonitorLock.lock();
                     stopASR();
                     stopWakeUp();
