@@ -68,7 +68,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
 
         if (TextUtils.isEmpty(input.input)) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand(LocalResourceManager.getInstance().getNoAnswerString(), input.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(LocalResourceManager.getInstance().getNoAnswerString(), SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
 
@@ -85,7 +85,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             Response<BaseResponseBody<GetAnswerResponse>> response = service.getAnswer(
                     DoraemonInfoManager.getInstance(App.mContext).getToken(), input.input).execute();
             if (response.isSuccessful() && response.body().isSuccess() && !TextUtils.isEmpty(response.body().getData().getAnswer())) {
-                return getCommands(input.isFromPhone, input.input, response.body().getData());
+                return getCommands(input.input, response.body().getData());
             }
         } catch (IOException e) {
             LogUtils.d("SoundTranslateTaskQueue", e.getMessage());
@@ -106,11 +106,11 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
     }
 
-    private List<Command> getCommands(boolean isFromPhone, String input, GetAnswerResponse data) {
+    private List<Command> getCommands(String input, GetAnswerResponse data) {
         //语音回复
         List<Command> commandList = new ArrayList<>();
         if (!TextUtils.isEmpty(data.getAnswer()))
-            commandList.add(new SoundCommand(data.getAnswer(), isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
+            commandList.add(new SoundCommand(data.getAnswer(), SoundCommand.InputSource.SOUND_TRANSLATE));
 
         //本地的GIF 图像
         String localGifResource = data.getLocal_resource();
@@ -152,12 +152,12 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
         if (input.contains("你好")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand("你好", soundTranslateInput.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand("你好", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
         if (input.contains("自我介绍")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, soundTranslateInput.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
         if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
@@ -165,7 +165,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
         if (input.contains("背") && input.contains("诗")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand(Constants.TANG_SHI, soundTranslateInput.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand(Constants.TANG_SHI, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
         if (input.contains("拍") && input.contains("照")) {
@@ -175,17 +175,17 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
         }
         if (input.contains("温度")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand("现在室内温度是" + SensorUtil.getInstance().temperture + "度", soundTranslateInput.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand("现在室内温度是" + SensorUtil.getInstance().temperture + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
         if (input.contains("湿度") || input.contains("适度") || input.contains("十度")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand("现在室内湿度是" + SensorUtil.getInstance().humidity + "度", soundTranslateInput.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand("现在室内湿度是" + SensorUtil.getInstance().humidity + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
         if (input.contains("光") && input.contains("强度")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand("现在室内光强度是" + SensorUtil.getInstance().light + "度", soundTranslateInput.isFromPhone ? SoundCommand.InputSource.TIPS : SoundCommand.InputSource.SOUND_TRANSLATE));
+            commands.add(new SoundCommand("现在室内光强度是" + SensorUtil.getInstance().light + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         }
         if (input.contains("前") && (input.contains("进") || input.contains("向") || input.contains("走"))) {
