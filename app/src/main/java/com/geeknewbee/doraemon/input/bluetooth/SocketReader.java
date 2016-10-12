@@ -11,7 +11,7 @@ public class SocketReader {
     public SocketReader() {
     }
 
-    public synchronized byte[] readData2(byte[] bytes) {
+    public synchronized byte[] readData(byte[] bytes) {
         if (bytes == null || bytes.length < 1)
             return null;
         String receiveDataStr = new String(bytes, 0, Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET.length());

@@ -144,7 +144,7 @@ public class SocketService {
                         cancel();//断开连接
                         break;
                     }
-                    byte[] result = socketReader.readData2(Arrays.copyOfRange(buffer, 0, bytes));
+                    byte[] result = socketReader.readData(Arrays.copyOfRange(buffer, 0, bytes));
                     if (result != null)
                         mHandler.obtainMessage(Constants.MESSAGE_SOCKET_CONTROL, result.length, -1, result)
                                 .sendToTarget();
