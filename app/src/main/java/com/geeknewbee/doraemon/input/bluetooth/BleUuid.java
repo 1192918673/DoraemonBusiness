@@ -32,4 +32,7 @@ public class BleUuid {
     public static final String CHAR_SET_TTS_STRING = "00002a60-0000-1000-8000-00805f9b34fb";
     public static final String CHAR_NOTIFY_TTS_STRING = "00002a61-0000-1000-8000-00805f9b34fb";
 
+    //secret key
+    public static final String SERVICE_SECRET_KEY = "0000180c-0000-1000-8000-00805f9b34fb";
+    public static final String CHAR_SET_SECRET_KEY = "00002a40-0000-1000-8000-00805f9b34fb";
 }

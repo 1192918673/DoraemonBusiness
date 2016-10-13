@@ -74,8 +74,10 @@ public class BleUtil {
         builder.setIncludeDeviceName(true);
         builder.addServiceUuid(new ParcelUuid(UUID.fromString(BleUuid.SERVICE_DEVICE_INFORMATION)));
         builder.addServiceUuid(new ParcelUuid(UUID.fromString(BleUuid.SERVICE_BUSINESS)));
+        builder.addServiceUuid(new ParcelUuid(UUID.fromString(BleUuid.SERVICE_SECRET_KEY)));
         AdvertiseData adv = builder.build();
         return adv;
     }
+
 
 }
