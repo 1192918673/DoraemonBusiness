@@ -108,6 +108,7 @@ public class AISpeechEar implements IEar {
         mASREngine.setPauseTime(500);
         mASREngine.setUseConf(true);
         mASREngine.setNoSpeechTimeOut(0);
+        mASREngine.setMaxSpeechTimeS(10);
         mASREngine.setDeviceId(Util.getIMEI(App.instance));
         mASREngine.setCloudVadEnable(false);
         mASREngine.setAecCfg(SpeechConstants.ace_cfg);
