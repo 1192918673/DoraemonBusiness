@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'im.fir.plugin.gradle'
+apply from: rootProject.getRootDir().getAbsolutePath() + "/utils.gradle"
 
 def Properties localProps = new Properties()
 try {
@@ -6,9 +8,33 @@ try {
 } catch (Exception e) {
 }
 
+fir {
+    //必填 上传 fir.im apk 字段，否则无法上传 APP 到 fir.im
+//    apiToken FirToken  在运行fir相应的task再指定
+    //可选 上传fir.im 中显示的changelog
+//    changeLog FirLog   在运行fir相应的task再指定
+}
+
+/**
+ 我们在gradle解析完整个任务之后，找到对应的Task，然后在里边添加一个doFirst Action
+ 这样能确保编译开始的时候，我们动态设置Fir的参数。
+ 注意，必须在afterEvaluate里边才能做，否则gradle没有建立完任务有向图，你是找不到
+ 什么preDebugBuild之类的任务的
+ */
+project.afterEvaluate {
+    //Fir的task已publishApk开头
+    tasks.findAll { task ->
+        task.name.startsWith("publishApk")
+    }.each {
+        it.doFirst {
+            getFirTokenAndFirLog()
+        }
+    }
+}
+
 ext {
-    TestVersion = '1.0.0.18'
-    TestVersionCode = 1000018
+    TestVersion = '1.0.0.20'
+    TestVersionCode = 1000020
     Version = '1.0.0'
     VersionCode = 10000
     DevURLDOMAIN = '"http://doraemon.babadeyan.com"'
@@ -18,6 +44,7 @@ ext {
     DevUMengAppKey = "57a9406be0f55a4be60038ba"
     OnlineUMengAppKey = "57a9405267e58e073100057e"
     BLNAME = '"Doraemon"'
+    FirToken = "b90c0ceb8e1f7c518951ed9f0c791102"
 }
 
 android {
