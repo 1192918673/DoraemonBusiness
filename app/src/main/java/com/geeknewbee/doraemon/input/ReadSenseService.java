@@ -59,7 +59,9 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     private static final int UPLOAD_FAILED = 5;
     private boolean NEED_TAKE_PICTURE = false;
     private long LAST_TAKE_PICTURE_TIME;
+    private long LAST_SPEAK_PERSON_NAME_TIME;
     private int TAKE_PICTURE_INTERVAL = 30 * 1000; // 拍照时间戳半分钟
+    private int SPEAK_PERSON_NAME_INTERVAL = 15 * 1000; // 拍到同一个人叫人名的间隔时间
     private long TTS_PICTURE_START;
     private long TTS_PICTURE_INTERVAL = 2 * 1000; // TTS时间戳2秒
     private boolean busy = false; // 是否正在检测
@@ -86,6 +88,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     };
     private ReadSenseReceiver mReadSenseReceiver;
     private PendingIntent pintent;
+    private int lastPerson;
 
     @Override
     public void onCreate() {
@@ -205,10 +208,14 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                 LogUtils.d(TAG, "检测到人脸。。。");
                 int person = faceTrack.identifyPerson(0);
                 if (person != -111) {
-                    Intent intent = new Intent(Constants.ACTION_DORAEMON_DISCOVERY_PERSON);
-                    intent.putExtra(Constants.EXTRA_PERSON_ID, person);
-                    sendBroadcast(intent);
+                    if (lastPerson != person || System.currentTimeMillis() - LAST_SPEAK_PERSON_NAME_TIME > SPEAK_PERSON_NAME_INTERVAL) {
+                        LAST_SPEAK_PERSON_NAME_TIME = System.currentTimeMillis();
+                        Intent intent = new Intent(Constants.ACTION_DORAEMON_DISCOVERY_PERSON);
+                        intent.putExtra(Constants.EXTRA_PERSON_ID, person);
+                        sendBroadcast(intent);
+                    }
                 }
+                lastPerson = person;
                 LogUtils.d(TAG, "检测到具体人。。。" + person);
                 takePicture(data, true);
             }
