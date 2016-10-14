@@ -96,7 +96,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Notification notification = new Notification(R.mipmap.ic_launcher,
+        Notification notification = new Notification(R.mipmap.launcher,
                 "readSense service is running",
                 System.currentTimeMillis());
         pintent = PendingIntent.getService(this, 0, intent, 0);
