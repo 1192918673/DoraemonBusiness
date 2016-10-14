@@ -79,7 +79,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                 if (soundCommand.inputSource == SoundCommand.InputSource.IOS_BUSINESS)
                     ittXF.addSoundCommand(soundCommand, soundCommand.isOverwrite);//商业版的需要覆盖正在执行的任务
                 else
-                    itts.talk(soundCommand.getContent(), soundCommand.inputSource);//思必驰的不能采用队列的方式目前
+                    itts.addSoundCommand(soundCommand, soundCommand.isOverwrite);//思必驰的不能采用队列的方式目前
                 break;
             case PLAY_MUSIC:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));

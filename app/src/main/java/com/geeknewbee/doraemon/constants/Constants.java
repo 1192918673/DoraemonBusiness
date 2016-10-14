@@ -9,7 +9,6 @@ public class Constants {
     public static final int RESPONSE_STATUS_SUCCESS = 200;
     public static final int HTTP_TIME_OUT = 30 * 1000;
     public static final String TAG_COMMAND = "ROBOT_COMMAND";
-    public static final String TAG_SOUND = "ROBOT_SOUND";
     public static final String TAG_MUSIC = "ROBOT_MUSIC";
     public static final String EMPTY_STRING = "";
     public static final String READSENSE_BROADCAST_TIPS_ACTION = "com.geeknewbee.doraemon.READ_SENSE_TIPS";
@@ -37,15 +36,13 @@ public class Constants {
     public static final String LISTENNING_GIF = "eyegif_fa_dai";
 
     public static final String STOP_FLAG = "停";
-    //    public static final String COMMAND_ROBOT_PREFIX = "DRC";
-//    public static final String COMMAND_ROBOT_SUFFIX = "DRC_SUFFIX";
     public static final String COMMAND_ROBOT_PREFIX = new String(new byte[]{0x02});
     public static final String COMMAND_ROBOT_SUFFIX = new String(new byte[]{0x03});
     public static final String COMMAND_ROBOT_PREFIX_FOR_SOCKET = "ROBOT_PREFIX";
     public static final String COMMAND_ROBOT_SUFFIX_FOR_SOCKET = "ROBOT_SUFFIX";
-    public static final String MOJI_WEATHER_API_TOKEN = "c4adee396b1260222696";
     //墨迹天气
     public static final String MOJI_WEATHER_API_PWD = "mojisgbb20151207";
+    public static final String MOJI_WEATHER_API_TOKEN = "c4adee396b1260222696";
     //SharedPreferences
     public static final String KEY_TOKEN = "key_token";
     public static final String KEY_HX_USERNAME = "key_hx_username";
@@ -141,6 +138,5 @@ public class Constants {
     public static final String ACTION_DORAEMON_DISCOVERY_PERSON = "Action_Doraemon_discovery_person";
     public static final String BLE_SECRET = "@DORA%1316";
     public static final int BLE_SECRET_OUT_TIME = 2000;
-    public static String READ_NEWS_TIPS = "小朋友声音读新闻";
     public static final String ACTION_DORAEMON_REINIT_FACE_TRACK = "action_doraemon_reinit_face_track";
 }
