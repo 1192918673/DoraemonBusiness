@@ -146,4 +146,5 @@
     <string name="title_activity_video_talk">VideoTalkActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="answer_no_connect_network">网络没有连接，请先连接网络!</string>
 </resources>
