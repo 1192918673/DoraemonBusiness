@@ -25,6 +25,7 @@ import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
 import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
+import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -65,6 +66,13 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     public List<Command> performTask(SoundTranslateInput input) {
         // 1.当没有解析到声音的时候不做任何输出,重新开启ASR
         LogUtils.d(AISpeechEar.TAG, "开始我们的结果分析");
+
+        //如果没有链接网络提升先连接网络
+        if (!DeviceUtil.isNetworkConnected(App.mContext)) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand(App.mContext.getString(R.string.answer_no_connect_network), SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
+        }
 
         if (TextUtils.isEmpty(input.input)) {
             List<Command> commands = new ArrayList<>();
