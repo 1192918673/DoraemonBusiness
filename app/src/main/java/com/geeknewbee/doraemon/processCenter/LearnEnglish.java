@@ -12,9 +12,8 @@ import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.entity.StudyWords;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.iflytek.ise.result.Result;
-import com.geeknewbee.doraemon.iflytek.speech.setting.TtsSettings;
-import com.geeknewbee.doraemon.iflytek.speech.util.ApkInstaller;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
+import com.geeknewbee.doraemon.output.action.XfSpeechTTS;
 import com.geeknewbee.doraemon.utils.XmlResultParser;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
@@ -26,8 +25,6 @@ import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechEvaluator;
-import com.iflytek.cloud.SpeechSynthesizer;
-import com.iflytek.cloud.SynthesizerListener;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -68,11 +65,6 @@ public class LearnEnglish {
             }
         }
     };
-    // 语记安装助手类
-    ApkInstaller mInstaller;
-    // private EditText mEvaTextEditText;
-    //  private EditText mResultEditText;
-    // private Button mIseStartButton;
     // 评测语种
     private String language;
     // 评测题型
@@ -134,68 +126,11 @@ public class LearnEnglish {
 
     };
     private SpeechEvaluator mIse;
-    // 语音合成对象
-    private SpeechSynthesizer mTts;
-    // 默认发音人
-    private String voicer = "nannan";
-    private SharedPreferences mSharedPreferences;
-    // 引擎类型，在线合成或离线合成
-    private String mEngineType = SpeechConstant.TYPE_LOCAL;
-    /**
-     * 合成回调监听。
-     */
-    private SynthesizerListener mTtsListener = new SynthesizerListener() {
-
-        @Override
-        public void onSpeakBegin() {
-            LogUtils.d(TAG, "开始播放");
-        }
-
-        @Override
-        public void onSpeakPaused() {
-            LogUtils.d(TAG, "暂停播放");
-        }
-
-        @Override
-        public void onSpeakResumed() {
-            LogUtils.d(TAG, "继续播放");
-        }
-
-        @Override
-        public void onBufferProgress(int percent, int beginPos, int endPos,
-                                     String info) {
-
-        }
-
-        @Override
-        public void onSpeakProgress(int percent, int beginPos, int endPos) {
-
-        }
-
-        @Override
-        public void onCompleted(SpeechError error) {
-            if (error == null) {
-                LogUtils.d(TAG, "播放完成");
-            } else {
-                LogUtils.d(TAG, error.getPlainDescription(true));
-            }
-            //TODO
-            starEvaluation();
-        }
-
-        @Override
-        public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
-            // 以下代码用于获取与云端的会话id，当业务出错时将会话id提供给技术支持人员，可用于查询会话日志，定位出错原因
-            // 若使用本地能力，会话id为null
-            //	if (SpeechEvent.EVENT_SESSION_ID == eventType) {
-            //		String sid = obj.getString(SpeechEvent.KEY_EVENT_SESSION_ID);
-            //		Log.d(TAG, "session id =" + sid);
-            //	}
-        }
-    };
     private ApiService apiService;
     private StudyWords studyWords;
     private int oneWordScore;
+    //讯飞tts
+    private XfSpeechTTS mTts;
 
     private void getStudyWords() {
         if (TextUtils.isEmpty(auth_token)) {
@@ -226,12 +161,12 @@ public class LearnEnglish {
                                 } else {
                                     oneWordScore = 0;
                                     LogUtils.d(TAG, "出现错误，暂无单词可学。");
-                                    mTts.startSpeaking("出现错误，暂无单词可学。", null);
+                                    mTts.talk("出现错误，暂无单词可学。", null);
                                     return;
                                 }
                             } else {
                                 LogUtils.d(TAG, "出现错误，请再试一次。错误内容：" + studyWordsBaseResponse.getMsg());
-                                mTts.startSpeaking("出现错误，请再试一次。错误内容：" + studyWordsBaseResponse.getMsg(), null);
+                                mTts.talk("出现错误，请再试一次。错误内容：" + studyWordsBaseResponse.getMsg(), null);
                                 return;
                             }
                         }
@@ -291,10 +226,14 @@ public class LearnEnglish {
         mIse = SpeechEvaluator.createEvaluator(App.mContext, null);
         setEvaText();
         // 初始化合成对象
-        mTts = SpeechSynthesizer.createSynthesizer(App.mContext, mTtsInitListener);
-        mSharedPreferences = App.mContext.getSharedPreferences(TtsSettings.PREFER_NAME, App.mContext.MODE_PRIVATE);
-        mInstaller = new ApkInstaller(App.mContext);
-        //startSynthesis("开始学习英语喽。");
+        mTts = new XfSpeechTTS();
+        //设置合成完成的监听
+        mTts.setOnTTSCompleteListener(new XfSpeechTTS.OnTTSCompleteListener() {
+            @Override
+            public void onTtsComplete() {
+                starEvaluation();
+            }
+        });
         getStudyWords();
     }
 
@@ -302,25 +241,15 @@ public class LearnEnglish {
      * 语音合成
      */
     private void startSynthesis(String text) {
-        // String text = ((EditText) findViewById(R.id.tts_text)).getText().toString();
-        // 设置参数
-        setParamSynthesis();
-        int code = mTts.startSpeaking(text, mTtsListener);
-//			/**
-//			 * 只保存音频不进行播放接口,调用此接口请注释startSpeaking接口
-//			 * text:要合成的文本，uri:需要保存的音频全路径，listener:回调接口
-//			*/
-//			String path = Environment.getExternalStorageDirectory()+"/tts.pcm";
-//			int code = mTts.synthesizeToUri(text, path, mTtsListener);
+//        /**
+//         * 只保存音频不进行播放接口,调用此接口请注释startSpeaking接口
+//         * text:要合成的文本，uri:需要保存的音频全路径，listener:回调接口
+//         */
+//        String path = Environment.getExternalStorageDirectory()+"/tts.pcm";
+//        int code = mTts.synthesizeToUri(text, path, mTtsListener);
 
-        if (code != ErrorCode.SUCCESS) {
-            if (code == ErrorCode.ERROR_COMPONENT_NOT_INSTALLED) {
-                //未安装则跳转到提示安装页面
-                mInstaller.install();
-            } else {
-                LogUtils.d(TAG, "语音合成失败,错误码: " + code);
-            }
-        }
+        mTts.talk(text, null);
+
         if (study_index >= studyWords.getWords().size()) {
             LogUtils.d(TAG, "等待退出学习英语！总分＝" + score);
             while (mTts.isSpeaking()) {
@@ -350,42 +279,6 @@ public class LearnEnglish {
             mIse.destroy();
             isLearnning = false;
         }
-    }
-
-    /**
-     * 参数设置
-     */
-    private void setParamSynthesis() {
-        // 清空参数
-        mTts.setParameter(SpeechConstant.PARAMS, null);
-        // 根据合成引擎设置相应参数
-        if (mEngineType.equals(SpeechConstant.TYPE_CLOUD)) {
-            mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
-//            // 设置在线合成发音人
-//            mTts.setParameter(SpeechConstant.VOICE_NAME, voicer);
-        } else {
-            mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
-            // 设置本地合成发音人 voicer为空，默认通过语记界面指定发音人。
-//            mTts.setParameter(SpeechConstant.VOICE_NAME, "");
-        }
-        // 设置合成发音人
-        mTts.setParameter(SpeechConstant.VOICE_NAME, voicer);
-        //设置合成语速
-        mTts.setParameter(SpeechConstant.SPEED, mSharedPreferences.getString("speed_preference", "50"));
-        //设置合成音调
-        mTts.setParameter(SpeechConstant.PITCH, mSharedPreferences.getString("pitch_preference", "50"));
-        //设置合成音量
-        mTts.setParameter(SpeechConstant.VOLUME, mSharedPreferences.getString("volume_preference", "50"));
-        //设置播放器音频流类型
-        mTts.setParameter(SpeechConstant.STREAM_TYPE, mSharedPreferences.getString("stream_preference", "3"));
-
-        // 设置播放合成音频打断音乐播放，默认为true
-        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "true");
-
-        // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
-        // 注：AUDIO_FORMAT参数语记需要更新版本才能生效
-        mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-        mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/tts.wav");
     }
 
     /**
@@ -472,7 +365,7 @@ public class LearnEnglish {
 
     public void stop() {
         if (mTts != null) {
-            mTts.stopSpeaking();
+            mTts.stop();
         }
     }
 
