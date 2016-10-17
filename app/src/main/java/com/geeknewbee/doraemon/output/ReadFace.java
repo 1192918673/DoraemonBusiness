@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.database.Person;
 import com.geeknewbee.doraemon.database.PersonDao;
@@ -212,7 +213,7 @@ public class ReadFace {
         entity.setName(name);
         entity.setPersonId(personId);
         App.instance.getDaoSession().getPersonDao().insert(entity);
-        Doraemon.getInstance(context).addCommand(new SoundCommand("成功添加了" + name + "的人脸", SoundCommand.InputSource.TIPS));
+        Doraemon.getInstance(context).addCommand(new SoundCommand(String.format(context.getString(R.string.format_add_face_success), name), SoundCommand.InputSource.TIPS));
         context.sendBroadcast(new Intent(Constants.ACTION_DORAEMON_REINIT_FACE_TRACK));
         return true;
     }
