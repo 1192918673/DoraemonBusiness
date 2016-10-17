@@ -36,6 +36,7 @@ public class LimbsManager {
     private ReentrantLock reentrantLock = new ReentrantLock();
 
     private SportActionSetCommand.InputSource inputSource;
+    private SportActionSetCommand activeCommand;
 
 
     private LimbsManager() {
@@ -62,6 +63,7 @@ public class LimbsManager {
     }
 
     public void perform(SportActionSetCommand command) {
+        activeCommand = command;
         isStopAction = false;
         isBusy = true;
 
@@ -204,7 +206,7 @@ public class LimbsManager {
 
     private void notifyComplete() {
         isBusy = false;
-        EventBus.getDefault().post(new LimbActionCompleteEvent(inputSource));
+        EventBus.getDefault().post(new LimbActionCompleteEvent(activeCommand.getId(), inputSource));
     }
 
 
