@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattServer;
 import android.bluetooth.BluetoothGattServerCallback;
 import android.bluetooth.BluetoothGattService;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,12 +25,21 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
     private BluetoothGattCharacteristic read;
     private BluetoothGattCharacteristic notifyTTS;
     private BLEDataReader bleDataReader;
-    private CountDownTimer countDownTimer;
     private boolean hadSetSecret;
+    private Runnable secret_runnable;
 
     public ImmediateAlertService(Handler mHandler) {
         this.mHandler = mHandler;
         bleDataReader = new BLEDataReader();
+        secret_runnable = new Runnable() {
+            @Override
+            public void run() {
+                //必须在规定的时间内发送正确的密钥过来否则断开连接
+                if (!hadSetSecret && bluetoothDevice != null)
+                    mGattServer.cancelConnection(bluetoothDevice);
+                LogUtils.d(TAG, " countDownTimer finish:" + hadSetSecret);
+            }
+        };
     }
 
     public void setupServices(BluetoothGattServer gattServer) {
@@ -124,22 +132,11 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             bluetoothDevice = device;
             bleDataReader.clearData();
             hadSetSecret = false;
-            if (countDownTimer != null)
-                countDownTimer.cancel();
 
-            countDownTimer = new CountDownTimer(Constants.BLE_SECRET_OUT_TIME, Constants.BLE_SECRET_OUT_TIME) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                }
+            mHandler.removeCallbacks(secret_runnable);
+            mHandler.postDelayed(secret_runnable, Constants.BLE_SECRET_OUT_TIME);
 
-                @Override
-                public void onFinish() {
-                    //必须在规定的时间内发送正确的密钥过来否则断开连接
-                    if (!hadSetSecret)
-                        mGattServer.close();
-                }
-            };
-            countDownTimer.start();
+            LogUtils.d(TAG, "start countDownTimer");
         } else {
             bluetoothDevice = null;
             bleDataReader.clearData();
@@ -173,21 +170,26 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             case BleUuid.CHAR_SET_WIFI_STRING:
             case BleUuid.CHAR_SET_CONTROL_STRING:
             case BleUuid.CHAR_SET_TTS_STRING:
-                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
-                mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                        null);
+                if (!hadSetSecret)
+                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
+                            null);
+                else {
+                    receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
+                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                            null);
+                }
                 break;
             case BleUuid.CHAR_SET_SECRET_KEY:
-                //TODO 设置密钥 必须在连接的5s内发送正确的密钥，否则主动断开
-
                 if (value == null)
                     mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
                             null);
                 else {
                     String secret = new String(value);
-                    if (secret.endsWith(Constants.BLE_SECRET))
+                    if (secret.equals(Constants.BLE_SECRET)) {
+                        hadSetSecret = true;
                         mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
                                 null);
+                    }
                 }
                 break;
         }
