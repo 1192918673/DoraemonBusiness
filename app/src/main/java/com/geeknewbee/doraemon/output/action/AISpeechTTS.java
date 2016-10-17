@@ -136,7 +136,7 @@ public class AISpeechTTS implements ITTS {
     private void notifyComplete(boolean isSuccess, String error) {
         isSpeaking = false;
         if (commandListener != null) {
-            commandListener.onComplete(activeCommand.getId(), isSuccess, error);
+            commandListener.onTTSComplete(activeCommand.getId(), isSuccess, error);
         }
         scheduleNext();
         EventBus.getDefault().post(new TTSCompleteEvent(inputSource));
