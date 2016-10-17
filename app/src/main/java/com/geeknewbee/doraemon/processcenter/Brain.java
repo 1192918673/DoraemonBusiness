@@ -5,6 +5,7 @@ import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.FaceManager;
@@ -123,6 +124,6 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     public void onTranslateComplete(List<Command> commands) {
         LogUtils.d(AISpeechEar.TAG, "onTranslateComplete");
         addCommand(commands);
-        EventManager.sendTranslateSoundComplete();
+        EventBus.getDefault().post(new TranslateSoundCompleteEvent());
     }
 }
