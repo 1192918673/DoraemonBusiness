@@ -140,8 +140,8 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     public synchronized boolean isBusy() {
-        return itts.isSpeaking()
-                || ittXF.isSpeaking()
+        return itts.isBusy()
+                || ittXF.isBusy()
                 || iMusicPlayer.isPlaying()
                 || mediaPlayerHelper.isPlaying()
                 || (videoPlayer != null && videoPlayer.isPlaying()

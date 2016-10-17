@@ -79,8 +79,8 @@ public class XfSpeechTTS implements ITTS {
     }
 
     @Override
-    public boolean isSpeaking() {
-        return mTts != null && mTts.isSpeaking();
+    public boolean isBusy() {
+        return mTts != null && mTts.isSpeaking() && soundCommands.isEmpty();
     }
 
     /**

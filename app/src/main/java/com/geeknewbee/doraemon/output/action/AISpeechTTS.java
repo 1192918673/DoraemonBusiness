@@ -68,7 +68,7 @@ public class AISpeechTTS implements ITTS {
         }
 
         if (mTTSEngine != null) {
-            if (isSpeaking())
+            if (isBusy())
                 mTTSEngine.stop();
             isSpeaking = true;
             mTTSEngine.speak(command.getContent(), "1024");
@@ -115,8 +115,8 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
-    public boolean isSpeaking() {
-        return isSpeaking;
+    public boolean isBusy() {
+        return isSpeaking && soundCommands.isEmpty();
     }
 
     private void scheduleNext() {
