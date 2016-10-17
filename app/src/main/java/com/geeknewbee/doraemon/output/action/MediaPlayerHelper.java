@@ -5,22 +5,25 @@ import android.media.MediaPlayer;
 
 import com.geeknewbee.doraemon.entity.event.DanceMusicStopEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
+import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
 
 import org.greenrobot.eventbus.EventBus;
 
 public class MediaPlayerHelper {
 
     private MediaPlayer mediaPlayer;
+    private LocalResourceCommand activeCommand;
 
-    public void start(Context context, int rawId) {
-        if (rawId <= 0) {
+    public void start(Context context, LocalResourceCommand command) {
+        activeCommand = command;
+        if (command.resourceID <= 0) {
             notifyComplete();
             return;
         }
 
         stop();
 
-        mediaPlayer = MediaPlayer.create(context, rawId);
+        mediaPlayer = MediaPlayer.create(context, command.resourceID);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -40,7 +43,7 @@ public class MediaPlayerHelper {
 
     private void notifyComplete() {
         mediaPlayer.release();
-        EventBus.getDefault().post(new MusicCompleteEvent());
+        EventBus.getDefault().post(new MusicCompleteEvent(activeCommand.getId()));
         EventBus.getDefault().post(new DanceMusicStopEvent());//通知停止动作
     }
 

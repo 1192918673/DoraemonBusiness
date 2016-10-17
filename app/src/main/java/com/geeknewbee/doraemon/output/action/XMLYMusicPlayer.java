@@ -2,8 +2,9 @@ package com.geeknewbee.doraemon.output.action;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
-import com.geeknewbee.doraemon.processcenter.EventManager;
+import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -21,6 +22,8 @@ import com.ximalaya.ting.android.opensdk.player.service.IXmPlayerStatusListener;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerConfig;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerException;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,8 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     private CommonRequest mXimalaya; // 命令请求对象
     private List<Track> tracks = new ArrayList<>();
     private List<Long> albumId = new ArrayList<>();
+    private Command activeCommand;
+
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
 
         @Override
@@ -148,9 +153,10 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     @Override
-    public synchronized boolean play(String param) {
+    public synchronized boolean play(Command command) {
+        activeCommand = command;
         Map<String, String> map = new HashMap<String, String>();
-        map.put(DTransferConstants.SEARCH_KEY, param);
+        map.put(DTransferConstants.SEARCH_KEY, command.getContent());
         map.put(DTransferConstants.CATEGORY_ID, "2");
         map.put(DTransferConstants.PAGE, "1");
         map.put(DTransferConstants.CALC_DIMENSION, "1");
@@ -189,7 +195,8 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     @Override
-    public synchronized boolean joke() {
+    public synchronized boolean joke(Command command) {
+        activeCommand = command;
         // 分类列表：娱乐
         // 1--资讯,2--音乐,3--有声书,4--娱乐,6--儿童,7--健康养生,8--商业财经,9--历史人文,10--情感生活,
         // 11--其他,12--相声评书,13--教育培训,14--百家讲坛,15--广播剧,16--戏曲,17--电台,18--IT科技,
@@ -247,7 +254,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     private void notifyComplete() {
-        EventManager.sendMusicCompleteEvent();
+        EventBus.getDefault().post(new MusicCompleteEvent(activeCommand.getId()));
     }
 
     @Override

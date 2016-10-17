@@ -84,16 +84,16 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             case PLAY_MUSIC:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 itts.addSoundCommand(new SoundCommand("正在搜索音乐", SoundCommand.InputSource.TIPS));
-                iMusicPlayer.play(input.getContent());
+                iMusicPlayer.play(input);
                 break;
             case PLAY_JOKE:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-                iMusicPlayer.joke();
+                iMusicPlayer.joke(input);
                 break;
             case PLAY_LOCAL_RESOURCE:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 LocalResourceCommand resourceCommand = (LocalResourceCommand) input;
-                mediaPlayerHelper.start(App.mContext, resourceCommand.resourceID);
+                mediaPlayerHelper.start(App.mContext, resourceCommand);
                 break;
             case PLAY_MOVIE:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
