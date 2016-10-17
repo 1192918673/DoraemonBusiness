@@ -127,8 +127,8 @@ public class AISpeechTTS implements ITTS {
 
     private void notifyComplete(boolean isSuccess, String error) {
         isSpeaking = false;
-        scheduleNext();
         EventBus.getDefault().post(new TTSCompleteEvent(inputSource, activeCommand.getId(), isSuccess, error));
+        scheduleNext();
     }
 
     private class AILocalTTSListenerImpl implements AITTSListener {

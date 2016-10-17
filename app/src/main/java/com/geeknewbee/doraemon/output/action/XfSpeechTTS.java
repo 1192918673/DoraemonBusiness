@@ -161,8 +161,8 @@ public class XfSpeechTTS implements ITTS {
     }
 
     private void notifyComplete(boolean isSuccess, String error) {
-        scheduleNext();
         EventBus.getDefault().post(new TTSCompleteEvent(inputSource, activeCommand.getId(), isSuccess, error));
+        scheduleNext();
     }
 
     @Override
