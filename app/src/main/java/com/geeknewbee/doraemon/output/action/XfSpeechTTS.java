@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
-import com.geeknewbee.doraemon.iflytek.speech.setting.TtsSettings;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.iflytek.cloud.ErrorCode;
@@ -27,6 +26,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class XfSpeechTTS implements ITTS {
 
+    public static final String TtsSettings_PREFER_NAME = "com.iflytek.setting";
     private static final String TAG = "XfSpeechTTS";
     private final SharedPreferences mSharedPreferences;
     // 语音合成对象
@@ -62,10 +62,16 @@ public class XfSpeechTTS implements ITTS {
         }
     };
 
+    private OnTTSCompleteListener onTTSCompleteListener;
+
+    public void setOnTTSCompleteListener(OnTTSCompleteListener onTTSCompleteListener) {
+        this.onTTSCompleteListener = onTTSCompleteListener;
+    }
+
     public XfSpeechTTS() {
         // 初始化合成对象
         mTts = SpeechSynthesizer.createSynthesizer(App.mContext, mTtsInitListener);
-        mSharedPreferences = App.mContext.getSharedPreferences(TtsSettings.PREFER_NAME, App.mContext.MODE_PRIVATE);
+        mSharedPreferences = App.mContext.getSharedPreferences(TtsSettings_PREFER_NAME, App.mContext.MODE_PRIVATE);
         setParamSynthesis();
         soundCommands = new ArrayBlockingQueue<SoundCommand>(5);
     }
@@ -120,6 +126,9 @@ public class XfSpeechTTS implements ITTS {
             } else {
                 LogUtils.d(TAG, error.getPlainDescription(true));
             }
+            if (onTTSCompleteListener != null) {
+                onTTSCompleteListener.onTtsComplete();
+            }
         }
 
         @Override
@@ -140,21 +149,24 @@ public class XfSpeechTTS implements ITTS {
             notifyComplete();
             return true;
         }
-
+        int code = -1;
         //  如果还没初始化完成，先睡眠再说话
         if (!isInit) {
             try {
                 Thread.sleep(1000);
                 if (mTts != null) {
                     LogUtils.d(TAG, "第一次开始说话。。。" + text);
-                    mTts.startSpeaking(text, mTtsListener);
+                    code = mTts.startSpeaking(text, mTtsListener);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } else {
             LogUtils.d(TAG, "开始说话。。。" + text);
-            mTts.startSpeaking(text, mTtsListener);
+            code = mTts.startSpeaking(text, mTtsListener);
+        }
+        if (code != ErrorCode.SUCCESS) {
+            LogUtils.d(TAG, "语音合成失败,错误码: " + code);
         }
         return true;
     }
@@ -243,5 +255,9 @@ public class XfSpeechTTS implements ITTS {
         // 注：AUDIO_FORMAT参数语记需要更新版本才能生效
 //        mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
 //        mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/tts.wav");
+    }
+
+    public interface OnTTSCompleteListener {
+        void onTtsComplete();
     }
 }
