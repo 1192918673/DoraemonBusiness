@@ -9,7 +9,6 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.iflytek.speech.setting.TtsSettings;
-import com.geeknewbee.doraemon.processcenter.command.ICommandCompleteListener;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.iflytek.cloud.ErrorCode;
@@ -63,7 +62,6 @@ public class XfSpeechTTS implements ITTS {
             }
         }
     };
-    private ICommandCompleteListener commandListener;
 
     public XfSpeechTTS() {
         // 初始化合成对象
@@ -163,11 +161,8 @@ public class XfSpeechTTS implements ITTS {
     }
 
     private void notifyComplete(boolean isSuccess, String error) {
-        if (commandListener != null) {
-            commandListener.onTTSComplete(activeCommand.getId(), isSuccess, error);
-        }
         scheduleNext();
-        EventBus.getDefault().post(new TTSCompleteEvent(inputSource));
+        EventBus.getDefault().post(new TTSCompleteEvent(inputSource, activeCommand.getId(), isSuccess, error));
     }
 
     @Override
@@ -198,11 +193,6 @@ public class XfSpeechTTS implements ITTS {
         soundCommands.offer(command);
         if (activeCommand == null)
             scheduleNext();
-    }
-
-    @Override
-    public void setCommandListener(ICommandCompleteListener listener) {
-        this.commandListener = listener;
     }
 
     private void scheduleNext() {

@@ -11,7 +11,6 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
-import com.geeknewbee.doraemon.processcenter.command.ICommandCompleteListener;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -34,7 +33,6 @@ public class AISpeechTTS implements ITTS {
 
     private BlockingQueue<SoundCommand> soundCommands;
     private SoundCommand activeCommand;
-    private ICommandCompleteListener commandListener;
 
     public AISpeechTTS() {
         init();
@@ -102,12 +100,6 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
-    public void setCommandListener(ICommandCompleteListener listener) {
-        this.commandListener = listener;
-    }
-
-
-    @Override
     public void destroy() {
         if (mTTSEngine != null) {
             mTTSEngine.destroy();
@@ -135,11 +127,8 @@ public class AISpeechTTS implements ITTS {
 
     private void notifyComplete(boolean isSuccess, String error) {
         isSpeaking = false;
-        if (commandListener != null) {
-            commandListener.onTTSComplete(activeCommand.getId(), isSuccess, error);
-        }
         scheduleNext();
-        EventBus.getDefault().post(new TTSCompleteEvent(inputSource));
+        EventBus.getDefault().post(new TTSCompleteEvent(inputSource, activeCommand.getId(), isSuccess, error));
     }
 
     private class AILocalTTSListenerImpl implements AITTSListener {
