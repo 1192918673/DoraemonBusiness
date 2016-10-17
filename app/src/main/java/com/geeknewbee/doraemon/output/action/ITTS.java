@@ -1,5 +1,6 @@
 package com.geeknewbee.doraemon.output.action;
 
+import com.geeknewbee.doraemon.processcenter.command.ICommandCompleteListener;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 
 /**
@@ -9,13 +10,16 @@ import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 public interface ITTS {
 
     boolean reInit();
+
     boolean isSpeaking();
 
-    boolean talk(String param, SoundCommand.InputSource inputSource);
+    boolean talk(SoundCommand command);
 
     boolean stop();
 
-    void addSoundCommand(SoundCommand command, boolean isOverwrite);
+    void addSoundCommand(SoundCommand command);
+
+    void setCommandListener(ICommandCompleteListener listener);
 
     void destroy();
 }

@@ -6,8 +6,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.iflytek.speech.setting.TtsSettings;
+import com.geeknewbee.doraemon.processcenter.command.ICommandCompleteListener;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.iflytek.cloud.ErrorCode;
@@ -61,6 +63,7 @@ public class XfSpeechTTS implements ITTS {
             }
         }
     };
+    private ICommandCompleteListener commandListener;
 
     public XfSpeechTTS() {
         // 初始化合成对象
@@ -114,11 +117,11 @@ public class XfSpeechTTS implements ITTS {
 
         @Override
         public void onCompleted(SpeechError error) {
-            notifyComplete();
+            notifyComplete(error == null, error == null ? Constants.EMPTY_STRING : error.getErrorDescription());
             if (error == null) {
                 LogUtils.d(TAG, "播放完成");
             } else {
-                LogUtils.d(TAG, error.getPlainDescription(true));
+                LogUtils.d(TAG, error.getErrorDescription());
             }
         }
 
@@ -134,10 +137,10 @@ public class XfSpeechTTS implements ITTS {
     };
 
     @Override
-    public boolean talk(String text, SoundCommand.InputSource inputSource) {
-        this.inputSource = inputSource;
-        if (TextUtils.isEmpty(text)) {
-            notifyComplete();
+    public boolean talk(SoundCommand command) {
+        this.inputSource = command.inputSource;
+        if (TextUtils.isEmpty(command.getContent())) {
+            notifyComplete(true, Constants.EMPTY_STRING);
             return true;
         }
 
@@ -146,20 +149,23 @@ public class XfSpeechTTS implements ITTS {
             try {
                 Thread.sleep(1000);
                 if (mTts != null) {
-                    LogUtils.d(TAG, "第一次开始说话。。。" + text);
-                    mTts.startSpeaking(text, mTtsListener);
+                    LogUtils.d(TAG, "第一次开始说话。。。" + command.getContent());
+                    mTts.startSpeaking(command.getContent(), mTtsListener);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } else {
-            LogUtils.d(TAG, "开始说话。。。" + text);
-            mTts.startSpeaking(text, mTtsListener);
+            LogUtils.d(TAG, "开始说话。。。" + command.getContent());
+            mTts.startSpeaking(command.getContent(), mTtsListener);
         }
         return true;
     }
 
-    private void notifyComplete() {
+    private void notifyComplete(boolean isSuccess, String error) {
+        if (commandListener != null) {
+            commandListener.onComplete(activeCommand.getId(), isSuccess, error);
+        }
         scheduleNext();
         EventBus.getDefault().post(new TTSCompleteEvent(inputSource));
     }
@@ -173,8 +179,8 @@ public class XfSpeechTTS implements ITTS {
     }
 
     @Override
-    public void addSoundCommand(SoundCommand command, boolean isOverwrite) {
-        if (isOverwrite) {
+    public void addSoundCommand(SoundCommand command) {
+        if (command.isOverwrite) {
             //清空TTS队列
             soundCommands.clear();
             activeCommand = null;
@@ -194,9 +200,14 @@ public class XfSpeechTTS implements ITTS {
             scheduleNext();
     }
 
+    @Override
+    public void setCommandListener(ICommandCompleteListener listener) {
+        this.commandListener = listener;
+    }
+
     private void scheduleNext() {
         if ((activeCommand = soundCommands.poll()) != null) {
-            talk(activeCommand.getContent(), activeCommand.inputSource);
+            talk(activeCommand);
         }
     }
 
