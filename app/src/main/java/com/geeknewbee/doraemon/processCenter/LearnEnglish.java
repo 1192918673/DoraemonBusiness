@@ -14,6 +14,7 @@ import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.iflytek.ise.result.Result;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.action.XfSpeechTTS;
+import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.XmlResultParser;
 import com.geeknewbee.doraemon.webservice.ApiService;
 import com.geeknewbee.doraemon.webservice.BaseResponseBody;
@@ -161,13 +162,12 @@ public class LearnEnglish {
                                 } else {
                                     oneWordScore = 0;
                                     LogUtils.d(TAG, "出现错误，暂无单词可学。");
-                                    mTts.talk("出现错误，暂无单词可学。", null);
+                                    mTts.talk(new SoundCommand("出现错误，暂无单词可学。", SoundCommand.InputSource.TIPS));
                                     return;
                                 }
                             } else {
                                 LogUtils.d(TAG, "出现错误，请再试一次。错误内容：" + studyWordsBaseResponse.getMsg());
-                                mTts.talk("出现错误，请再试一次。错误内容：" + studyWordsBaseResponse.getMsg(), null);
-                                return;
+                                mTts.talk(new SoundCommand("出现错误，请再试一次。错误内容：" + studyWordsBaseResponse.getMsg(), SoundCommand.InputSource.TIPS));
                             }
                         }
                     });
@@ -248,11 +248,11 @@ public class LearnEnglish {
 //        String path = Environment.getExternalStorageDirectory()+"/tts.pcm";
 //        int code = mTts.synthesizeToUri(text, path, mTtsListener);
 
-        mTts.talk(text, null);
+        mTts.talk(new SoundCommand(text, SoundCommand.InputSource.TIPS));
 
         if (study_index >= studyWords.getWords().size()) {
             LogUtils.d(TAG, "等待退出学习英语！总分＝" + score);
-            while (mTts.isSpeaking()) {
+            while (mTts.isBusy()) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
