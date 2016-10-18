@@ -167,6 +167,8 @@ public class XfSpeechTTS implements ITTS {
 
     @Override
     public boolean stop() {
+        activeCommand = null;
+        soundCommands.clear();
         if (mTts != null) {
             mTts.stopSpeaking();
         }

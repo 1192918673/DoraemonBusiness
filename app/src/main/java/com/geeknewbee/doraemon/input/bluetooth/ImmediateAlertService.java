@@ -124,22 +124,22 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             bluetoothDevice = device;
             bleDataReader.clearData();
             hadSetSecret = false;
-            if (countDownTimer != null)
-                countDownTimer.cancel();
-
-            countDownTimer = new CountDownTimer(Constants.BLE_SECRET_OUT_TIME, Constants.BLE_SECRET_OUT_TIME) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                }
-
-                @Override
-                public void onFinish() {
-                    //必须在规定的时间内发送正确的密钥过来否则断开连接
-                    if (!hadSetSecret)
-                        mGattServer.close();
-                }
-            };
-            countDownTimer.start();
+//            if (countDownTimer != null)
+//                countDownTimer.cancel();
+//
+//            countDownTimer = new CountDownTimer(Constants.BLE_SECRET_OUT_TIME, Constants.BLE_SECRET_OUT_TIME) {
+//                @Override
+//                public void onTick(long millisUntilFinished) {
+//                }
+//
+//                @Override
+//                public void onFinish() {
+//                    //必须在规定的时间内发送正确的密钥过来否则断开连接
+//                    if (!hadSetSecret)
+//                        mGattServer.close();
+//                }
+//            };
+//            countDownTimer.start();
         } else {
             bluetoothDevice = null;
             bleDataReader.clearData();

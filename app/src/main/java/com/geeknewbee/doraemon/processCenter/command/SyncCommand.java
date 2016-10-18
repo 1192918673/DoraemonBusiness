@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SyncCommand {
-    private List<Command> commandList;
+    public List<Command> commandList;
     private List<Long> unFinishIDS;
 
     public SyncCommand(List<Command> commandList) {

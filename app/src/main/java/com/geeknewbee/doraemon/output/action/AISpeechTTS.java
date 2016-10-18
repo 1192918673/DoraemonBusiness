@@ -11,6 +11,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
+import com.geeknewbee.doraemon.processcenter.SyncQueue;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -61,6 +62,7 @@ public class AISpeechTTS implements ITTS {
 
     @Override
     public boolean talk(SoundCommand command) {
+        LogUtils.d(SyncQueue.TAG, "begin talk");
         this.inputSource = command.inputSource;
         if (TextUtils.isEmpty(command.getContent())) {
             notifyComplete(true, Constants.EMPTY_STRING);
@@ -78,6 +80,8 @@ public class AISpeechTTS implements ITTS {
 
     @Override
     public boolean stop() {
+        soundCommands.clear();
+        activeCommand = null;
         if (mTTSEngine != null) {
             mTTSEngine.stop();
             isSpeaking = false;
