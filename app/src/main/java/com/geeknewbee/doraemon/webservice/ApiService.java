@@ -5,6 +5,7 @@ import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.GetMembersCountResponse;
 import com.geeknewbee.doraemon.entity.ResponseAppVersion;
 import com.geeknewbee.doraemon.entity.StudyWords;
+import com.geeknewbee.doraemon.entity.WeatherResponse;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -72,4 +73,13 @@ public interface ApiService {
     @Multipart
     @POST("robot/photo")
     Call<BaseResponseBody<Object>> uploadPhoto(@Part("token") RequestBody token, @Part("photo_type") RequestBody photo_type, @Part("photo\"; filename=\"picture.jpg") RequestBody photo);
+
+    /**
+     * 获取天气
+     *
+     * @param key Token
+     * @return 返回 Call<WeatherResponse>
+     */
+    @GET("weather/weatherInfo")
+    Call<WeatherResponse> get_weather(@Query("key") String key, @Query("city") String city);
 }
