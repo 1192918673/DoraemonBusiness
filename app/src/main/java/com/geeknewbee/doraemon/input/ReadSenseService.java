@@ -54,16 +54,15 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
     public static final String PHOTOTYPE_HANDLE = "2";
     public static final int iw = 640;
     public static final int ih = 480;
-    private static final int UPLOAD_PICTURE = 3;
-    private static final int UPLOAD_SUCCESS = 4;
-    private static final int UPLOAD_FAILED = 5;
+    private static final int UPLOAD_PICTURE = 0;
+    private static final int UPLOAD_SUCCESS = 1;
+    private static final int UPLOAD_FAILED = 2;
+    private static int COUNTS_OF_UPLOAD = 0;
     private boolean NEED_TAKE_PICTURE = false;
     private long LAST_TAKE_PICTURE_TIME;
     private long LAST_SPEAK_PERSON_NAME_TIME;
     private int TAKE_PICTURE_INTERVAL = 30 * 1000; // 拍照时间戳半分钟
     private int SPEAK_PERSON_NAME_INTERVAL = 15 * 1000; // 拍到同一个人叫人名的间隔时间
-    private long TTS_PICTURE_START;
-    private long TTS_PICTURE_INTERVAL = 2 * 1000; // TTS时间戳2秒
     private boolean busy = false; // 是否正在检测
     private TextureView previewTexture;
     private Camera mCamera;
@@ -79,9 +78,16 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                     break;
                 case UPLOAD_SUCCESS:
                     LogUtils.d(TAG, "上传成功");
+                    COUNTS_OF_UPLOAD = 0;
                     break;
                 case UPLOAD_FAILED:
                     LogUtils.d(TAG, "上传失败");
+                    if (COUNTS_OF_UPLOAD++ < 3) {
+                        Message failedMsg = mHandler.obtainMessage();
+                        failedMsg.what = UPLOAD_PICTURE;
+                        failedMsg.arg1 = 1;
+                        mHandler.sendMessageDelayed(failedMsg, 2000);
+                    }
                     break;
             }
         }
@@ -252,21 +258,17 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         if (isAutoTakePicture) {
             // 1.如果是自动拍照，再判断距上次拍照是不是够半分钟
             if (System.currentTimeMillis() - LAST_TAKE_PICTURE_TIME > TAKE_PICTURE_INTERVAL) {
-                LogUtils.d(TAG, "Auto take picture, 0.5-minute intervals time out, take picture now...");
+                LogUtils.d(TAG, "偷拍了你一张照片。。。");
 
                 LAST_TAKE_PICTURE_TIME = System.currentTimeMillis();
-                LogUtils.d(TAG, "偷拍了你一张照片。。。");
-                TTS_PICTURE_START = System.currentTimeMillis();
                 startTake(data, isAutoTakePicture);
             } else
                 LogUtils.d(TAG, "拍照间隔未到。。。");
         } else {
             // 2.如果是命令拍照，直接调用拍照
-            LogUtils.d(TAG, "Command take picture, take picture now...");
-
-            TTS_PICTURE_START = System.currentTimeMillis();
             LogUtils.d(TAG, "主动拍了一张照片。。。");
             speak("照片拍好了");
+
             LAST_TAKE_PICTURE_TIME = System.currentTimeMillis();
             startTake(data, isAutoTakePicture);
         }
