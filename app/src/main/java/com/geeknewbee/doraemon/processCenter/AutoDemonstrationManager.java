@@ -4,12 +4,12 @@ import android.content.Context;
 
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.WeatherResponse;
 import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
-import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
+import com.geeknewbee.doraemon.weather.WeatherManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,23 +51,55 @@ public class AutoDemonstrationManager {
     private void addAutoCommand() {
         List<Command> commands = new ArrayList<>();
 
-        SoundCommand soundCommand = new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.TIPS);
-        SportActionSetCommand actionSetCommand = LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_THANK_YOU);
-        ExpressionCommand expressionCommand = new ExpressionCommand("wei_xiao", 2);
-        commands.add(soundCommand);
-        commands.add(actionSetCommand);
-        commands.add(expressionCommand);
+        commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_ARM_UP_DOWN_MOVE));
+        commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.TIPS));
         SyncCommand syncCommand = new SyncCommand(commands);
         SyncQueue.getInstance().addCommand(syncCommand);
 
-        commands.clear();
-        commands.add(new SoundCommand("今天的天气很好", SoundCommand.InputSource.TIPS));
+        commands = new ArrayList<>();
+        commands.add(new SoundCommand(Constants.SELF_POEM, SoundCommand.InputSource.TIPS));
         syncCommand = new SyncCommand(commands);
         SyncQueue.getInstance().addCommand(syncCommand);
 
-        commands.clear();
-        commands.add(new LocalResourceCommand(R.raw.little_apple));
-        commands.add(LocalResourceManager.getInstance().getDanceCommand(LocalResourceManager.XIAO_PING_GUO));
+        WeatherResponse.Weather weather = WeatherManager.getInstance().getWeatherReport();
+        if (weather != null) {
+            commands = new ArrayList<>();
+            commands.add(new SoundCommand(String.format(context.getString(R.string.tips_weather),
+                    weather.getCity(), weather.getWeather(), weather.getWindpower(), weather.getWinddirection(),
+                    weather.getTemperature(), weather.getHumidity()), SoundCommand.InputSource.TIPS));
+            syncCommand = new SyncCommand(commands);
+            SyncQueue.getInstance().addCommand(syncCommand);
+        }
+
+        commands = new ArrayList<>();
+        commands.add(new SoundCommand("下面我给大家跳支舞", SoundCommand.InputSource.TIPS));
+        syncCommand = new SyncCommand(commands);
+        SyncQueue.getInstance().addCommand(syncCommand);
+
+        commands = new ArrayList<>();
+        commands.add(new LocalResourceCommand(R.raw.xiao_ping_guo_short));
+        commands.add(LocalResourceManager.getInstance().getDanceCommand(LocalResourceManager.ACTION_ARM_UP_DOWN_MOVE));
+        syncCommand = new SyncCommand(commands);
+        SyncQueue.getInstance().addCommand(syncCommand);
+
+        commands = new ArrayList<>();
+        commands.add(new SoundCommand(Constants.SELF_INTRODUCTION_2, SoundCommand.InputSource.TIPS));
+        syncCommand = new SyncCommand(commands);
+        SyncQueue.getInstance().addCommand(syncCommand);
+
+        commands = new ArrayList<>();
+        commands.add(new SoundCommand(Constants.SELF_INTRODUCTION_3, SoundCommand.InputSource.TIPS));
+        syncCommand = new SyncCommand(commands);
+        SyncQueue.getInstance().addCommand(syncCommand);
+
+        commands = new ArrayList<>();
+        commands.add(new SoundCommand(Constants.SELF_INTRODUCTION_4, SoundCommand.InputSource.TIPS));
+        syncCommand = new SyncCommand(commands);
+        SyncQueue.getInstance().addCommand(syncCommand);
+
+        commands = new ArrayList<>();
+        commands.add(new SoundCommand(Constants.END, SoundCommand.InputSource.TIPS));
+        commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_THANK_YOU));
         syncCommand = new SyncCommand(commands);
         SyncQueue.getInstance().addCommand(syncCommand);
     }

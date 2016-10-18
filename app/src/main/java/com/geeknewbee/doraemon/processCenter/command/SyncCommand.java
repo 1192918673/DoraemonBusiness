@@ -6,6 +6,9 @@ import java.util.List;
 public class SyncCommand {
     public List<Command> commandList;
     private List<Long> unFinishIDS;
+    //延迟时间
+    public int delayTime = 2000;
+
 
     public SyncCommand(List<Command> commandList) {
         this.commandList = commandList;

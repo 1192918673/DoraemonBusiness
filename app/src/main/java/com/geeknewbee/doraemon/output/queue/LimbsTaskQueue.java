@@ -48,11 +48,11 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         switch (command.getType()) {
             case SPORT_ACTION_SET:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-                LimbsManager.getInstance().perform((SportActionSetCommand) command);
+                LimbsManager.getInstance().addTask(command);
                 break;
             case BLUETOOTH_CONTROL_FOOT:
                 BluetoothControlFootCommand footCommand = (BluetoothControlFootCommand) command;
-                LimbsManager.getInstance().perform(footCommand);
+                LimbsManager.getInstance().addTask(footCommand);
                 break;
         }
 

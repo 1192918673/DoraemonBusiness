@@ -16,7 +16,6 @@ import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
-import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -57,16 +56,26 @@ public class SyncQueue extends AbstractTaskQueue<SyncCommand, Boolean> {
         return instance;
     }
 
-    public void addCommand(SyncCommand command) {
+    public synchronized void addCommand(SyncCommand command) {
         LogUtils.d(TAG, "add command");
         soundCommands.offer(command);
         if (activeCommand == null)
             scheduleNext();
+        else
+            LogUtils.d(TAG, "activeCommand is not null");
     }
 
     @Override
     public Boolean performTask(SyncCommand syncCommand) {
-        for (Command command : syncCommand.getCommandList()) {
+        LogUtils.d(TAG, "performTask");
+
+        try {
+            if (syncCommand.delayTime > 0)
+                Thread.sleep(syncCommand.delayTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        for (Command command : syncCommand.commandList) {
             switch (command.getType()) {
                 case PLAY_SOUND:
                     itts.addSoundCommand((SoundCommand) command);
@@ -76,7 +85,7 @@ public class SyncQueue extends AbstractTaskQueue<SyncCommand, Boolean> {
                     mediaPlayerHelper.start(App.mContext, resourceCommand);
                     break;
                 case SPORT_ACTION_SET:
-                    LimbsManager.getInstance().perform((SportActionSetCommand) command);
+                    LimbsManager.getInstance().addTask(command);
                     break;
                 case SHOW_EXPRESSION:
                     ExpressionCommand expressionCommand = (ExpressionCommand) command;
@@ -143,7 +152,7 @@ public class SyncQueue extends AbstractTaskQueue<SyncCommand, Boolean> {
      *
      * @param commandID
      */
-    private void markAndTryDoNextCommand(long commandID) {
+    private synchronized void markAndTryDoNextCommand(long commandID) {
         if (activeCommand != null) {
             LogUtils.d(TAG, "complete command id:" + commandID);
             activeCommand.executeComplete(commandID);
@@ -151,11 +160,17 @@ public class SyncQueue extends AbstractTaskQueue<SyncCommand, Boolean> {
                 scheduleNext();
             else
                 LogUtils.d(TAG, "activeCommand not complete");
-        }
+        } else
+            LogUtils.d(TAG, "activeCommand is null");
     }
 
     public void stop() {
+        activeCommand = null;
+        soundCommands.clear();
+        LogUtils.d(TAG, "stop");
         LimbsManager.getInstance().stop();
+        mediaPlayerHelper.stop();
+        itts.stop();
         clearTasks();
     }
 }
