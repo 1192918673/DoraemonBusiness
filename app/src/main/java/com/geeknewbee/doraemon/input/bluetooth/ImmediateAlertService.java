@@ -133,8 +133,8 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             bleDataReader.clearData();
             hadSetSecret = false;
 
-            mHandler.removeCallbacks(secret_runnable);
-            mHandler.postDelayed(secret_runnable, Constants.BLE_SECRET_OUT_TIME);
+//            mHandler.removeCallbacks(secret_runnable);
+//            mHandler.postDelayed(secret_runnable, Constants.BLE_SECRET_OUT_TIME);
 
             LogUtils.d(TAG, "start countDownTimer");
         } else {
@@ -170,14 +170,14 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             case BleUuid.CHAR_SET_WIFI_STRING:
             case BleUuid.CHAR_SET_CONTROL_STRING:
             case BleUuid.CHAR_SET_TTS_STRING:
-                if (!hadSetSecret)
-                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
-                            null);
-                else {
+//                if (!hadSetSecret)
+//                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
+//                            null);
+//                else {
                     receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
                     mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                             null);
-                }
+//                }
                 break;
             case BleUuid.CHAR_SET_SECRET_KEY:
                 if (value == null)
