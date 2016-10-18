@@ -124,9 +124,16 @@ public class Constants {
     public static final List<Map<String, String>> musics = Arrays.asList(map1, map2, map3, map4, map5, map6, map7, map8, map9, map10);
 
     // 本地语义对应的回答
-    public static final String SELF_INTRODUCTION = "我叫哆啦a梦，来自22世纪。如果你们以为我只有颜值那可就错啦，" +
-            "我可不是那种肤浅的猫，我上知天文，下知地理，数学计算，语文国学这些都难不倒我。我还喜欢摄影，" +
-            "别看我身材不好，我可是只能歌善舞的猫哦。";
+    public static final String SELF_INTRODUCTION = "大家好，我叫哆啦A梦，来自22世纪。如果你们以为我只有颜值那可就错啦" +
+            "，我可不是那种肤浅的猫，我上知天文，下知地理，数学计算，语文国学这些都难不倒我。";
+
+    public static final String SELF_POEM = "先给大家背首诗吧： 白日依山尽，黄河入海流。欲穷千里目，更上一层楼。";
+    public static final String SELF_INTRODUCTION_2 = "怎么样，我跳的很专业吧。其实我能做的事情可多了，我可以用我专业级的英语发音，" +
+            "辅助老师教小朋友们学习英语，完成专业教育机构的课程。";
+    public static final String SELF_INTRODUCTION_3 = "对了，明年我还要去台湾的老人院帮忙照看老人，给老人家读报，带他们做早操，" +
+            "提醒他们吃药，帮助他们与家人互动。听说还有很多品牌邀请我去商场超市做推广呢。";
+    public static final String SELF_INTRODUCTION_4 = "介绍了这么久，我累了哦，要休息了。";
+
 
     public static final String HELLO = "大家好";
     public static final String END = "谢谢大家，期待越来越多的朋友帮我变得更聪明";
@@ -139,4 +146,6 @@ public class Constants {
     public static final String BLE_SECRET = "@DORA%1316";
     public static final int BLE_SECRET_OUT_TIME = 2000;
     public static final String ACTION_DORAEMON_REINIT_FACE_TRACK = "action_doraemon_reinit_face_track";
+    public static final String GAO_DE_WEATHER_URL = "http://restapi.amap.com/v3/";
+    public static final String GAO_DE_WEATHER_KEY = "a869015dcb20f2fda25f0500782af06b";
 }

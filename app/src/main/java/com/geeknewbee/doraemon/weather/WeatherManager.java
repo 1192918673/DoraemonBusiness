@@ -9,14 +9,13 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.Location;
 import com.geeknewbee.doraemon.entity.WeatherResponse;
 import com.geeknewbee.doraemon.webservice.ApiService;
+import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * 根据当前位置查询天气
@@ -60,17 +59,13 @@ public class WeatherManager {
     }
 
     private void queryWeather() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(Constants.GAO_DE_WEATHER_URL)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
+        Retrofit retrofit = RetrofitUtils.getRetrofit(Constants.GAO_DE_WEATHER_URL);
 
         ApiService service = retrofit.create(ApiService.class);
         service.get_weather(Constants.GAO_DE_WEATHER_KEY, currentLocation.getCity()).enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
-                if (response != null && response.isSuccessful() && response.body().getStatus().equals("0")) {
+                if (response != null && response.isSuccessful() && response.body().getStatus().equals("1")) {
                     WeatherResponse weatherResponse = response.body();
                     if (weatherResponse.getLives().size() == 0)
                         currentWeather = weatherResponse.getLives().get(0);
