@@ -174,9 +174,9 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
 //                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
 //                            null);
 //                else {
-                    receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
-                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                            null);
+                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
+                mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                        null);
 //                }
                 break;
             case BleUuid.CHAR_SET_SECRET_KEY:

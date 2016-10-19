@@ -359,11 +359,16 @@ public class HYMessageReceive implements IMessageReceive {
      * 环信视频通话逻辑 初始化操作
      */
     private void EMInit() {
-        String broadcastAction = EMClient.getInstance().callManager().getIncomingCallBroadcastAction();
-        IntentFilter callFilter = new IntentFilter(broadcastAction);
-        callFilter.setPriority(1000);
-        mContext.registerReceiver(emIncomingCallReceiver, callFilter);
-        LogUtils.d(TAG, "环信广播接受者注册。。。：" + broadcastAction);
+        try {
+            String broadcastAction = EMClient.getInstance().callManager().getIncomingCallBroadcastAction();
+            IntentFilter callFilter = new IntentFilter(broadcastAction);
+            callFilter.setPriority(1000);
+            mContext.registerReceiver(emIncomingCallReceiver, callFilter);
+            LogUtils.d(TAG, "环信广播接受者注册。。。：" + broadcastAction);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtils.d(TAG, "环信广播接受者失败。。：" + e.getMessage());
+        }
     }
 
     /**

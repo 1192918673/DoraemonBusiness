@@ -412,14 +412,16 @@ public class Doraemon implements IMessageReceive.MessageListener {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSwitchControlType(SwitchControlTypeEvent event) {
-        this.controlType = event.type;
         if (controlType == ControlType.REMOTE) {
             AutoDemonstrationManager.getInstance(context).stop();
+            this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
         } else if (controlType == ControlType.LOCAL) {
             AutoDemonstrationManager.getInstance(context).stop();
+            this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.EDD);
         } else if (controlType == ControlType.AUTO) {
+            this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
             AutoDemonstrationManager.getInstance(context).start();
         }
@@ -442,6 +444,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
         inputTimeOutMonitorTask.stopMonitor();
         switch (type) {
             case ASR:
+                //只有LOCAL模式下才可以进入ASR
                 if (BuildConfig.HAVE_SPEECH_DEVCE && controlType == ControlType.LOCAL) {
                     switchMonitorLock.lock();
                     stopWakeUp();
@@ -451,7 +454,8 @@ public class Doraemon implements IMessageReceive.MessageListener {
                 }
                 break;
             case EDD:
-                if (BuildConfig.HAVE_SPEECH_DEVCE && controlType == ControlType.LOCAL) {
+                //只有AUTO模式不能进入EDD
+                if (BuildConfig.HAVE_SPEECH_DEVCE && controlType != ControlType.AUTO) {
                     switchMonitorLock.lock();
                     stopASR();
                     stopWakeUp();
@@ -464,6 +468,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
                     switchMonitorLock.lock();
                     stopASR();
                     stopWakeUp();
+                    addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
                     switchMonitorLock.unlock();
                 }
                 break;

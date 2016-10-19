@@ -18,6 +18,7 @@ import java.util.Random;
  */
 public class LocalResourceManager extends Thread {
     public static final String XIAO_PING_GUO = "xiao_ping_guo";
+    public static final String XIAO_PING_GUO_SHORT = "xiao_ping_guo_short";
     public static final String NO_ANSWER = "no_answer";
     public static final String ACTION_ARM_MOVE = "arm_move";
     public static final String ACTION_ARM_UP_DOWN_MOVE = "action_arm_up_down_move";
@@ -164,6 +165,9 @@ public class LocalResourceManager extends Thread {
         final OldSportActionUtil oldSportActionUtil = new OldSportActionUtil();
         actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_scripts);
         localActionMap.put(XIAO_PING_GUO, actions);
+
+        actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_short_scripts);
+        localActionMap.put(XIAO_PING_GUO_SHORT, actions);
         isRunning = false;
     }
 
