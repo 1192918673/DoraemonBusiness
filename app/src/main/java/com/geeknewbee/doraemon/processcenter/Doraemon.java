@@ -15,6 +15,7 @@ import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.NetWorkStateChangeEvent;
+import com.geeknewbee.doraemon.entity.event.PressNoseEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
@@ -39,6 +40,7 @@ import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.InputTimeoutMonitorTask.TimeOutMonitorType;
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
@@ -366,6 +368,27 @@ public class Doraemon implements IMessageReceive.MessageListener {
     }
 
     /**
+     * 鼻子按下事件
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNosePressed(PressNoseEvent event) {
+        this.controlType = ControlType.LOCAL;
+        addCommand(new Command(CommandType.STOP));
+        switch (event.type) {
+            case SHORT_PRESS:
+                if (!isListening())
+                    addCommand(new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
+                break;
+            case LONG_PRESS:
+                addCommand(new SoundCommand("再见，主人，我去休息了", SoundCommand.InputSource.TIPS));
+                switchSoundMonitor(SoundMonitorType.EDD);
+                break;
+        }
+    }
+
+    /**
      * 唤醒成功：停止所有任务、TTS提示语(开启ASR监听)、旋转
      *
      * @param event
@@ -374,8 +397,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
     public void onWakeup(WakeupSuccessEvent event) {
         //当唤醒的时候停止当前的动作
         this.wakePhis = event.mPhis;
-        MouthTaskQueue.getInstance().stop();
-        LimbsTaskQueue.getInstance().stop();
+        addCommand(new Command(CommandType.STOP));
         //提示成功 TTS完成后自动打开ASR 这里的类型必须是WAKE_UP
         addCommand(new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
         //根据声音定位转向

@@ -14,6 +14,7 @@ import com.geeknewbee.doraemon.broadcast.BatteryReceiver;
 import com.geeknewbee.doraemon.broadcast.NetworkChangeReceiver;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
+import com.geeknewbee.doraemon.entity.event.PressNoseEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.input.ReadSenseService;
 import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
@@ -21,6 +22,7 @@ import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
+import com.geeknewbee.doraemon.processcenter.PressNoseType;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
@@ -76,17 +78,8 @@ public class MainActivity extends Activity {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_D:
-                if (isLongPress) {
-                    //TODO chang an
-                    LogUtils.d(App.TAG, "鼻子事件");
-//                    EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-//                    Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("再见，主人，我去休息了", SoundCommand.InputSource.TIPS));
-                } else {
-                    //TODO duan an
-                    LogUtils.d(App.TAG, "鼻子长短按事件");
-//                    EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-//                    Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("再见，主人，我去休息了", SoundCommand.InputSource.TIPS));
-                }
+                LogUtils.d(App.TAG, "鼻子抬起事件");
+                EventBus.getDefault().post(new PressNoseEvent(isLongPress ? PressNoseType.LONG_PRESS : PressNoseType.SHORT_PRESS));
                 isLongPress = false;
                 return true;
         }
