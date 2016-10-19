@@ -26,13 +26,14 @@ public class LocalResourceManager extends Thread {
     private volatile static LocalResourceManager instance;
     private final String[] noAnswerList;
     private final String[] defaultAnswerList;
+    private final String[] wakeUpAnswerList;
     private Map<String, List<SportAction>> localActionMap;
-    private boolean isRunning = false;
 
     private LocalResourceManager() {
         localActionMap = new HashMap<>();
         noAnswerList = App.mContext.getResources().getStringArray(R.array.no_answer);
         defaultAnswerList = App.mContext.getResources().getStringArray(R.array.default_answer);
+        wakeUpAnswerList = App.mContext.getResources().getStringArray(R.array.wake_up);
     }
 
     public static LocalResourceManager getInstance() {
@@ -101,7 +102,6 @@ public class LocalResourceManager extends Thread {
 
     @Override
     public void run() {
-        isRunning = true;
         super.run();
         List<SportAction> actions;
         actions = SportActionUtil.parseSportCommand(R.raw.action_head_up);
@@ -165,7 +165,9 @@ public class LocalResourceManager extends Thread {
         final OldSportActionUtil oldSportActionUtil = new OldSportActionUtil();
         actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_scripts);
         localActionMap.put(XIAO_PING_GUO, actions);
-        isRunning = false;
+
+        actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_short_scripts);
+        localActionMap.put(XIAO_PING_GUO_SHORT, actions);
     }
 
     /**
@@ -175,6 +177,10 @@ public class LocalResourceManager extends Thread {
      */
     public String getNoAnswerString() {
         return noAnswerList[getRandom(noAnswerList.length)];
+    }
+
+    public String getWakeUpString() {
+        return wakeUpAnswerList[getRandom(wakeUpAnswerList.length)];
     }
 
     /**

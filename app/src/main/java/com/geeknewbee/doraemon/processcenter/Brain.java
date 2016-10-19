@@ -74,6 +74,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             case STOP:
                 MouthTaskQueue.getInstance().stop();
                 LimbsTaskQueue.getInstance().stop();
+                SyncQueue.getInstance().stop();
                 break;
             case TAKE_PICTURE: //拍照
                 addCommand(new SoundCommand("好的", SoundCommand.InputSource.TIPS));

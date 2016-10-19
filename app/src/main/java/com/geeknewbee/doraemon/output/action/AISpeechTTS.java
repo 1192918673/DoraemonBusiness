@@ -34,7 +34,21 @@ public class AISpeechTTS implements ITTS {
     private BlockingQueue<SoundCommand> soundCommands;
     private SoundCommand activeCommand;
 
-    public AISpeechTTS() {
+    public static volatile AISpeechTTS instance;
+
+    public static AISpeechTTS getInstance() {
+        if (instance == null) {
+            synchronized (AISpeechTTS.class) {
+                if (instance == null) {
+                    instance = new AISpeechTTS();
+                }
+            }
+        }
+        return instance;
+    }
+
+
+    private AISpeechTTS() {
         init();
     }
 
@@ -130,7 +144,8 @@ public class AISpeechTTS implements ITTS {
 
     private void notifyComplete(boolean isSuccess, String error) {
         isSpeaking = false;
-        EventBus.getDefault().post(new TTSCompleteEvent(inputSource, activeCommand.getId(), isSuccess, error));
+        if (activeCommand != null)
+            EventBus.getDefault().post(new TTSCompleteEvent(inputSource, activeCommand.getId(), isSuccess, error));
         scheduleNext();
     }
 

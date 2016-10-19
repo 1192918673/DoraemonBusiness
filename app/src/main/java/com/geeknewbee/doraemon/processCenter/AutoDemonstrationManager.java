@@ -77,8 +77,8 @@ public class AutoDemonstrationManager {
         SyncQueue.getInstance().addCommand(syncCommand);
 
         commands = new ArrayList<>();
-        commands.add(new LocalResourceCommand(R.raw.xiao_ping_guo_short));
-        commands.add(LocalResourceManager.getInstance().getDanceCommand(LocalResourceManager.ACTION_ARM_UP_DOWN_MOVE));
+        commands.add(new LocalResourceCommand(R.raw.little_apple_short));
+        commands.add(LocalResourceManager.getInstance().getDanceCommand(LocalResourceManager.XIAO_PING_GUO_SHORT));
         syncCommand = new SyncCommand(commands);
         SyncQueue.getInstance().addCommand(syncCommand);
 

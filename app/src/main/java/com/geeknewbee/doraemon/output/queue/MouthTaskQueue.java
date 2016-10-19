@@ -38,7 +38,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
 
     private MouthTaskQueue() {
         super();
-        itts = new AISpeechTTS();
+        itts = AISpeechTTS.getInstance();
         ittXF = new XfSpeechTTS();
         iMusicPlayer = new XMLYMusicPlayer();
         mediaPlayerHelper = new MediaPlayerHelper();

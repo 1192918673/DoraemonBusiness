@@ -107,17 +107,21 @@ public class LimbsManager extends AbstractTaskQueue<Command, Boolean> {
                 Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 3));
 
             sendTopCommand(sportAction.topCommand);
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
             if (isUseLeXing) {
                 sendLeXingFootCommand(sportAction.footCommand);
                 stopFoot(sportAction.delayTime);
             } else {
-                sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
+                if (!TextUtils.isEmpty(sportAction.footCommand)) {
+                    //连续发送串口命令，中控板会反应不过来,这里暂停了20ms
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
+                }
+
                 stopFootLuGong(sportAction.delayTime);
             }
         }
@@ -166,7 +170,7 @@ public class LimbsManager extends AbstractTaskQueue<Command, Boolean> {
         try {
             Thread.sleep(delayTime);
             sendLeXingFootCommand(0, 0);//最后要停止运动
-            Thread.sleep(20);
+            Thread.sleep(10);
             sendLeXingFootCommand(0, 0);//最后要停止运动
         } catch (InterruptedException e) {
             e.printStackTrace();

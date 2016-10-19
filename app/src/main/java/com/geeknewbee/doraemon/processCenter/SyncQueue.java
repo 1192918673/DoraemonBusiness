@@ -39,7 +39,7 @@ public class SyncQueue extends AbstractTaskQueue<SyncCommand, Boolean> {
 
     private SyncQueue() {
         soundCommands = new ArrayBlockingQueue<SyncCommand>(50);
-        itts = new AISpeechTTS();
+        itts = AISpeechTTS.getInstance();
 
         mediaPlayerHelper = new MediaPlayerHelper();
         EventBus.getDefault().register(this);

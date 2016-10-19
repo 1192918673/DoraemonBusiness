@@ -374,7 +374,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
         //提示成功 TTS完成后自动打开ASR 这里的类型必须是WAKE_UP
-        addCommand(new SoundCommand("唤醒成功", SoundCommand.InputSource.AFTER_WAKE_UP));
+        addCommand(new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
         //根据声音定位转向
         double turnAngle = 0;
         LeXingUtil.Direction direction;
@@ -412,14 +412,16 @@ public class Doraemon implements IMessageReceive.MessageListener {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSwitchControlType(SwitchControlTypeEvent event) {
-        this.controlType = event.type;
-        if (controlType == ControlType.REMOTE) {
+        if (event.type == ControlType.REMOTE) {
             AutoDemonstrationManager.getInstance(context).stop();
+            this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
-        } else if (controlType == ControlType.LOCAL) {
+        } else if (event.type == ControlType.LOCAL) {
             AutoDemonstrationManager.getInstance(context).stop();
+            this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.EDD);
-        } else if (controlType == ControlType.AUTO) {
+        } else if (event.type == ControlType.AUTO) {
+            this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
             AutoDemonstrationManager.getInstance(context).start();
         }
@@ -442,6 +444,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
         inputTimeOutMonitorTask.stopMonitor();
         switch (type) {
             case ASR:
+                //只有LOCAL模式下才可以进入ASR
                 if (BuildConfig.HAVE_SPEECH_DEVCE && controlType == ControlType.LOCAL) {
                     switchMonitorLock.lock();
                     stopWakeUp();
@@ -451,7 +454,8 @@ public class Doraemon implements IMessageReceive.MessageListener {
                 }
                 break;
             case EDD:
-                if (BuildConfig.HAVE_SPEECH_DEVCE && controlType == ControlType.LOCAL) {
+                //只有AUTO模式不能进入EDD
+                if (BuildConfig.HAVE_SPEECH_DEVCE && controlType != ControlType.AUTO) {
                     switchMonitorLock.lock();
                     stopASR();
                     stopWakeUp();
@@ -464,6 +468,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
                     switchMonitorLock.lock();
                     stopASR();
                     stopWakeUp();
+                    addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
                     switchMonitorLock.unlock();
                 }
                 break;
@@ -509,9 +514,13 @@ public class Doraemon implements IMessageReceive.MessageListener {
      * 解除接受ReadSenseService的TTS的广播
      */
     private void unRegisterTTSReceiver() {
-        context.unregisterReceiver(TTSReceiver);
-        TTSReceiver = null;
-        LogUtils.d(ReadSenseService.TAG, "解除注册接受播报广播");
+        try {
+            context.unregisterReceiver(TTSReceiver);
+            TTSReceiver = null;
+            LogUtils.d(ReadSenseService.TAG, "解除注册接受播报广播");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     class ReadSenseTTSReceiver extends BroadcastReceiver {
