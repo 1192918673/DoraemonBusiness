@@ -18,7 +18,6 @@ import java.util.Random;
  */
 public class LocalResourceManager extends Thread {
     public static final String XIAO_PING_GUO = "xiao_ping_guo";
-    public static final String XIAO_PING_GUO_SHORT = "xiao_ping_guo_short";
     public static final String NO_ANSWER = "no_answer";
     public static final String ACTION_ARM_MOVE = "arm_move";
     public static final String ACTION_ARM_UP_DOWN_MOVE = "action_arm_up_down_move";
