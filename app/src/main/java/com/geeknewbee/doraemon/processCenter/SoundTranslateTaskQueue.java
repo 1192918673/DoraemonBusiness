@@ -157,85 +157,67 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand("好的，我去休息了，主人一定要记得再来找我奥", SoundCommand.InputSource.TIPS));
             return commands;
-        }
-        if (input.contains("你好")) {
+        } else if (input.contains("你好")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand("你好", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
-        }
-        if (input.contains("自我介绍")) {
+        } else if (input.contains("自我介绍")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
-        }
-        if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
+        } else if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
             return Arrays.asList(new SoundCommand("好的", SoundCommand.InputSource.TIPS), new Command(CommandType.PLAY_JOKE));
-        }
-        if (input.contains("背") && input.contains("诗")) {
+        } else if (input.contains("背") && input.contains("诗")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.TANG_SHI, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
-        }
-        if (input.contains("拍") && input.contains("照")) {
+        } else if (input.contains("拍") && input.contains("照")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new Command(CommandType.TAKE_PICTURE, "拍照"));
             return commands;
-        }
-        if (input.contains("温度")) {
+        } else if (input.contains("温度")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand("现在室内温度是" + SensorUtil.getInstance().temperture + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
-        }
-        if (input.contains("湿度") || input.contains("适度") || input.contains("十度")) {
+        } else if (input.contains("湿度") || input.contains("适度") || input.contains("十度")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand("现在室内湿度是" + SensorUtil.getInstance().humidity + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
-        }
-        if (input.contains("光") && input.contains("强度")) {
+        } else if (input.contains("光") && input.contains("强度")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand("现在室内光强度是" + SensorUtil.getInstance().light + "度", SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
-        }
-        if (input.contains("前") && (input.contains("进") || input.contains("向") || input.contains("走"))) {
+        } else if (input.contains("前") && (input.contains("进") || input.contains("向") || input.contains("走"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalResourceManager.getInstance().getActionSetCommand("forward"));
             return commands;
-        }
-        if (input.contains("后") && (input.contains("退") || input.contains("向") || input.contains("走"))) {
+        } else if (input.contains("后") && (input.contains("退") || input.contains("向") || input.contains("走"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalResourceManager.getInstance().getActionSetCommand("backward"));
             return commands;
-        }
-        if (input.contains("左") && (input.contains("转") || input.contains("向"))) {
+        } else if (input.contains("左") && (input.contains("转") || input.contains("向"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalResourceManager.getInstance().getActionSetCommand("left"));
             return commands;
-        }
-        if (input.contains("右") && (input.contains("转") || input.contains("向"))) {
+        } else if (input.contains("右") && (input.contains("转") || input.contains("向"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalResourceManager.getInstance().getActionSetCommand("right"));
             return commands;
-        }
-        if (input.contains("举手") || input.contains("伸胳膊") || input.contains("抬头")) {
+        } else if (input.contains("举手") || input.contains("伸胳膊") || input.contains("抬头")) {
             List<Command> commands = new ArrayList<>();
             commands.add(LocalResourceManager.getInstance().getActionSetCommand(Arrays.asList("l_arm_up", "r_arm_up")));
             return commands;
-        }
-        if (input.contains("跳") && (input.contains("舞") || input.contains("苹果"))) {
+        } else if (input.contains("跳") && (input.contains("舞") || input.contains("苹果"))) {
             List<Command> commands = new ArrayList<>();
             commands.add(new LocalResourceCommand(R.raw.little_apple));
             commands.add(LocalResourceManager.getInstance().getDanceCommand(LocalResourceManager.XIAO_PING_GUO));
             return commands;
-        }
-
-        if (input.contains("看电影")) {
+        } else if (input.contains("看电影")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.TIP_BEFORE_PLAY_MOVIE, SoundCommand.InputSource.TIPS));
             commands.add(new Command(CommandType.PLAY_MOVIE, "XNzgyODExNDY4"));
             return commands;
-        }
-
-        if ((TextUtils.equals(soundTranslateInput.action, "播放音乐")
+        } else if ((TextUtils.equals(soundTranslateInput.action, "播放音乐")
                 || TextUtils.equals(soundTranslateInput.action, "音乐")
                 || TextUtils.equals(soundTranslateInput.musicName, "一首歌"))
                 && (input.contains("唱") || input.contains("来") || (input.contains("放")))) {
@@ -245,13 +227,17 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
                 soundTranslateInput.musicName = Constants.musics.get(i).get("musicName");
             }
             return Arrays.asList(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
-        }
-
-        if (input.contains("学英语")) {
+        } else if (input.contains("学英语")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new LearnEnCommand());
             return commands;
+        } else if (input.contains("当前版本")) {
+            List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand("版本号:" + DeviceUtil.getVersionName(App.mContext), SoundCommand.InputSource.SOUND_TRANSLATE));
+            return commands;
         }
+
+
         return null;
     }
 
