@@ -42,6 +42,7 @@ import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
+import com.geeknewbee.doraemon.weather.WeatherManager;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -110,6 +111,8 @@ public class Doraemon implements IMessageReceive.MessageListener {
         }
         // 每次重新联网，都重新初始化XMLY
         MouthTaskQueue.getInstance().reMusicPlayer();
+        //每次都重新获取天气
+        WeatherManager.getInstance().getWeatherReport();
     }
 
     /**
