@@ -3,10 +3,9 @@ package com.geeknewbee.doraemon.view;
 import android.app.Activity;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.SurfaceView;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.geeknewbee.doraemon.App;
@@ -41,10 +40,9 @@ public class MainActivity extends Activity {
     public GifImageView gifView;
     private BluetoothServiceManager bluetoothServiceManager;
     private TextView result;
-    private RelativeLayout rl_preView;
-    private SurfaceView mPreView;
     private BatteryReceiver receiverBattery;
     private NetworkChangeReceiver receiverNetWork;
+    private boolean isLongPress;//是否长按
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +56,51 @@ public class MainActivity extends Activity {
         LogUtils.d(ReadSenseService.TAG, "MainActivity 调用。。。");
         Doraemon.getInstance(getApplicationContext()).startAFR();// 开启人脸检测
         registerReceiver();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        event.startTracking();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_D:
+                LogUtils.d(App.TAG, "鼻子按下事件");
+                if (event.getRepeatCount() == 0) {
+                    isLongPress = false;
+                }
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_D:
+                if (isLongPress) {
+                    //TODO chang an
+                    LogUtils.d(App.TAG, "鼻子事件");
+//                    EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+//                    Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("再见，主人，我去休息了", SoundCommand.InputSource.TIPS));
+                } else {
+                    //TODO duan an
+                    LogUtils.d(App.TAG, "鼻子长短按事件");
+//                    EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+//                    Doraemon.getInstance(getApplicationContext()).addCommand(new SoundCommand("再见，主人，我去休息了", SoundCommand.InputSource.TIPS));
+                }
+                isLongPress = false;
+                return true;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_D:
+                isLongPress = true;
+                return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
     }
 
     private void registerReceiver() {
@@ -78,9 +121,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         result = (TextView) findViewById(R.id.tv_result);
-        rl_preView = (RelativeLayout) findViewById(R.id.rl_preView);
-        mPreView = (SurfaceView) findViewById(R.id.sv_preView);
-
         initFaceView();
     }
 
