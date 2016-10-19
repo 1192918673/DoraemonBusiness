@@ -26,6 +26,7 @@ public class LocalResourceManager extends Thread {
     private volatile static LocalResourceManager instance;
     private final String[] noAnswerList;
     private final String[] defaultAnswerList;
+    private final String[] wakeUpAnswerList;
     private Map<String, List<SportAction>> localActionMap;
     private boolean isRunning = false;
 
@@ -33,6 +34,7 @@ public class LocalResourceManager extends Thread {
         localActionMap = new HashMap<>();
         noAnswerList = App.mContext.getResources().getStringArray(R.array.no_answer);
         defaultAnswerList = App.mContext.getResources().getStringArray(R.array.default_answer);
+        wakeUpAnswerList = App.mContext.getResources().getStringArray(R.array.wake_up);
     }
 
     public static LocalResourceManager getInstance() {
@@ -178,6 +180,10 @@ public class LocalResourceManager extends Thread {
      */
     public String getNoAnswerString() {
         return noAnswerList[getRandom(noAnswerList.length)];
+    }
+
+    public String getWakeUpString() {
+        return wakeUpAnswerList[getRandom(wakeUpAnswerList.length)];
     }
 
     /**

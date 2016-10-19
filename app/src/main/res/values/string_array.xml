@@ -132,4 +132,11 @@
         <item>我在想为什么要告诉你这个答案呢</item>
         <item>这个不好回答</item>
     </string-array>
+
+    <string-array name="wake_up">
+        <item>我在了</item>
+        <item>有什么可以帮你</item>
+        <item>有事您说话</item>
+        <item>唤醒成功</item>
+    </string-array>
 </resources>

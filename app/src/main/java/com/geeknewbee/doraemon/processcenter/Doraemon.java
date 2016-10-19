@@ -374,7 +374,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
         //提示成功 TTS完成后自动打开ASR 这里的类型必须是WAKE_UP
-        addCommand(new SoundCommand("唤醒成功", SoundCommand.InputSource.AFTER_WAKE_UP));
+        addCommand(new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
         //根据声音定位转向
         double turnAngle = 0;
         LeXingUtil.Direction direction;
