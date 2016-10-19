@@ -77,23 +77,23 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
                     EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
 
                 if (soundCommand.inputSource == SoundCommand.InputSource.IOS_BUSINESS)
-                    ittXF.addSoundCommand(soundCommand, soundCommand.isOverwrite);//商业版的需要覆盖正在执行的任务
+                    ittXF.addSoundCommand(soundCommand);//商业版的需要覆盖正在执行的任务
                 else
-                    itts.addSoundCommand(soundCommand, soundCommand.isOverwrite);//思必驰的不能采用队列的方式目前
+                    itts.addSoundCommand(soundCommand);//思必驰的不能采用队列的方式目前
                 break;
             case PLAY_MUSIC:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-                itts.talk("正在搜索音乐", SoundCommand.InputSource.TIPS);
-                iMusicPlayer.play(input.getContent());
+                itts.addSoundCommand(new SoundCommand("正在搜索音乐", SoundCommand.InputSource.TIPS));
+                iMusicPlayer.play(input);
                 break;
             case PLAY_JOKE:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-                iMusicPlayer.joke();
+                iMusicPlayer.joke(input);
                 break;
             case PLAY_LOCAL_RESOURCE:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 LocalResourceCommand resourceCommand = (LocalResourceCommand) input;
-                mediaPlayerHelper.start(App.mContext, resourceCommand.resourceID);
+                mediaPlayerHelper.start(App.mContext, resourceCommand);
                 break;
             case PLAY_MOVIE:
                 EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
@@ -140,8 +140,8 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     public synchronized boolean isBusy() {
-        return itts.isSpeaking()
-                || ittXF.isSpeaking()
+        return itts.isBusy()
+                || ittXF.isBusy()
                 || iMusicPlayer.isPlaying()
                 || mediaPlayerHelper.isPlaying()
                 || (videoPlayer != null && videoPlayer.isPlaying()

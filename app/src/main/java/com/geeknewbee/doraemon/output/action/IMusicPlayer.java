@@ -1,5 +1,7 @@
 package com.geeknewbee.doraemon.output.action;
 
+import com.geeknewbee.doraemon.processcenter.command.Command;
+
 /**
  * 用于播放音乐、讲笑话
  */
@@ -7,9 +9,9 @@ public interface IMusicPlayer {
 
     void reInit();
 
-    boolean play(String param);
+    boolean play(Command command);
 
-    boolean joke();
+    boolean joke(Command command);
 
     boolean stop();
 

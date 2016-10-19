@@ -20,6 +20,7 @@ import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.StartASREvent;
 import com.geeknewbee.doraemon.entity.event.SwitchControlTypeEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
+import com.geeknewbee.doraemon.entity.event.SyncQueueEmptyEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.VideoCompleteEvent;
@@ -412,11 +413,30 @@ public class Doraemon implements IMessageReceive.MessageListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSwitchControlType(SwitchControlTypeEvent event) {
         this.controlType = event.type;
-        if (controlType == ControlType.REMOTE)
+        if (controlType == ControlType.REMOTE) {
+            AutoDemonstrationManager.getInstance(context).stop();
             switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
-        else if (controlType == ControlType.LOCAL)
+        } else if (controlType == ControlType.LOCAL) {
+            AutoDemonstrationManager.getInstance(context).stop();
             switchSoundMonitor(SoundMonitorType.EDD);
+        } else if (controlType == ControlType.AUTO) {
+            switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
+            AutoDemonstrationManager.getInstance(context).start();
+        }
     }
+
+    /**
+     * 当SyncQueue 队列任务都完成的时候触发 现在是为了实习自动演示的功能
+     * 2016-10-17
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onSyncQueueEmpty(SyncQueueEmptyEvent event) {
+        if (controlType == ControlType.AUTO)
+            AutoDemonstrationManager.getInstance(context).circle();
+    }
+
 
     private void switchSoundMonitor(SoundMonitorType type) {
         inputTimeOutMonitorTask.stopMonitor();

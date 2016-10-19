@@ -84,7 +84,6 @@ android {
     }
     buildTypes {
         release {
-            buildConfigField "boolean", "NEED_DEBUG", "false"
             signingConfig signingConfigs.myConfig
             minifyEnabled false
             zipAlignEnabled true
@@ -112,6 +111,7 @@ android {
         }
         //测试版
         Beta {
+            buildConfigField "boolean", "NEED_DEBUG", "false"
             versionName TestVersion
             versionCode TestVersionCode
             buildConfigField "String", "URLDOMAIN", BetaURLDOMAIN
@@ -121,6 +121,7 @@ android {
 
         //发布版
         Online {
+            buildConfigField "boolean", "NEED_DEBUG", "false"
             buildConfigField "String", "URLDOMAIN", OnlineURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]

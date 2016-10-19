@@ -50,3 +50,25 @@ public static final int *;
 -keep class com.hyphenate.** {*;}
 -dontwarn  com.hyphenate.**
 #环信
+
+
+#高德3D 地图
+    -keep   class com.amap.api.mapcore.**{*;}
+    -keep   class com.amap.api.maps.**{*;}
+    -keep   class com.autonavi.amap.mapcore.*{*;}
+
+    #高德定位
+    -keep class com.amap.api.location.**{*;}
+    -keep class com.amap.api.fence.**{*;}
+    -keep class com.autonavi.aps.amapapi.model.**{*;}
+
+   #高德 搜索
+    -keep   class com.amap.api.services.**{*;}
+
+   # 高德2D地图
+    -keep class com.amap.api.maps2d.**{*;}
+    -keep class com.amap.api.mapcore2d.**{*;}
+
+    #高德导航
+    -keep class com.amap.api.navi.**{*;}
+    -keep class com.autonavi.**{*;}

@@ -20,6 +20,8 @@ import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.geeknewbee.doraemonsdk.utils.MD5Util;
 
+import org.greenrobot.eventbus.EventBus;
+
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Retrofit;
@@ -73,7 +75,7 @@ public class DoraemonInfoManager {
                 PrefUtils.saveString(context, Constants.KEY_TOKEN, response.getToken());
                 PrefUtils.saveString(context, Constants.KEY_HX_USERNAME, response.getHx_user().getUsername());
                 PrefUtils.saveString(context, Constants.KEY_HX_USERPWD, response.getHx_user().getPassword());
-                EventManager.sendHxInfoEvent(response.getHx_user());
+                EventBus.getDefault().post(new AuthRobotResponse.HxUserInfo());
             }
 
             @Override

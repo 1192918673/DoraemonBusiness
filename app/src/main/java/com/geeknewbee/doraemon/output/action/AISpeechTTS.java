@@ -7,6 +7,7 @@ import com.aispeech.common.AIConstant;
 import com.aispeech.common.Util;
 import com.aispeech.export.engines.AILocalTTSEngine;
 import com.aispeech.export.listeners.AITTSListener;
+import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
@@ -59,24 +60,26 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
-    public boolean talk(String text, SoundCommand.InputSource inputSource) {
-        this.inputSource = inputSource;
-        if (TextUtils.isEmpty(text)) {
-            notifyComplete();
+    public boolean talk(SoundCommand command) {
+        this.inputSource = command.inputSource;
+        if (TextUtils.isEmpty(command.getContent())) {
+            notifyComplete(true, Constants.EMPTY_STRING);
             return true;
         }
 
         if (mTTSEngine != null) {
-            if (isSpeaking())
+            if (isBusy())
                 mTTSEngine.stop();
             isSpeaking = true;
-            mTTSEngine.speak(text, "1024");
+            mTTSEngine.speak(command.getContent(), "1024");
         }
         return true;
     }
 
     @Override
     public boolean stop() {
+        soundCommands.clear();
+        activeCommand = null;
         if (mTTSEngine != null) {
             mTTSEngine.stop();
             isSpeaking = false;
@@ -85,9 +88,9 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
-    public void addSoundCommand(SoundCommand command, boolean isOverwrite) {
+    public void addSoundCommand(SoundCommand command) {
         //思必驰有问题暂时不能采用队列，因为会出现tts 不出声没有回调的情况
-        if (isOverwrite) {
+        if (command.isOverwrite) {
             //清空TTS队列
             soundCommands.clear();
             activeCommand = null;
@@ -97,7 +100,6 @@ public class AISpeechTTS implements ITTS {
         if (activeCommand == null)
             scheduleNext();
     }
-
 
     @Override
     public void destroy() {
@@ -115,20 +117,20 @@ public class AISpeechTTS implements ITTS {
     }
 
     @Override
-    public boolean isSpeaking() {
-        return isSpeaking;
+    public boolean isBusy() {
+        return isSpeaking && soundCommands.isEmpty();
     }
 
     private void scheduleNext() {
         if ((activeCommand = soundCommands.poll()) != null) {
-            talk(activeCommand.getContent(), activeCommand.inputSource);
+            talk(activeCommand);
         }
     }
 
-    private void notifyComplete() {
+    private void notifyComplete(boolean isSuccess, String error) {
         isSpeaking = false;
+        EventBus.getDefault().post(new TTSCompleteEvent(inputSource, activeCommand.getId(), isSuccess, error));
         scheduleNext();
-        EventBus.getDefault().post(new TTSCompleteEvent(inputSource));
     }
 
     private class AILocalTTSListenerImpl implements AITTSListener {
@@ -160,13 +162,13 @@ public class AISpeechTTS implements ITTS {
         @Override
         public void onCompletion(String utteranceId) {
             LogUtils.d(TAG, "tts onCompletion");
-            notifyComplete();
+            notifyComplete(true, Constants.EMPTY_STRING);
         }
 
         @Override
         public void onError(String utteranceId, AIError error) {
-            LogUtils.d(TAG, "TTS Error：" + error.toString());
-            notifyComplete();
+            LogUtils.d(TAG, "TTS Error：" + error.getError());
+            notifyComplete(false, error.getError());
         }
     }
 }

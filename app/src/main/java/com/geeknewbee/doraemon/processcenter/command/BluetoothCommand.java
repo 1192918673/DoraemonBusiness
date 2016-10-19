@@ -4,8 +4,12 @@ import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.SwitchControlTypeEvent;
+import com.geeknewbee.doraemon.processcenter.ControlType;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.SportActionUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -169,6 +173,14 @@ public class BluetoothCommand {
                 case "sleep":
                     //进入休眠
                     commands.add(new Command(CommandType.SLEEP));
+                    break;
+                case "open_auto_demonstration":
+                    //进入自动展示模式
+                    EventBus.getDefault().post(new SwitchControlTypeEvent(ControlType.AUTO));
+                    break;
+                case "close_auto_demonstration":
+                    //退出自动展示模式
+                    EventBus.getDefault().post(new SwitchControlTypeEvent(ControlType.LOCAL));
                     break;
                 default:
                     commands.add(LocalResourceManager.getInstance().getActionSetCommand(Arrays.asList(action)));

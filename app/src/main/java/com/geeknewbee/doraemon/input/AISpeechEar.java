@@ -14,8 +14,9 @@ import com.aispeech.export.listeners.AILocalGrammarListener;
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.SpeechConstants;
 import com.geeknewbee.doraemon.entity.event.ASRResultEvent;
+import com.geeknewbee.doraemon.entity.event.BeginningOfSpeechEvent;
+import com.geeknewbee.doraemon.entity.event.BeginningofDealWithEvent;
 import com.geeknewbee.doraemon.entity.event.ReadyForSpeechEvent;
-import com.geeknewbee.doraemon.processcenter.EventManager;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.GrammarHelper;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -256,13 +257,13 @@ public class AISpeechEar implements IEar {
         @Override
         public void onBeginningOfSpeech() {
             LogUtils.d(TAG, "检测到说话");
-            EventManager.sendBeginningOfSpeechEvent();
+            EventBus.getDefault().post(new BeginningOfSpeechEvent());
         }
 
         @Override
         public void onEndOfSpeech() {
             LogUtils.d(TAG, "检测到语音停止，开始识别...");
-            EventManager.sendBeginningOfDealWithEvent();
+            EventBus.getDefault().post(new BeginningofDealWithEvent());
         }
 
         @Override

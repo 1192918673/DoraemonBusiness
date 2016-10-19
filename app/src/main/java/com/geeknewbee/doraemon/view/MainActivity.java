@@ -25,6 +25,7 @@ import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
+import com.geeknewbee.doraemon.weather.WeatherManager;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.umeng.analytics.MobclickAgent;
@@ -53,7 +54,6 @@ public class MainActivity extends Activity {
         startBluetoothService();
         initData();
         EventBus.getDefault().register(this);
-//        test();
         Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
         LogUtils.d(ReadSenseService.TAG, "MainActivity 调用。。。");
         Doraemon.getInstance(getApplicationContext()).startAFR();// 开启人脸检测
@@ -96,16 +96,6 @@ public class MainActivity extends Activity {
         bluetoothServiceManager.start();
     }
 
-    private void test() {
-//        findViewById(R.id.bt_test).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
-//                DoraemonInfoManager.getInstance(getApplicationContext()).uploadBattery(20);
-//            }
-//        });
-    }
-
     private void initData() {
         //当没有token的时候需要获取token
         DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
@@ -125,6 +115,9 @@ public class MainActivity extends Activity {
 
         //注册传感器检测
         SensorUtil.getInstance().initSensor();
+
+        //获取天气预报
+        WeatherManager.getInstance().getWeatherReport();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -132,14 +125,6 @@ public class MainActivity extends Activity {
         //收到ASR的识别结果
         result.setText(event.input);
     }
-
-    /*@Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTakePicture(SwitchMonitorEvent event) {
-        //收到ASR的识别结果
-        if (event.type == SoundMonitorType.CLOSE_ALL) {
-            Doraemon.getInstance(getApplicationContext()).startAFR();// 开启人脸检测
-        }
-    }*/
 
     /**
      * 当app crash 的时候
@@ -173,6 +158,7 @@ public class MainActivity extends Activity {
         destroy();
         Doraemon.getInstance(getApplicationContext()).destroy();
         Doraemon.getInstance(getApplicationContext()).stopAFR();
+        WeatherManager.getInstance().destroy();
     }
 
     private void destroy() {
