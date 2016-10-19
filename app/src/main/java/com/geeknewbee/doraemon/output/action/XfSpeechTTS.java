@@ -64,31 +64,6 @@ public class XfSpeechTTS implements ITTS {
     };
 
     private OnTTSCompleteListener onTTSCompleteListener;
-
-    public void setOnTTSCompleteListener(OnTTSCompleteListener onTTSCompleteListener) {
-        this.onTTSCompleteListener = onTTSCompleteListener;
-    }
-
-    public XfSpeechTTS() {
-        // 初始化合成对象
-        mTts = SpeechSynthesizer.createSynthesizer(App.mContext, mTtsInitListener);
-        mSharedPreferences = App.mContext.getSharedPreferences(TtsSettings_PREFER_NAME, App.mContext.MODE_PRIVATE);
-        setParamSynthesis();
-        soundCommands = new ArrayBlockingQueue<SoundCommand>(5);
-    }
-
-    @Override
-    public boolean reInit() {
-        // 初始化合成对象
-        mTts = SpeechSynthesizer.createSynthesizer(App.mContext, mTtsInitListener);
-        return true;
-    }
-
-    @Override
-    public boolean isBusy() {
-        return mTts != null && mTts.isSpeaking() && soundCommands.isEmpty();
-    }
-
     /**
      * 合成回调监听。
      */
@@ -142,6 +117,30 @@ public class XfSpeechTTS implements ITTS {
             //	}
         }
     };
+
+    public XfSpeechTTS() {
+        // 初始化合成对象
+        mTts = SpeechSynthesizer.createSynthesizer(App.mContext, mTtsInitListener);
+        mSharedPreferences = App.mContext.getSharedPreferences(TtsSettings_PREFER_NAME, App.mContext.MODE_PRIVATE);
+        setParamSynthesis();
+        soundCommands = new ArrayBlockingQueue<SoundCommand>(5);
+    }
+
+    public void setOnTTSCompleteListener(OnTTSCompleteListener onTTSCompleteListener) {
+        this.onTTSCompleteListener = onTTSCompleteListener;
+    }
+
+    @Override
+    public boolean reInit() {
+        // 初始化合成对象
+        mTts = SpeechSynthesizer.createSynthesizer(App.mContext, mTtsInitListener);
+        return true;
+    }
+
+    @Override
+    public boolean isBusy() {
+        return mTts != null && mTts.isSpeaking() && soundCommands.isEmpty();
+    }
 
     @Override
     public boolean talk(SoundCommand command) {
@@ -247,7 +246,7 @@ public class XfSpeechTTS implements ITTS {
         //设置合成音调
         mTts.setParameter(SpeechConstant.PITCH, mSharedPreferences.getString("pitch_preference", "50"));
         //设置合成音量
-        mTts.setParameter(SpeechConstant.VOLUME, mSharedPreferences.getString("volume_preference", "50"));
+        mTts.setParameter(SpeechConstant.VOLUME, mSharedPreferences.getString("volume_preference", "100"));
         //设置播放器音频流类型
         mTts.setParameter(SpeechConstant.STREAM_TYPE, mSharedPreferences.getString("stream_preference", "3"));
 

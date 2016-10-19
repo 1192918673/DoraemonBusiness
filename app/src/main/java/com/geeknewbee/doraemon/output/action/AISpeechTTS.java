@@ -66,7 +66,8 @@ public class AISpeechTTS implements ITTS {
         mTTSEngine.init(BaseApplication.mContext, new AILocalTTSListenerImpl(), SpeechConstants.APPKEY, SpeechConstants.SECRETKEY);//初始化合成引擎
         mTTSEngine.setLeftMargin(0);
         mTTSEngine.setRightMargin(0);
-        mTTSEngine.setSpeechRate(0.9f);//设置语速
+        mTTSEngine.setSpeechRate(0.9f);//设置语速，范围0-10，1为正常语速，10为最快，0为最慢
+        mTTSEngine.setSpeechVolume(100);//设置音量，范围0-100，越大越响，默认50
         mTTSEngine.setDeviceId(Util.getIMEI(BaseApplication.mContext));
         LogUtils.d(TAG, "endInit...");
 
