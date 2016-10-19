@@ -514,9 +514,13 @@ public class Doraemon implements IMessageReceive.MessageListener {
      * 解除接受ReadSenseService的TTS的广播
      */
     private void unRegisterTTSReceiver() {
-        context.unregisterReceiver(TTSReceiver);
-        TTSReceiver = null;
-        LogUtils.d(ReadSenseService.TAG, "解除注册接受播报广播");
+        try {
+            context.unregisterReceiver(TTSReceiver);
+            TTSReceiver = null;
+            LogUtils.d(ReadSenseService.TAG, "解除注册接受播报广播");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     class ReadSenseTTSReceiver extends BroadcastReceiver {

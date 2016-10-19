@@ -28,7 +28,6 @@ public class LocalResourceManager extends Thread {
     private final String[] defaultAnswerList;
     private final String[] wakeUpAnswerList;
     private Map<String, List<SportAction>> localActionMap;
-    private boolean isRunning = false;
 
     private LocalResourceManager() {
         localActionMap = new HashMap<>();
@@ -103,7 +102,6 @@ public class LocalResourceManager extends Thread {
 
     @Override
     public void run() {
-        isRunning = true;
         super.run();
         List<SportAction> actions;
         actions = SportActionUtil.parseSportCommand(R.raw.action_head_up);
@@ -170,7 +168,6 @@ public class LocalResourceManager extends Thread {
 
         actions = oldSportActionUtil.parseOldActionScript(oldSportActionUtil.xiao_ping_guo_dance_short_scripts);
         localActionMap.put(XIAO_PING_GUO_SHORT, actions);
-        isRunning = false;
     }
 
     /**
