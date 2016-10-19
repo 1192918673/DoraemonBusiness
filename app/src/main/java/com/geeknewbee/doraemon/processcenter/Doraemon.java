@@ -412,15 +412,15 @@ public class Doraemon implements IMessageReceive.MessageListener {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSwitchControlType(SwitchControlTypeEvent event) {
-        if (controlType == ControlType.REMOTE) {
+        if (event.type == ControlType.REMOTE) {
             AutoDemonstrationManager.getInstance(context).stop();
             this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
-        } else if (controlType == ControlType.LOCAL) {
+        } else if (event.type == ControlType.LOCAL) {
             AutoDemonstrationManager.getInstance(context).stop();
             this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.EDD);
-        } else if (controlType == ControlType.AUTO) {
+        } else if (event.type == ControlType.AUTO) {
             this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
             AutoDemonstrationManager.getInstance(context).start();
