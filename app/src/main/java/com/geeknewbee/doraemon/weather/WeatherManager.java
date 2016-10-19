@@ -42,16 +42,13 @@ public class WeatherManager {
     }
 
     public WeatherResponse.Weather getWeatherReport() {
-        if (currentWeather == null) {
-            if (currentLocation == null) {
-                startLocation();
-            } else {
-                queryWeather();
-            }
+        if (currentLocation == null) {
+            startLocation();
+        } else {
+            queryWeather(); //每次都查询一次天气为下次使用准备
+        }
 
-            return null;
-        } else
-            return currentWeather;
+        return currentWeather;
     }
 
     public Location getCurrentLocation() {
