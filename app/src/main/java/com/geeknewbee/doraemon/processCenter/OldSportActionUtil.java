@@ -59,7 +59,7 @@ public class OldSportActionUtil {
      * @param motor3Val 右手前后转动度数
      * @param motor4Val 左手前后转动度数
      * @param motor5Val 头旋转度数
-     * @param motor6Val 头上下度数
+     * @param motor6Val 头上下度数 以前水平方向是128，上下幅度是80;现在是0,幅度是8(应该是12，为了不达到极限值这里限制为8)所以
      * @return 执行结果  因为现在和以前的协议，角度不一致，这里进行了转换。特别是现在的角度的起始和范围不同。
      */
     private String robot_base_action(char motor1Val, char motor2Val, char motor3Val, char motor4Val, char motor5Val, char motor6Val, int walk_direction, int walk_speed) {
@@ -69,7 +69,7 @@ public class OldSportActionUtil {
                 CONTROL_MOTOR_LEFT_ARM_STRETCH, (char) (compute_motor_val(4, motor4Val) == 0 ? 0 : 180 - compute_motor_val(4, motor4Val)),
                 CONTROL_MOTOR_RIGHT_ARM_STRETCH, (char) (compute_motor_val(3, motor3Val) == 0 ? 0 : 180 - compute_motor_val(3, motor3Val)),
                 CONTROL_MOTOR_HEAD_LEFT_OR_RIGHT, (char) (compute_motor_val(5, motor5Val) == 0 ? 0 : 131 - compute_motor_val(5, motor5Val)),
-                CONTROL_MOTOR_HEAD_UP_OR_DOWN, (char) (compute_motor_val(6, motor6Val) == 0 ? 0 : -(128 - compute_motor_val(6, motor6Val))), 0x03, 0xe8, 0x00, 0x01};//步进电机控制
+                CONTROL_MOTOR_HEAD_UP_OR_DOWN, (char) (compute_motor_val(6, motor6Val) == 0 ? 0 : -(128 - compute_motor_val(6, motor6Val)) / 10), 0x03, 0xe8, 0x00, 0x01};//步进电机控制
 
         return String.valueOf(buf);
     }
