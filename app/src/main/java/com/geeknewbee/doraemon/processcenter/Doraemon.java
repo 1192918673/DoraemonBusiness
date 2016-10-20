@@ -35,6 +35,7 @@ import com.geeknewbee.doraemon.input.IMessageReceive;
 import com.geeknewbee.doraemon.input.ISoundInputDevice;
 import com.geeknewbee.doraemon.input.ReadSenseService;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
+import com.geeknewbee.doraemon.input.bluetooth.WirelessControlServiceManager;
 import com.geeknewbee.doraemon.output.ReadFace;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
@@ -75,6 +76,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
     private ReadSenseTTSReceiver TTSReceiver;
     //控制模式 默认本地控制
     private ControlType controlType = ControlType.LOCAL;
+    private WirelessControlServiceManager wirelessControlServiceManager;
 
     private Doraemon(Context context) {
         this.context = context;
@@ -86,6 +88,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
         soundInputDevice = new AISpeechSoundInputDevice();
         inputTimeOutMonitorTask = new InputTimeoutMonitorTask(context);
         inputTimeOutMonitorTask.startMonitor(TimeOutMonitorType.MODEL_NONE);
+        startBluetoothService();
         EventBus.getDefault().register(this);
     }
 
@@ -98,6 +101,12 @@ public class Doraemon implements IMessageReceive.MessageListener {
             }
         }
         return instance;
+    }
+
+    private void startBluetoothService() {
+        wirelessControlServiceManager = WirelessControlServiceManager.getInstance(context);
+        wirelessControlServiceManager.init();
+        wirelessControlServiceManager.start();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -514,6 +523,8 @@ public class Doraemon implements IMessageReceive.MessageListener {
     }
 
     public void destroy() {
+        wirelessControlServiceManager.onDestroy();
+        wirelessControlServiceManager = null;
         ear.destroy();
         soundInputDevice.destroy();
         inputTimeOutMonitorTask.cancel();

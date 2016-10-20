@@ -17,7 +17,6 @@ import com.geeknewbee.doraemon.entity.event.CrashEvent;
 import com.geeknewbee.doraemon.entity.event.PressNoseEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.input.ReadSenseService;
-import com.geeknewbee.doraemon.input.bluetooth.WirelessControlServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
@@ -40,7 +39,6 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class MainActivity extends Activity {
     public GifImageView gifView;
-    private WirelessControlServiceManager wirelessControlServiceManager;
     private TextView result;
     private BatteryReceiver receiverBattery;
     private NetworkChangeReceiver receiverNetWork;
@@ -51,7 +49,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         LogUtils.d(App.TAG, "MainActivity onCreate");
         initView();
-        startBluetoothService();
         initData();
         EventBus.getDefault().register(this);
         Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
@@ -123,12 +120,6 @@ public class MainActivity extends Activity {
         Doraemon.getInstance(getApplicationContext()).addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
     }
 
-    private void startBluetoothService() {
-        wirelessControlServiceManager = WirelessControlServiceManager.getInstance(getApplicationContext());
-        wirelessControlServiceManager.init();
-        wirelessControlServiceManager.start();
-    }
-
     private void initData() {
         //当没有token的时候需要获取token
         DoraemonInfoManager.getInstance(getApplicationContext()).requestTokenFromServer();
@@ -166,7 +157,6 @@ public class MainActivity extends Activity {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCrash(CrashEvent event) {
-        destroy();
         finish();
     }
 
@@ -188,16 +178,9 @@ public class MainActivity extends Activity {
         unregisterReceiver(receiverBattery);
         unregisterReceiver(receiverNetWork);
 //        unbindService(myServiceConnection);
-        destroy();
         Doraemon.getInstance(getApplicationContext()).destroy();
         Doraemon.getInstance(getApplicationContext()).stopAFR();
         WeatherManager.getInstance().destroy();
     }
 
-    private void destroy() {
-        if (wirelessControlServiceManager != null) {
-            wirelessControlServiceManager.onDestroy();
-            wirelessControlServiceManager = null;
-        }
-    }
 }
