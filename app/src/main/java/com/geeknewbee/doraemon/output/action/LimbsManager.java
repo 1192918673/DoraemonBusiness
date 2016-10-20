@@ -9,12 +9,10 @@ import com.geeknewbee.doraemon.input.bluetooth.ImmediateAlertService;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;
-import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
-import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
@@ -25,7 +23,10 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LimbsManager extends AbstractTaskQueue<Command, Boolean> {
+/**
+ * 头，手，脚控制类
+ */
+public class LimbsManager {
     public static volatile LimbsManager instance;
 
     private IArmsAndHead armsAndHead;
@@ -53,24 +54,6 @@ public class LimbsManager extends AbstractTaskQueue<Command, Boolean> {
         EventBus.getDefault().register(this);
     }
 
-    @Override
-    public Boolean performTask(Command command) {
-        switch (command.getType()) {
-            case SPORT_ACTION_SET:
-                perform((SportActionSetCommand) command);
-                break;
-            case BLUETOOTH_CONTROL_FOOT:
-                perform((BluetoothControlFootCommand) command);
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public void onTaskComplete(Boolean output) {
-
-    }
-
     public static LimbsManager getInstance() {
         if (instance == null) {
             synchronized (LimbsManager.class) {
@@ -82,7 +65,7 @@ public class LimbsManager extends AbstractTaskQueue<Command, Boolean> {
         return instance;
     }
 
-    private void perform(SportActionSetCommand command) {
+    public void perform(SportActionSetCommand command) {
         activeCommand = command;
         isStopAction = false;
         isBusy = true;
@@ -129,7 +112,7 @@ public class LimbsManager extends AbstractTaskQueue<Command, Boolean> {
         notifyComplete();
     }
 
-    private void perform(BluetoothControlFootCommand command) {
+    public void perform(BluetoothControlFootCommand command) {
 //        if (command.v == 0 && command.w == 0) {
 //            stopMoveThread();
 //        } else

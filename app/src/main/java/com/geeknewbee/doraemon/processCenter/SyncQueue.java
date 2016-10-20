@@ -1,23 +1,17 @@
 package com.geeknewbee.doraemon.processcenter;
 
-import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.SyncQueueEmptyEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.output.FaceManager;
-import com.geeknewbee.doraemon.output.action.AISpeechTTS;
-import com.geeknewbee.doraemon.output.action.ITTS;
-import com.geeknewbee.doraemon.output.action.LimbsManager;
-import com.geeknewbee.doraemon.output.action.MediaPlayerHelper;
+import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
+import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.BLCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
-import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
-import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
-import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,22 +20,19 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class SyncQueue extends AbstractTaskQueue<SyncCommand, Boolean> {
+public class SyncQueue {
     public static final String TAG = SyncQueue.class.getSimpleName();
     public static volatile SyncQueue instance;
+    private final ExecutorService executorService;
     private BlockingQueue<SyncCommand> soundCommands;
-    private ITTS itts;
-    private MediaPlayerHelper mediaPlayerHelper;
-
-
     private SyncCommand activeCommand;
 
     private SyncQueue() {
         soundCommands = new ArrayBlockingQueue<SyncCommand>(50);
-        itts = AISpeechTTS.getInstance();
-
-        mediaPlayerHelper = new MediaPlayerHelper();
+        executorService = Executors.newSingleThreadExecutor();
         EventBus.getDefault().register(this);
     }
 
@@ -65,52 +56,47 @@ public class SyncQueue extends AbstractTaskQueue<SyncCommand, Boolean> {
             LogUtils.d(TAG, "activeCommand is not null");
     }
 
-    @Override
-    public Boolean performTask(SyncCommand syncCommand) {
-        LogUtils.d(TAG, "performTask");
+    public void performCommand(final SyncCommand syncCommand) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                LogUtils.d(TAG, "performCommand");
+                try {
+                    if (syncCommand.delayTime > 0)
+                        Thread.sleep(syncCommand.delayTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-        try {
-            if (syncCommand.delayTime > 0)
-                Thread.sleep(syncCommand.delayTime);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        for (Command command : syncCommand.commandList) {
-            switch (command.getType()) {
-                case PLAY_SOUND:
-                    itts.addSoundCommand((SoundCommand) command);
-                    break;
-                case PLAY_LOCAL_RESOURCE:
-                    LocalResourceCommand resourceCommand = (LocalResourceCommand) command;
-                    mediaPlayerHelper.start(App.mContext, resourceCommand);
-                    break;
-                case SPORT_ACTION_SET:
-                    LimbsManager.getInstance().addTask(command);
-                    break;
-                case SHOW_EXPRESSION:
-                    ExpressionCommand expressionCommand = (ExpressionCommand) command;
-                    FaceManager.getInstance().displayGif(expressionCommand.getContent(), expressionCommand.loops);
-                    markAndTryDoNextCommand(expressionCommand.getId());//表情的命令执行时调用命令后就认为成功了
-                    break;
-                case BL:
-                    BLCommand blCommand = (BLCommand) command;
-                    BLM.broadLinkRMProSend(blCommand.getResponse());
-                    markAndTryDoNextCommand(blCommand.getId());//智能家居的命令执行时调用命令后就认为成功了
-                    break;
+                for (Command command : syncCommand.commandList) {
+                    switch (command.getType()) {
+                        case PLAY_SOUND:
+                        case PLAY_LOCAL_RESOURCE:
+                            MouthTaskQueue.getInstance().addTask(command);
+                            break;
+                        case SPORT_ACTION_SET:
+                            LimbsTaskQueue.getInstance().addTask(command);
+                            break;
+                        case SHOW_EXPRESSION:
+                            ExpressionCommand expressionCommand = (ExpressionCommand) command;
+                            FaceManager.getInstance().displayGif(expressionCommand.getContent(), expressionCommand.loops);
+                            markAndTryDoNextCommand(expressionCommand.getId());//表情的命令执行时调用命令后就认为成功了
+                            break;
+                        case BL:
+                            BLCommand blCommand = (BLCommand) command;
+                            BLM.broadLinkRMProSend(blCommand.getResponse());
+                            markAndTryDoNextCommand(blCommand.getId());//智能家居的命令执行时调用命令后就认为成功了
+                            break;
+                    }
+                }
             }
-        }
-        return true;
-    }
-
-    @Override
-    public void onTaskComplete(Boolean output) {
-
+        });
     }
 
     private void scheduleNext() {
         if ((activeCommand = soundCommands.poll()) != null) {
             LogUtils.d(TAG, "scheduleNext:" + true);
-            addTask(activeCommand); //后台执行
+            performCommand(activeCommand); //后台执行
         } else {
             LogUtils.d(TAG, "scheduleNext:" + false);
             EventBus.getDefault().post(new SyncQueueEmptyEvent());
@@ -165,12 +151,10 @@ public class SyncQueue extends AbstractTaskQueue<SyncCommand, Boolean> {
     }
 
     public void stop() {
+        LogUtils.d(TAG, "stop");
         activeCommand = null;
         soundCommands.clear();
-        LogUtils.d(TAG, "stop");
-        LimbsManager.getInstance().stop();
-        mediaPlayerHelper.stop();
-        itts.stop();
-        clearTasks();
+        MouthTaskQueue.getInstance().stop();
+        LimbsTaskQueue.getInstance().stop();
     }
 }
