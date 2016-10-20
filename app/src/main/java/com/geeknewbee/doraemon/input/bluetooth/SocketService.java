@@ -28,9 +28,10 @@ public class SocketService {
     }
 
     public void start() {
-        stop();
-        acceptThread = new AcceptThread();
-        acceptThread.start();
+        if (acceptThread == null) {
+            acceptThread = new AcceptThread();
+            acceptThread.start();
+        }
     }
 
     public void stop() {

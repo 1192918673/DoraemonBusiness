@@ -175,18 +175,22 @@ public class BluetoothServiceManager {
                 int state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1);
                 switch (state) {
                     case BluetoothAdapter.STATE_ON:
-                        startServer();
+                        startBLEServer();
                         break;
                     case BluetoothAdapter.STATE_OFF:
-                        if (mChatService != null) {
-                            mChatService.stop();
-                        }
-                        stopAdvertise();
+                        stopBLEServer();
                         break;
                 }
             }
         }
     };
+
+    private void stopBLEServer() {
+        if (mChatService != null) {
+            mChatService.stop();
+        }
+        stopAdvertise();
+    }
 
     private BluetoothServiceManager(Context context) {
         this.context = context;
@@ -221,16 +225,18 @@ public class BluetoothServiceManager {
         if (!mBluetoothAdapter.isEnabled()) {
             mBluetoothAdapter.enable();
         } else {
-            startServer();
+            startBLEServer();
         }
+
+        startSocketService();
     }
 
     private void startSocketService() {
         socketService.start();
     }
 
-    private void startServer() {
-        LogUtils.d(ImmediateAlertService.TAG, "startServer");
+    private void startBLEServer() {
+        LogUtils.d(ImmediateAlertService.TAG, "startBLEServer");
 //        DeviceUtil.setDiscoverableTimeout(1000 * 60 * 60 * 24 * 7);
 //        if (mChatService == null) {
 //            startBluetoothServer();
@@ -244,15 +250,11 @@ public class BluetoothServiceManager {
 
     public void onDestroy() {
         context.unregisterReceiver(mReceiver);
-        if (mChatService != null) {
-            mChatService.stop();
-        }
-
         if (talkTask != null) {
             talkTask.stop();
         }
 
-        stopAdvertise();
+        stopBLEServer();
         stopSocketService();
     }
 
@@ -325,10 +327,6 @@ public class BluetoothServiceManager {
         wifiCallBack.hadBound = event.hadBound;
         wifiCallBack.ipAddress = event.ipAddress;
         phoneCommand.setWifiCallBack(wifiCallBack);
-
-        //当设置wifi成功后开启socket service
-        if (event.isSuccess)
-            startSocketService();
 
         if (mChatService != null) {
             mChatService.write(new Gson().toJson(phoneCommand).getBytes());
