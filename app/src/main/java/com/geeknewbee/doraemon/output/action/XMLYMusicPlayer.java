@@ -42,10 +42,14 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     private List<Long> albumId = new ArrayList<>();
     private Command activeCommand;
 
+    private boolean stopFlag;
     private IXmPlayerStatusListener mPlayerStatusListener = new IXmPlayerStatusListener() {
 
         @Override
         public void onSoundPrepared() {
+            if (stopFlag) {
+                stop();
+            }
             LogUtils.d(Constants.TAG_MUSIC, "onSoundPrepared");
         }
 
@@ -154,6 +158,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     @Override
     public synchronized boolean play(Command command) {
+        stopFlag = false;
         activeCommand = command;
         Map<String, String> map = new HashMap<String, String>();
         map.put(DTransferConstants.SEARCH_KEY, command.getContent());
@@ -178,6 +183,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
                     tracks.add(searchTrackList.getTracks().get(0));
                     mPlayerManager.clearPlayCache();
                     mPlayerManager.playList(tracks, 0);
+                    LogUtils.d("Debug", "喜马拉雅播放器playList");
                 } else {
                     // 此处说完话后要开启ASR，为解决音乐任务先于“正在搜索音乐...”的TIPS结束后，处于谁也没有启动ASR的死角
                     Doraemon.getInstance(App.mContext).addCommand(new SoundCommand("没有搜索到音乐", SoundCommand.InputSource.TIPS));
@@ -196,6 +202,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     @Override
     public synchronized boolean joke(Command command) {
+        stopFlag = false;
         activeCommand = command;
         // 分类列表：娱乐
         // 1--资讯,2--音乐,3--有声书,4--娱乐,6--儿童,7--健康养生,8--商业财经,9--历史人文,10--情感生活,
@@ -259,9 +266,12 @@ public class XMLYMusicPlayer implements IMusicPlayer {
 
     @Override
     public boolean stop() {
+        stopFlag = true;
         LogUtils.d(Constants.TAG_MUSIC, "Music Stop...");
         if (mPlayerManager != null) {
+            LogUtils.d("Debug", mPlayerManager.isPlaying() ? "正在播放" : "还没开始播放");
             mPlayerManager.stop();
+            LogUtils.d("Debug", "喜马拉雅播放器stop");
         }
         return true;
     }
