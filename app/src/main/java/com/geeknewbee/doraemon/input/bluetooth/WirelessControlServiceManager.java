@@ -20,7 +20,6 @@ import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.output.AddFaceType;
 import com.geeknewbee.doraemon.output.BluetoothTalkTask;
-import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.command.AddFaceCommand;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
@@ -35,7 +34,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -59,12 +61,17 @@ public class WirelessControlServiceManager {
 
     private static volatile WirelessControlServiceManager instance;
     private BluetoothAdapter mBluetoothAdapter;
-    private Doraemon doraemon;
     private Context context;
     private BluetoothChatService mChatService;
     private SocketService socketService;
     private BlockingQueue<byte[]> audioData = new LinkedBlockingQueue<byte[]>();
     private BluetoothTalkTask talkTask;
+    private OnReceiveCommandListener receiveCommandListener;
+
+    private BluetoothGattServer mGattServer;
+    private BluetoothLeAdvertiser mBTAdvertiser;
+    private ImmediateAlertService ias;
+
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -96,7 +103,7 @@ public class WirelessControlServiceManager {
                     try {
                         String readMessage = new String(buf, 0, buf.length);
                         BluetoothCommand command = gson.fromJson(readMessage, BluetoothCommand.class);
-                        doraemon.addCommand(command.getCommand());
+                        receiveCommands(command.getCommand());
                     } catch (JsonSyntaxException e) {
                         e.printStackTrace();
                     }
@@ -114,25 +121,29 @@ public class WirelessControlServiceManager {
                             Gson gsonSecond = new Gson();
                             try {
                                 BluetoothCommand command = gsonSecond.fromJson(new String(bytes, 1, bytes.length - 1), BluetoothCommand.class);
-                                doraemon.addCommand(command.getCommand());
+                                receiveCommands(command.getCommand());
                             } catch (JsonSyntaxException e) {
                                 e.printStackTrace();
                             }
                             break;
                         case WirelessControlServiceManager.TYPE_PERSON_START:
-                            doraemon.addCommand(new Command(CommandType.PERSON_START, new String(bytes, 1, bytes.length - 1)));
+                            receiveCommands(Collections.singletonList(new Command(CommandType.PERSON_START, new String(bytes, 1, bytes.length - 1))));
                             break;
                         case WirelessControlServiceManager.TYPE_PERSON_ADD_FACE:
-                            doraemon.addCommand(new AddFaceCommand(AddFaceType.YUV, Arrays.copyOfRange(bytes, 1, bytes.length)));
+                            List<Command> commands1 = new ArrayList<>();
+                            commands1.add(new AddFaceCommand(AddFaceType.YUV, Arrays.copyOfRange(bytes, 1, bytes.length)));
+                            receiveCommands(commands1);
                             break;
                         case WirelessControlServiceManager.TYPE_PERSON_ADD_FACE_IMAGE:
-                            doraemon.addCommand(new AddFaceCommand(AddFaceType.IMAGE, Arrays.copyOfRange(bytes, 1, bytes.length)));
+                            List<Command> commands2 = new ArrayList<>();
+                            commands2.add(new AddFaceCommand(AddFaceType.IMAGE, Arrays.copyOfRange(bytes, 1, bytes.length)));
+                            receiveCommands(commands2);
                             break;
                         case WirelessControlServiceManager.TYPE_PERSON_SET_NAME:
-                            doraemon.addCommand(new Command(CommandType.PERSON_SET_NAME, new String(bytes, 1, bytes.length - 1)));
+                            receiveCommands(Collections.singletonList(new Command(CommandType.PERSON_SET_NAME, new String(bytes, 1, bytes.length - 1))));
                             break;
                         case WirelessControlServiceManager.TYPE_PERSON_DELETE_ALL:
-                            doraemon.addCommand(new Command(CommandType.PERSON_DELETE_ALL, new String(bytes, 1, bytes.length - 1)));
+                            receiveCommands(Collections.singletonList(new Command(CommandType.PERSON_DELETE_ALL, new String(bytes, 1, bytes.length - 1))));
                             break;
                     }
                     break;
@@ -141,7 +152,7 @@ public class WirelessControlServiceManager {
                     Gson gsonSecond = new Gson();
                     try {
                         BluetoothCommand command = gsonSecond.fromJson(message, BluetoothCommand.class);
-                        doraemon.addCommand(command.getCommand());
+                        receiveCommands(command.getCommand());
                     } catch (JsonSyntaxException e) {
                         e.printStackTrace();
                     }
@@ -149,9 +160,12 @@ public class WirelessControlServiceManager {
             }
         }
     };
-    private BluetoothGattServer mGattServer;
-    private BluetoothLeAdvertiser mBTAdvertiser;
-    private ImmediateAlertService ias;
+
+    private void receiveCommands(List<Command> commands) {
+        if (receiveCommandListener != null)
+            receiveCommandListener.onReceiveCommand(commands);
+    }
+
     private AdvertiseCallback mAdvCallback = new AdvertiseCallback() {
         public void onStartSuccess(android.bluetooth.le.AdvertiseSettings settingsInEffect) {
             if (settingsInEffect != null) {
@@ -216,7 +230,6 @@ public class WirelessControlServiceManager {
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         context.registerReceiver(mReceiver, filter);
 
-        doraemon = Doraemon.getInstance(context);
         talkTask = new BluetoothTalkTask(audioData);
 
         if (mBluetoothAdapter != null)
@@ -231,6 +244,10 @@ public class WirelessControlServiceManager {
         }
 
         startSocketService();
+    }
+
+    public void setReceiveCommandListener(OnReceiveCommandListener receiveCommandListener) {
+        this.receiveCommandListener = receiveCommandListener;
     }
 
     private void startSocketService() {
@@ -359,5 +376,9 @@ public class WirelessControlServiceManager {
         if (socketService != null) {
             socketService.write(data);
         }
+    }
+
+    public interface OnReceiveCommandListener {
+        void onReceiveCommand(List<Command> command);
     }
 }

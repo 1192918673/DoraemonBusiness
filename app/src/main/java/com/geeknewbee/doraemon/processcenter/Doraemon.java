@@ -59,7 +59,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 哆啦A梦 单利模式
  */
-public class Doraemon implements IMessageReceive.MessageListener {
+public class Doraemon implements IMessageReceive.MessageListener, WirelessControlServiceManager.OnReceiveCommandListener {
     private volatile static Doraemon instance;
     private final Context context;
     private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
@@ -105,6 +105,7 @@ public class Doraemon implements IMessageReceive.MessageListener {
 
     private void startBluetoothService() {
         wirelessControlServiceManager = WirelessControlServiceManager.getInstance(context);
+        wirelessControlServiceManager.setReceiveCommandListener(this);
         wirelessControlServiceManager.init();
         wirelessControlServiceManager.start();
     }
@@ -557,6 +558,16 @@ public class Doraemon implements IMessageReceive.MessageListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 当接收到无线远程的命令
+     *
+     * @param commands
+     */
+    @Override
+    public void onReceiveCommand(List<Command> commands) {
+        addCommand(commands);
     }
 
     class ReadSenseTTSReceiver extends BroadcastReceiver {
