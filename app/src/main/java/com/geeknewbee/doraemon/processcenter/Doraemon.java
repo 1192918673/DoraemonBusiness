@@ -524,6 +524,9 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
     }
 
     public void destroy() {
+        stopASR();
+        stopWakeUp();
+        stopAFR();
         wirelessControlServiceManager.onDestroy();
         wirelessControlServiceManager = null;
         ear.destroy();

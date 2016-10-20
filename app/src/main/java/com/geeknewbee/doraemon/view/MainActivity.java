@@ -14,14 +14,13 @@ import com.geeknewbee.doraemon.broadcast.BatteryReceiver;
 import com.geeknewbee.doraemon.broadcast.NetworkChangeReceiver;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CrashEvent;
-import com.geeknewbee.doraemon.entity.event.PressNoseEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
+import com.geeknewbee.doraemon.input.KeyEventParser;
 import com.geeknewbee.doraemon.input.ReadSenseService;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
-import com.geeknewbee.doraemon.processcenter.PressNoseType;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.SensorUtil;
@@ -42,7 +41,6 @@ public class MainActivity extends Activity {
     private TextView result;
     private BatteryReceiver receiverBattery;
     private NetworkChangeReceiver receiverNetWork;
-    private boolean isLongPress;//是否长按
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,38 +57,17 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        event.startTracking();
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_D:
-                LogUtils.d(App.TAG, "鼻子按下事件");
-                if (event.getRepeatCount() == 0) {
-                    isLongPress = false;
-                }
-                return true;
-        }
-        return super.onKeyDown(keyCode, event);
+        return KeyEventParser.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_D:
-                LogUtils.d(App.TAG, "鼻子抬起事件");
-                EventBus.getDefault().post(new PressNoseEvent(isLongPress ? PressNoseType.LONG_PRESS : PressNoseType.SHORT_PRESS));
-                isLongPress = false;
-                return true;
-        }
-        return super.onKeyUp(keyCode, event);
+        return KeyEventParser.onKeyUp(keyCode, event);
     }
 
     @Override
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_D:
-                isLongPress = true;
-                return true;
-        }
-        return super.onKeyLongPress(keyCode, event);
+        return KeyEventParser.onKeyLongPress(keyCode, event);
     }
 
     private void registerReceiver() {
@@ -146,7 +123,7 @@ public class MainActivity extends Activity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onASRResult(ReceiveASRResultEvent event) {
-        //收到ASR的识别结果
+        //显示ASR的识别结果
         result.setText(event.input);
     }
 
@@ -177,10 +154,7 @@ public class MainActivity extends Activity {
         super.onDestroy();
         unregisterReceiver(receiverBattery);
         unregisterReceiver(receiverNetWork);
-//        unbindService(myServiceConnection);
         Doraemon.getInstance(getApplicationContext()).destroy();
-        Doraemon.getInstance(getApplicationContext()).stopAFR();
         WeatherManager.getInstance().destroy();
     }
-
 }
