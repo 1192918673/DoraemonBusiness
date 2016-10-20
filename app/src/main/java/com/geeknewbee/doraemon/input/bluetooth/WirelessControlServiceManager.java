@@ -39,9 +39,11 @@ import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
+/**
+ * BLE,经典蓝牙，socket service
+ */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class BluetoothServiceManager {
+public class WirelessControlServiceManager {
     //远程控制命令
     public static final byte TYPE_CONTROL = 0x31;
     //开始添加人的功能
@@ -55,7 +57,7 @@ public class BluetoothServiceManager {
     //删除已经添加的所有的人
     public static final byte TYPE_PERSON_DELETE_ALL = 0x36;
 
-    private static volatile BluetoothServiceManager instance;
+    private static volatile WirelessControlServiceManager instance;
     private BluetoothAdapter mBluetoothAdapter;
     private Doraemon doraemon;
     private Context context;
@@ -108,7 +110,7 @@ public class BluetoothServiceManager {
                         e.printStackTrace();
                     }
                     switch (funCode) {
-                        case BluetoothServiceManager.TYPE_CONTROL:
+                        case WirelessControlServiceManager.TYPE_CONTROL:
                             Gson gsonSecond = new Gson();
                             try {
                                 BluetoothCommand command = gsonSecond.fromJson(new String(bytes, 1, bytes.length - 1), BluetoothCommand.class);
@@ -117,19 +119,19 @@ public class BluetoothServiceManager {
                                 e.printStackTrace();
                             }
                             break;
-                        case BluetoothServiceManager.TYPE_PERSON_START:
+                        case WirelessControlServiceManager.TYPE_PERSON_START:
                             doraemon.addCommand(new Command(CommandType.PERSON_START, new String(bytes, 1, bytes.length - 1)));
                             break;
-                        case BluetoothServiceManager.TYPE_PERSON_ADD_FACE:
+                        case WirelessControlServiceManager.TYPE_PERSON_ADD_FACE:
                             doraemon.addCommand(new AddFaceCommand(AddFaceType.YUV, Arrays.copyOfRange(bytes, 1, bytes.length)));
                             break;
-                        case BluetoothServiceManager.TYPE_PERSON_ADD_FACE_IMAGE:
+                        case WirelessControlServiceManager.TYPE_PERSON_ADD_FACE_IMAGE:
                             doraemon.addCommand(new AddFaceCommand(AddFaceType.IMAGE, Arrays.copyOfRange(bytes, 1, bytes.length)));
                             break;
-                        case BluetoothServiceManager.TYPE_PERSON_SET_NAME:
+                        case WirelessControlServiceManager.TYPE_PERSON_SET_NAME:
                             doraemon.addCommand(new Command(CommandType.PERSON_SET_NAME, new String(bytes, 1, bytes.length - 1)));
                             break;
-                        case BluetoothServiceManager.TYPE_PERSON_DELETE_ALL:
+                        case WirelessControlServiceManager.TYPE_PERSON_DELETE_ALL:
                             doraemon.addCommand(new Command(CommandType.PERSON_DELETE_ALL, new String(bytes, 1, bytes.length - 1)));
                             break;
                     }
@@ -192,17 +194,17 @@ public class BluetoothServiceManager {
         stopAdvertise();
     }
 
-    private BluetoothServiceManager(Context context) {
+    private WirelessControlServiceManager(Context context) {
         this.context = context;
         socketService = new SocketService(mHandler);
         EventBus.getDefault().register(this);
     }
 
-    public static BluetoothServiceManager getInstance(Context context) {
+    public static WirelessControlServiceManager getInstance(Context context) {
         if (instance == null) {
-            synchronized (BluetoothServiceManager.class) {
+            synchronized (WirelessControlServiceManager.class) {
                 if (instance == null) {
-                    instance = new BluetoothServiceManager(context);
+                    instance = new WirelessControlServiceManager(context);
                 }
             }
         }

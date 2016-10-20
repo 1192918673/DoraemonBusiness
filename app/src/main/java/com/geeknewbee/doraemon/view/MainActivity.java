@@ -17,7 +17,7 @@ import com.geeknewbee.doraemon.entity.event.CrashEvent;
 import com.geeknewbee.doraemon.entity.event.PressNoseEvent;
 import com.geeknewbee.doraemon.entity.event.ReceiveASRResultEvent;
 import com.geeknewbee.doraemon.input.ReadSenseService;
-import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
+import com.geeknewbee.doraemon.input.bluetooth.WirelessControlServiceManager;
 import com.geeknewbee.doraemon.output.FaceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.DoraemonInfoManager;
@@ -40,7 +40,7 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class MainActivity extends Activity {
     public GifImageView gifView;
-    private BluetoothServiceManager bluetoothServiceManager;
+    private WirelessControlServiceManager wirelessControlServiceManager;
     private TextView result;
     private BatteryReceiver receiverBattery;
     private NetworkChangeReceiver receiverNetWork;
@@ -124,9 +124,9 @@ public class MainActivity extends Activity {
     }
 
     private void startBluetoothService() {
-        bluetoothServiceManager = BluetoothServiceManager.getInstance(getApplicationContext());
-        bluetoothServiceManager.init();
-        bluetoothServiceManager.start();
+        wirelessControlServiceManager = WirelessControlServiceManager.getInstance(getApplicationContext());
+        wirelessControlServiceManager.init();
+        wirelessControlServiceManager.start();
     }
 
     private void initData() {
@@ -195,9 +195,9 @@ public class MainActivity extends Activity {
     }
 
     private void destroy() {
-        if (bluetoothServiceManager != null) {
-            bluetoothServiceManager.onDestroy();
-            bluetoothServiceManager = null;
+        if (wirelessControlServiceManager != null) {
+            wirelessControlServiceManager.onDestroy();
+            wirelessControlServiceManager = null;
         }
     }
 }

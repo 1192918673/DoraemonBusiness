@@ -10,7 +10,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.database.Person;
 import com.geeknewbee.doraemon.database.PersonDao;
 import com.geeknewbee.doraemon.entity.ReadFaceInitParams;
-import com.geeknewbee.doraemon.input.bluetooth.BluetoothServiceManager;
+import com.geeknewbee.doraemon.input.bluetooth.WirelessControlServiceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.AddFaceCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -71,23 +71,23 @@ public class ReadFace {
                 gson = new Gson();
                 ReadFaceInitParams initParams = gson.fromJson(command.getContent(), ReadFaceInitParams.class);
                 b = startAddFace(initParams.orientation, initParams.resizeScale, initParams.iw, initParams.ih);
-                data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_START);
-                BluetoothServiceManager.getInstance(context).writeToSocket(data);
+                data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_START);
+                WirelessControlServiceManager.getInstance(context).writeToSocket(data);
                 break;
             case PERSON_ADD_FACE:
                 AddFaceCommand faceCommand = (AddFaceCommand) command;
                 b = addFace(faceCommand);
                 if (faceCommand.faceType == AddFaceType.YUV)
-                    data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_ADD_FACE);
+                    data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_ADD_FACE);
                 else if (faceCommand.faceType == AddFaceType.IMAGE)
-                    data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_ADD_FACE_IMAGE);
-                BluetoothServiceManager.getInstance(context).writeToSocket(data);
+                    data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_ADD_FACE_IMAGE);
+                WirelessControlServiceManager.getInstance(context).writeToSocket(data);
                 break;
             case PERSON_SET_NAME:
                 String content = command.getContent();
                 b = setPersonName(content);
-                data = getCallbackString(b, BluetoothServiceManager.TYPE_PERSON_SET_NAME);
-                BluetoothServiceManager.getInstance(context).writeToSocket(data);
+                data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_SET_NAME);
+                WirelessControlServiceManager.getInstance(context).writeToSocket(data);
                 break;
             case PERSON_DELETE_ALL:
                 gson = new Gson();
