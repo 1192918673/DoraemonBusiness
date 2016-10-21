@@ -13,7 +13,7 @@ import org.greenrobot.eventbus.EventBus;
  * 猫的很多外部触摸事件是上报键值的方式
  */
 public class KeyEventParser {
-    private final int KEY_NOSE_PRESS = KeyEvent.KEYCODE_D;
+    private static final int KEY_NOSE_PRESS = KeyEvent.KEYCODE_D;
     private static boolean isLongPressOfNosePress = false;
 
     public static boolean onKeyDown(int keyCode, KeyEvent event) {
