@@ -58,7 +58,7 @@ public class AISpeechTTS implements ITTS {
         if (mTTSEngine != null) {
             mTTSEngine.destroy();
         }
-        soundCommands = new ArrayBlockingQueue<SoundCommand>(5);
+        soundCommands = new ArrayBlockingQueue<SoundCommand>(50);
         mTTSEngine = AILocalTTSEngine.createInstance();//创建实例
         mTTSEngine.setResource("qianran.v2.4.8.bin");//设置使用的合成资源模型名
         mTTSEngine.setDictDbName("aitts_sent_dict_v3.5.db");

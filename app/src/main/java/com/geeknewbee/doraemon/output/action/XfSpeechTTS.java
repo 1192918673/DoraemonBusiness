@@ -123,7 +123,7 @@ public class XfSpeechTTS implements ITTS {
         mTts = SpeechSynthesizer.createSynthesizer(App.mContext, mTtsInitListener);
         mSharedPreferences = App.mContext.getSharedPreferences(TtsSettings_PREFER_NAME, App.mContext.MODE_PRIVATE);
         setParamSynthesis();
-        soundCommands = new ArrayBlockingQueue<SoundCommand>(5);
+        soundCommands = new ArrayBlockingQueue<SoundCommand>(50);
     }
 
     public void setOnTTSCompleteListener(OnTTSCompleteListener onTTSCompleteListener) {
