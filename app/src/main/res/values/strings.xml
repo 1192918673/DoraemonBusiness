@@ -148,5 +148,5 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="answer_no_connect_network">网络没有连接，请先连接网络!</string>
     <string name="format_add_face_success">我已经认识%s了</string>
-    <string name="tips_weather" formatted="false">非常高兴来到%s,今天是%s天,有%s级的%s风。现在室外温度是%s度，室外的湿度%s度</string>
+    <string name="tips_weather" formatted="false">非常高兴来到%s,今天是%s天,有%s级的%s风。现在室外温度是%s度，室外的湿度百分之%s</string>
 </resources>
