@@ -96,7 +96,6 @@ public class XfSpeechTTS implements ITTS {
 
         @Override
         public void onCompleted(SpeechError error) {
-            notifyComplete(error == null, error == null ? Constants.EMPTY_STRING : error.getErrorDescription());
             if (error == null) {
                 LogUtils.d(TAG, "播放完成");
             } else {
@@ -104,7 +103,9 @@ public class XfSpeechTTS implements ITTS {
             }
             if (onTTSCompleteListener != null) {
                 onTTSCompleteListener.onTtsComplete();
+                return;
             }
+            notifyComplete(error == null, error == null ? Constants.EMPTY_STRING : error.getErrorDescription());
         }
 
         @Override
