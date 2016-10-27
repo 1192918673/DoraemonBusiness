@@ -318,6 +318,8 @@ public class SyncQueue {
         LogUtils.d(TAG, "stop");
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
+        MouthTaskQueue.getInstance().setBusy(false);
+        LimbsTaskQueue.getInstance().setBusy(false);
     }
 
     public void interrupt() {

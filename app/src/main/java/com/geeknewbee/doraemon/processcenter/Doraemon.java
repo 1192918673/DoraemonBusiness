@@ -39,12 +39,14 @@ import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
 import com.geeknewbee.doraemon.weather.WeatherManager;
+import com.geeknewbee.doraemonsdk.task.Priority;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -302,34 +304,13 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
         //当唤醒的时候停止当前的动作
         this.wakePhis = event.mPhis;
 
-        addCommand(new Command(CommandType.STOP),
-                new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
-//        addCommand(new SoundCommand("测试下占用的情况1", SoundCommand.InputSource.AFTER_WAKE_UP));
-//        addCommand(new SoundCommand("测试下占用的情况2", SoundCommand.InputSource.AFTER_WAKE_UP));
-//        addCommand(new SoundCommand("测试下占用的情况3", SoundCommand.InputSource.AFTER_WAKE_UP));
+        List<Command> commandList = new ArrayList<>();
+        Command command = new Command(CommandType.STOP);
+        commandList.add(command);
+        SyncCommand syncCommand = new SyncCommand(Priority.INTERRUPT, commandList);
+        addCommand(syncCommand);
+        addCommand(new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
 
-
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                super.run();
-//                try {
-//                    Thread.sleep(3*1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                List<Command> commandList = new ArrayList<>();
-//                commandList.add(new SoundCommand("这个是中断的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
-//                SyncCommand syncCommand = new SyncCommand(Priority.INTERRUPT, commandList);
-//                addCommand(syncCommand);
-//            }
-//        }.start();
-
-
-//        List<Command> commandList = new ArrayList<>();
-//        commandList.add(new SoundCommand("这个是延迟20秒的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
-//        SyncCommand syncCommand = new SyncCommand(commandList, 20 * 1000);
-//        addCommand(syncCommand);
         //根据声音定位转向
         double turnAngle = 0;
         LeXingUtil.Direction direction;
@@ -347,6 +328,43 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
 //        Doraemon.getInstance(App.mContext).addCommand(new LeXingCommand(speed[0], speed[1], 2000));
         //TODO 设置角度
 //        mEngine.setDoaChannel(6);//每次都是头对着用户
+    }
+
+    private void testSyncQueue() {
+        addCommand(new Command(CommandType.STOP),
+                new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
+        addCommand(new SoundCommand("测试下占用的情况1", SoundCommand.InputSource.AFTER_WAKE_UP));
+        addCommand(new SoundCommand("测试下占用的情况2", SoundCommand.InputSource.AFTER_WAKE_UP));
+        addCommand(new SoundCommand("测试下占用的情况3", SoundCommand.InputSource.AFTER_WAKE_UP));
+
+
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    Thread.sleep(3 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                List<Command> commandList = new ArrayList<>();
+                commandList.add(new SoundCommand("这个是中断的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
+                SyncCommand syncCommand = new SyncCommand(Priority.INTERRUPT, commandList);
+                addCommand(syncCommand);
+            }
+        }.start();
+
+
+        List<Command> commandList = new ArrayList<>();
+        commandList.add(new SoundCommand("这个是延迟15秒的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
+        SyncCommand syncCommand = new SyncCommand(commandList, 15 * 1000);
+        addCommand(syncCommand);
+
+        commandList = new ArrayList<>();
+        commandList.add(new SoundCommand("在延迟命令之后添加的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
+        syncCommand = new SyncCommand(commandList);
+        syncCommand.setExpireTime(30 * 1000);
+        addCommand(syncCommand);
     }
 
     /**

@@ -120,6 +120,11 @@ public class SyncCommand implements Comparable<SyncCommand> {
         return delayTime;
     }
 
+    public void setExpireTime(int expireTime) {
+        this.expireTime = expireTime;
+        this.expireTimestamp = startTimestamp + expireTime;
+    }
+
     /**
      * 如果当前事件的优先级更大，则返回-1，如果这两个优先级相等，则返回0，如果当前事件的优先级更小，则返回1。
      *

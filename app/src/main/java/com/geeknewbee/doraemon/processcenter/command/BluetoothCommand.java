@@ -2,6 +2,7 @@ package com.geeknewbee.doraemon.processcenter.command;
 
 import android.text.TextUtils;
 
+import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.SwitchControlTypeEvent;
@@ -100,8 +101,10 @@ public class BluetoothCommand {
         if (!TextUtils.isEmpty(musicName)) {
             if (musicName.equalsIgnoreCase(Constants.STOP_FLAG))
                 commands.add(new Command(CommandType.STOP, musicName));
-            else
+            else {
+                commands.add(new SoundCommand(App.mContext.getString(R.string.tips_search_music), SoundCommand.InputSource.TIPS));
                 commands.add(new Command(CommandType.PLAY_MUSIC, musicName));
+            }
         }
 
         if (wifiInfo != null) {
