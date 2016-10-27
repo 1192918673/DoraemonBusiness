@@ -1,11 +1,10 @@
 package com.geeknewbee.doraemonsdk.task;
 
 public enum Priority {
-    FG_TOP,
-    FG_NORMAL,
-    FG_LOW,
-    DEFAULT,
-    BG_TOP,
-    BG_NORMAL,
-    BG_LOW;
+    //中断当前task执行
+    INTERRUPT,
+    //默认
+    NORMAL,
+    //级别比较低
+    LOW;
 }

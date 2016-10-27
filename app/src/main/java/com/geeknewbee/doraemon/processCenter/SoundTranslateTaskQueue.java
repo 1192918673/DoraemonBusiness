@@ -8,9 +8,7 @@ import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
-import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
-import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.processcenter.command.BLCommand;
 import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
@@ -27,8 +25,6 @@ import com.geeknewbee.doraemon.webservice.RetrofitUtils;
 import com.geeknewbee.doraemonsdk.task.AbstractTaskQueue;
 import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -153,8 +149,8 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
     private List<Command> localPerform(SoundTranslateInput soundTranslateInput) {
         String input = soundTranslateInput.input;
         if (input.contains("睡觉") || input.contains("休息") || input.contains("再见") || input.contains("拜拜")) {
-            EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
             List<Command> commands = new ArrayList<>();
+            commands.add(new Command(CommandType.SLEEP));
             commands.add(new SoundCommand("好的，我去休息了，主人一定要记得再来找我奥", SoundCommand.InputSource.TIPS));
             return commands;
         } else if (input.contains("你好")) {

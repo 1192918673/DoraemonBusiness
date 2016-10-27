@@ -29,19 +29,20 @@ import mobile.ReadFace.YMFaceTrack;
 /**
  * 处理添加人脸功能
  */
-public class ReadFace {
+public class ReadFaceManager implements IOutput {
     public static final int INCOGNIZANT = -111;
-    public static final String TAG = ReadFace.class.getSimpleName();
+    public static final String TAG = ReadFaceManager.class.getSimpleName();
 
-    public static volatile ReadFace instance;
+    public static volatile ReadFaceManager instance;
     private final Context context;
     private List<Face> facesNew;
     private Map<Integer, String> persons;
     private YMFaceTrack faceTrack;
     private int iw;
     private int ih;
+    private boolean isBusy;
 
-    private ReadFace(Context context) {
+    private ReadFaceManager(Context context) {
         facesNew = new ArrayList<>();
         persons = new HashMap<>();
         this.context = context;
@@ -51,17 +52,18 @@ public class ReadFace {
         }
     }
 
-    public static ReadFace getInstance(Context context) {
+    public static ReadFaceManager getInstance(Context context) {
         if (instance == null) {
-            synchronized (ReadFace.class) {
+            synchronized (ReadFaceManager.class) {
                 if (instance == null) {
-                    instance = new ReadFace(context);
+                    instance = new ReadFaceManager(context);
                 }
             }
         }
         return instance;
     }
 
+    @Override
     public void addCommand(Command command) {
         String data = "";
         boolean b = false;
@@ -95,6 +97,16 @@ public class ReadFace {
                 deleteAddPerson(initParams2.orientation, initParams2.resizeScale);
                 break;
         }
+    }
+
+    @Override
+    public boolean isBusy() {
+        return isBusy;
+    }
+
+    @Override
+    public void setBusy(boolean isBusy) {
+        this.isBusy = isBusy;
     }
 
     private String getCallbackString(boolean b, byte type) {

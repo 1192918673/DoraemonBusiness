@@ -2,18 +2,20 @@ package com.geeknewbee.doraemon.processcenter.command;
 
 import com.geeknewbee.doraemon.constants.Constants;
 
+import java.util.UUID;
+
 /**
  * Brain执行的命令
  */
 public class Command {
-    private long id;
+    private String id;
     private CommandType type;
     private String content;
 
     public Command(CommandType type, String content) {
         this.type = type;
         this.content = content;
-        id = System.currentTimeMillis();
+        id = UUID.randomUUID().toString();
     }
 
     public Command(CommandType type) {
@@ -28,7 +30,7 @@ public class Command {
         return content;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 

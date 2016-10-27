@@ -99,6 +99,7 @@ public class AISpeechTTS implements ITTS {
             mTTSEngine.stop();
             isSpeaking = false;
         }
+        notifyComplete(true, "");
         return true;
     }
 

@@ -43,7 +43,8 @@ public class MediaPlayerHelper {
 
     private void notifyComplete() {
         mediaPlayer.release();
-        EventBus.getDefault().post(new MusicCompleteEvent(activeCommand.getId()));
+        if (activeCommand != null)
+            EventBus.getDefault().post(new MusicCompleteEvent(activeCommand.getId()));
         EventBus.getDefault().post(new DanceMusicStopEvent());//通知停止动作
     }
 
@@ -52,6 +53,8 @@ public class MediaPlayerHelper {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
+        if (activeCommand != null)
+            EventBus.getDefault().post(new MusicCompleteEvent(activeCommand.getId()));
     }
 
     public boolean isPlaying() {

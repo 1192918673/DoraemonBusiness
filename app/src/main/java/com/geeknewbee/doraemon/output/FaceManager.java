@@ -2,6 +2,8 @@ package com.geeknewbee.doraemon.output;
 
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
+import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.view.MainActivity;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -14,8 +16,7 @@ import pl.droidsonroids.gif.GifDrawable;
 /**
  * 处理表情
  */
-public class FaceManager {
-    private static final int HIDE_QR = 0;
+public class FaceManager implements IOutput {
     private static volatile FaceManager instance;
 
     public MainActivity faceActivity;
@@ -57,11 +58,7 @@ public class FaceManager {
         return instance;
     }
 
-    public synchronized void displayGif(final String content) {
-        displayGif(content, 1);
-    }
-
-    public synchronized void displayGif(final String content, int loops) {
+    private synchronized void displayGif(final String content, int loops) {
         int imageResId = BaseApplication.mContext.getResources().getIdentifier(content, "drawable", BaseApplication.mContext.getPackageName());
         if (imageResId <= 0)
             return;
@@ -115,5 +112,22 @@ public class FaceManager {
                 }
             }
         });
+    }
+
+    @Override
+    public void addCommand(Command command) {
+        ExpressionCommand expressionCommand = (ExpressionCommand) command;
+        displayGif(expressionCommand.getContent(), expressionCommand.loops);
+    }
+
+    @Override
+    public boolean isBusy() {
+        //这些命令都是异步命令，随时可用
+        return false;
+    }
+
+    @Override
+    public void setBusy(boolean isBusy) {
+        //该 输出通道一直都是非占用,随时可用
     }
 }

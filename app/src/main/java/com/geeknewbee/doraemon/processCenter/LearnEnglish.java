@@ -10,7 +10,6 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.BuildConfig;
 import com.geeknewbee.doraemon.R;
 import com.geeknewbee.doraemon.entity.StudyWords;
-import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.iflytek.ise.result.Result;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.output.action.XfSpeechTTS;
@@ -26,8 +25,6 @@ import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechEvaluator;
-
-import org.greenrobot.eventbus.EventBus;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -272,8 +269,8 @@ public class LearnEnglish {
                         }
                     });
             LogUtils.d(TAG, "退出学习英语！");
-            //  通知机器猫可以被唤醒了
-            EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
+            //通知机器猫可以被唤醒了
+            Doraemon.getInstance(App.mContext).switchSoundMonitor(SoundMonitorType.EDD);
             study_index = 0;
             mTts.destroy();
             mIse.destroy();

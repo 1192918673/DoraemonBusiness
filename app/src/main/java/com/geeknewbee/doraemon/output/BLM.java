@@ -1,10 +1,14 @@
-package com.geeknewbee.doraemon.BL;
+package com.geeknewbee.doraemon.output;
 
 import android.content.Context;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.BLLocalCMD;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.event.BLLocalResponse;
+import com.geeknewbee.doraemon.processcenter.command.BLCommand;
+import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
+import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 
@@ -13,13 +17,30 @@ import cn.com.broadlink.blnetwork.BLNetwork;
 /**
  * Created by GYY on 2016/9/6.
  */
-public class BLM {
+public class BLM implements IOutput {
 
     private static final int MSG_WHAT_BL_INIT = 100;
     private static final int MSG_WHAT_BL_SEND = 105;
     private static final int MSG_WHAT_BL_PLUG = 112;
     private static BLNetwork blNetwork;
     private static String TAG = "BLM";
+
+    public static volatile BLM instance;
+
+    private BLM() {
+    }
+
+    public static BLM getInstance() {
+        if (instance == null) {
+            synchronized (BLM.class) {
+                if (instance == null) {
+                    instance = new BLM();
+                }
+            }
+        }
+        return instance;
+    }
+
 
     /**
      * 初始化博联设备
@@ -37,7 +58,7 @@ public class BLM {
     /**
      * 初始化BroadLink的网络
      */
-    public static void broadLinkInit(int delay) {
+    private static void broadLinkInit(int delay) {
         BLLocalCMD blLocalCMD = new BLLocalCMD();
         blLocalCMD.setApi_id(1);
         blLocalCMD.setCommand("network_init");
@@ -49,7 +70,7 @@ public class BLM {
     /**
      * 发送命令代码到设备
      */
-    public static void broadLinkRMProSend(String blMac, String cmd_data, int delay) {
+    private static void broadLinkRMProSend(String blMac, String cmd_data, int delay) {
         BLLocalCMD blLocalCMD = new BLLocalCMD();
         blLocalCMD.setApi_id(134);
         blLocalCMD.setCommand("rm2_send");
@@ -67,7 +88,7 @@ public class BLM {
     /**
      * 发送命令代码到设备
      */
-    public static void broadLinkRMProSend(GetAnswerResponse response) {
+    private static void broadLinkRMProSend(GetAnswerResponse response) {
         if (response.getType() == 1) {   //电视
             String[] mData = response.getData().split(",");
             if (null != mData && mData.length == 2) {
@@ -94,7 +115,7 @@ public class BLM {
     /**
      * 发送命令代码到设备
      */
-    public static void broadLinkRMProSend(String data, int delay) {
+    private static void broadLinkRMProSend(String data, int delay) {
         String[] mData = data.split(",");
         if (null != mData && mData.length == 2) {
             broadLinkRMProSend(mData[0], mData[1], delay);
@@ -106,7 +127,7 @@ public class BLM {
      *
      * @param status 0，关闭，1，打开
      */
-    public static void modifyPlugbase(String blMac, int status) {
+    private static void modifyPlugbase(String blMac, int status) {
         BLLocalCMD blLocalCMD = new BLLocalCMD();
         blLocalCMD.setApi_id(72);
         blLocalCMD.setCommand("sp2_control");
@@ -121,7 +142,7 @@ public class BLM {
      * @param input 输入的语音
      * @param blMac 插座的mac
      */
-    public static void modifyPlugbase(String input, String blMac) {
+    private static void modifyPlugbase(String input, String blMac) {
         if (input.indexOf("开") != -1) {
             LogUtils.d(TAG, "打开插座：" + blMac);
             modifyPlugbase(blMac, 1);
@@ -140,7 +161,7 @@ public class BLM {
      * @param delay     推迟执行的时间
      * @param bls1_what 消息类别
      */
-    public static void sendCMDToBroadLink(final String cmd, final int msg_what, final int delay, final int bls1_what) {
+    private static void sendCMDToBroadLink(final String cmd, final int msg_what, final int delay, final int bls1_what) {
         Thread thread = new Thread() {
             @Override
             public void run() {
@@ -176,5 +197,30 @@ public class BLM {
             }
         };
         thread.start();
+    }
+
+    @Override
+    public void addCommand(Command command) {
+        switch (command.getType()) {
+            case BL:
+                BLCommand blCommand = (BLCommand) command;
+                BLM.broadLinkRMProSend(blCommand.getResponse());
+                break;
+            case BL_SP:
+                BLSPCommand blspCommand = (BLSPCommand) command;
+                BLM.modifyPlugbase(blspCommand.getInput(), blspCommand.getMac().trim());
+                break;
+        }
+    }
+
+    @Override
+    public boolean isBusy() {
+        //这些命令都是异步命令，随时可用
+        return false;
+    }
+
+    @Override
+    public void setBusy(boolean isBusy) {
+        //该 输出通道一直都是非占用,随时可用
     }
 }

@@ -9,11 +9,11 @@ import android.support.multidex.MultiDex;
 
 import com.aispeech.common.AIConstant;
 import com.facebook.stetho.Stetho;
-import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.database.DaoMaster;
 import com.geeknewbee.doraemon.database.DaoSession;
 import com.geeknewbee.doraemon.database.upgrade.MyOpenHelper;
 import com.geeknewbee.doraemon.input.AISpeechAuth;
+import com.geeknewbee.doraemon.output.BLM;
 import com.geeknewbee.doraemon.output.action.YouKuPlayerActivity;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
@@ -77,7 +77,7 @@ public class App extends BaseApplication {
      * 初始化博联设备
      */
     private void initBroadLink() {
-        BLM.initBroadLink(this);
+        BLM.getInstance().initBroadLink(this);
     }
 
     /**

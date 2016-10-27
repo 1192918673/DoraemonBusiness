@@ -39,12 +39,12 @@ public abstract class AbstractTaskQueue<Input, Result> {
     }
 
     /**
-     * 添加Tadk 默认优先级 Priority.DEFAULT
+     * 添加Tadk 默认优先级 Priority.NORMAL
      *
      * @param input
      */
     public synchronized void addTask(final Input input) {
-        addTask(Priority.DEFAULT, input);
+        addTask(Priority.NORMAL, input);
     }
 
     /**

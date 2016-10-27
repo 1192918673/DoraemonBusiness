@@ -1,32 +1,20 @@
 package com.geeknewbee.doraemon.processcenter;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.BL.BLM;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.SoundTranslateInput;
-import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.TranslateSoundCompleteEvent;
 import com.geeknewbee.doraemon.input.AISpeechEar;
-import com.geeknewbee.doraemon.input.SoundMonitorType;
-import com.geeknewbee.doraemon.output.FaceManager;
-import com.geeknewbee.doraemon.output.ReadFace;
-import com.geeknewbee.doraemon.output.SysSettingManager;
-import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
-import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
-import com.geeknewbee.doraemon.processcenter.command.BLCommand;
-import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
+import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
-import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
-import com.geeknewbee.doraemonsdk.BaseApplication;
+import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 任务处理中枢
@@ -35,8 +23,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * 输出终端有 喇叭/肢体/屏幕等。 每个终端保持一个 priority queue，每个终端的task任务必须串行。
  */
 public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
-    //创建一个切换AddCommand锁对象
-    private Lock addCommandLock = new ReentrantLock();
 
 
     public void translateSound(SoundTranslateInput input) {
@@ -46,79 +32,33 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     }
 
     public void addCommand(Command command) {
-        addCommandLock.lock();
+        LogUtils.d(SyncQueue.TAG, "add command:" + command.getType() + "-" + command.getId());
+
+        SyncCommand syncCommand = new SyncCommand(Collections.singletonList(command));
+        if (command.getType() == CommandType.PLAY_SOUND) {
+            SoundCommand soundCommand = (SoundCommand) command;
+            if (soundCommand.inputSource == SoundCommand.InputSource.START_WAKE_UP
+                    || soundCommand.inputSource == SoundCommand.InputSource.AFTER_WAKE_UP) {
+                syncCommand.needSwitchEdd = false;
+            }
+        } else if (command.getType() == CommandType.SHOW_EXPRESSION ||
+                command.getType() == CommandType.BLUETOOTH_CONTROL_FOOT ||
+                command.getType() == CommandType.STOP)
+            //单独的设置Gif、STOP、蓝牙控制脚步不需要进入EDD
+            syncCommand.needSwitchEdd = false;
+
+        SyncQueue.getInstance(App.mContext).addCommand(syncCommand);
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
-        switch (command.getType()) {
-            case SHOW_EXPRESSION: //面部表情
-                ExpressionCommand expressionCommand = (ExpressionCommand) command;
-                FaceManager.getInstance().displayGif(expressionCommand.getContent(), expressionCommand.loops);
-                break;
-            case PLAY_SOUND: //讲话
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case PLAY_MUSIC: //音乐
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case PLAY_JOKE: //笑话
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case PLAY_LOCAL_RESOURCE: //播放本地音频
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case BLUETOOTH_CONTROL_FOOT: //蓝牙控制脚步
-                LimbsTaskQueue.getInstance().addTask(command);
-                break;
-            case SPORT_ACTION_SET: //舞蹈动作
-                LimbsTaskQueue.getInstance().addTask(command);
-                break;
-            case STOP:
-                MouthTaskQueue.getInstance().stop();
-                LimbsTaskQueue.getInstance().stop();
-                SyncQueue.getInstance().stop();
-                break;
-            case TAKE_PICTURE: //拍照
-                addCommand(new SoundCommand("好的", SoundCommand.InputSource.TIPS));
-                Doraemon.getInstance(BaseApplication.mContext).startTakePicture();
-                break;
-            case WIFI_MESSAGE://设置连接WIFI
-                WifiCommand wifiCommand = (WifiCommand) command;
-                SysSettingManager.connectWiFi(wifiCommand.ssid, wifiCommand.pwd, wifiCommand.type);
-                break;
-            case SETTING_VOLUME://设置系统音量
-                SysSettingManager.setVolume(command.getContent());
-                break;
-            case BL: //博联遥控
-                BLCommand blCommand = (BLCommand) command;
-                BLM.broadLinkRMProSend(blCommand.getResponse());
-                break;
-            case BL_SP: //博联插座
-                BLSPCommand blspCommand = (BLSPCommand) command;
-                BLM.modifyPlugbase(blspCommand.getInput(), blspCommand.getMac().trim());
-                break;
-            case PLAY_MOVIE:
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case SLEEP:
-                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-                break;
-            case LEARN_EN:  //学英语
-                MouthTaskQueue.getInstance().addTask(command);
-                break;
-            case PERSON_START:
-            case PERSON_ADD_FACE:
-            case PERSON_SET_NAME:
-            case PERSON_DELETE_ALL:
-                ReadFace.getInstance(App.mContext).addCommand(command);
-                break;
-        }
-        addCommandLock.unlock();
     }
 
     protected void addCommand(List<Command> commands) {
-        if (commands == null || commands.isEmpty()) return;
+        String logStr = "addCommand list:";
         for (Command command : commands) {
-            addCommand(command);
+            logStr += (command.getType().toString() + "-" + command.getId());
         }
+        LogUtils.d(SyncQueue.TAG, logStr);
+        SyncCommand syncCommand = new SyncCommand(commands);
+        SyncQueue.getInstance(App.mContext).addCommand(syncCommand);
     }
 
     @Override
@@ -126,5 +66,9 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
         LogUtils.d(AISpeechEar.TAG, "onTranslateComplete");
         addCommand(commands);
         EventBus.getDefault().post(new TranslateSoundCompleteEvent());
+    }
+
+    public void addCommand(SyncCommand syncCommand) {
+        SyncQueue.getInstance(App.mContext).addCommand(syncCommand);
     }
 }

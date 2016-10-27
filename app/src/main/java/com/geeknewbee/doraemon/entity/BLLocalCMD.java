@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.BL;
+package com.geeknewbee.doraemon.entity;
 
 import java.util.HashMap;
 import java.util.Map;

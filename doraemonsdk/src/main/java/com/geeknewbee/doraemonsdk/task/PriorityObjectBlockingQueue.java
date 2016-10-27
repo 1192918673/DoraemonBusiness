@@ -629,7 +629,7 @@ public class PriorityObjectBlockingQueue<E> extends AbstractQueue<E>
                 this.value = (PriorityObject<?>) value;
                 this.valueAsT = true;
             } else {
-                this.value = new PriorityObject<T>(Priority.DEFAULT, value);
+                this.value = new PriorityObject<T>(Priority.NORMAL, value);
             }
         }
     }

@@ -261,7 +261,8 @@ public class XMLYMusicPlayer implements IMusicPlayer {
     }
 
     private void notifyComplete() {
-        EventBus.getDefault().post(new MusicCompleteEvent(activeCommand.getId()));
+        if (activeCommand != null)
+            EventBus.getDefault().post(new MusicCompleteEvent(activeCommand.getId()));
     }
 
     @Override
@@ -273,6 +274,7 @@ public class XMLYMusicPlayer implements IMusicPlayer {
             mPlayerManager.stop();
             LogUtils.d("Debug", "喜马拉雅播放器stop");
         }
+        notifyComplete();
         return true;
     }
 

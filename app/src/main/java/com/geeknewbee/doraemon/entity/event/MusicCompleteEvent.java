@@ -1,9 +1,9 @@
 package com.geeknewbee.doraemon.entity.event;
 
 public class MusicCompleteEvent {
-    public long commandId;
+    public String commandId;
 
-    public MusicCompleteEvent(long commandId) {
+    public MusicCompleteEvent(String commandId) {
         this.commandId = commandId;
     }
 }

@@ -184,6 +184,7 @@ public class XfSpeechTTS implements ITTS {
         if (mTts != null) {
             mTts.stopSpeaking();
         }
+        notifyComplete(true, "");
         return true;
     }
 

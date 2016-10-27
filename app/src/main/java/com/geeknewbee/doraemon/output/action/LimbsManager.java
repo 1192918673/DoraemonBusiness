@@ -9,6 +9,7 @@ import com.geeknewbee.doraemon.input.bluetooth.ImmediateAlertService;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;
+import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportAction;
 import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
@@ -39,7 +40,7 @@ public class LimbsManager {
     private ReentrantLock reentrantLock = new ReentrantLock();
 
     private SportActionSetCommand.InputSource inputSource;
-    private SportActionSetCommand activeCommand;
+    private Command activeCommand;
 
 
     private LimbsManager() {
@@ -117,11 +118,17 @@ public class LimbsManager {
 //            stopMoveThread();
 //        } else
 //            startMoveThread();
+        activeCommand = command;
+        isStopAction = false;
+        isBusy = true;
+        inputSource = SportActionSetCommand.InputSource.REMOTE_CONTROL;
 
         if (isUseLeXing)
             sendLeXingFootCommand(command.v, command.w);
         else
             sendLeXingFootCommandByLuGong(command.v, command.w);
+
+        notifyComplete();
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
@@ -213,7 +220,8 @@ public class LimbsManager {
 
     private void notifyComplete() {
         isBusy = false;
-        EventBus.getDefault().post(new LimbActionCompleteEvent(activeCommand.getId(), inputSource));
+        if (activeCommand != null)
+            EventBus.getDefault().post(new LimbActionCompleteEvent(activeCommand.getId(), inputSource));
     }
 
 
@@ -246,6 +254,7 @@ public class LimbsManager {
             armMoveThread.cancel();
             armMoveThread.interrupt();
         }
+        notifyComplete();
     }
 
     public boolean isBusy() {

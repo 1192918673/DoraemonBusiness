@@ -3,9 +3,8 @@ package com.geeknewbee.doraemon.output.queue;
 import android.content.Intent;
 
 import com.geeknewbee.doraemon.App;
-import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.entity.event.VideoPlayCreate;
-import com.geeknewbee.doraemon.input.SoundMonitorType;
+import com.geeknewbee.doraemon.output.IOutput;
 import com.geeknewbee.doraemon.output.action.AISpeechTTS;
 import com.geeknewbee.doraemon.output.action.IMusicPlayer;
 import com.geeknewbee.doraemon.output.action.ITTS;
@@ -27,7 +26,7 @@ import org.greenrobot.eventbus.ThreadMode;
 /**
  * 声音 task queue
  */
-public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
+public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implements IOutput {
     private volatile static MouthTaskQueue instance;
     private ITTS itts;
     private ITTS ittXF;
@@ -35,6 +34,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     private MediaPlayerHelper mediaPlayerHelper;
     private IVideoPlayer videoPlayer;
     private LearnEnglish learnEnglish;
+    private boolean isBusy;
 
     private MouthTaskQueue() {
         super();
@@ -72,39 +72,31 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         switch (input.getType()) {
             case PLAY_SOUND:
                 SoundCommand soundCommand = (SoundCommand) input;
-                if (soundCommand.inputSource != SoundCommand.InputSource.START_WAKE_UP
-                        && soundCommand.inputSource != SoundCommand.InputSource.AFTER_WAKE_UP)
-                    EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
 
                 if (soundCommand.inputSource == SoundCommand.InputSource.IOS_BUSINESS)
                     ittXF.addSoundCommand(soundCommand);//商业版的需要覆盖正在执行的任务
                 else
-                    itts.addSoundCommand(soundCommand);//思必驰的不能采用队列的方式目前
+                    itts.addSoundCommand(soundCommand);
                 break;
             case PLAY_MUSIC:
-                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-                itts.addSoundCommand(new SoundCommand("正在搜索音乐", SoundCommand.InputSource.TIPS));
+//                itts.addSoundCommand(new SoundCommand("正在搜索音乐", SoundCommand.InputSource.TIPS));
                 iMusicPlayer.play(input);
                 break;
             case PLAY_JOKE:
-                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 iMusicPlayer.joke(input);
                 break;
             case PLAY_LOCAL_RESOURCE:
-                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
                 LocalResourceCommand resourceCommand = (LocalResourceCommand) input;
                 mediaPlayerHelper.start(App.mContext, resourceCommand);
                 break;
             case PLAY_MOVIE:
-                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.EDD));
-
                 Intent intent = new Intent(App.mContext, YouKuPlayerActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(YouKuPlayerActivity.EXTRA_VID, input.getContent());
+                intent.putExtra(YouKuPlayerActivity.EXTRA_COMMAND_ID, input.getId());
                 App.mContext.startActivity(intent);
                 break;
             case LEARN_EN:  //学英语
-                EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.CLOSE_ALL));
                 learnEnglish.init();
                 break;
         }
@@ -127,6 +119,11 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
     }
 
     public void stop() {
+        stopCurrentTask();
+        clearTasks();
+    }
+
+    private void stopCurrentTask() {
         learnEnglish.stop();
         itts.stop();
         ittXF.stop();
@@ -136,16 +133,16 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
             videoPlayer.stop();
             videoPlayer = null;
         }
-        clearTasks();
     }
 
+    @Override
     public synchronized boolean isBusy() {
-        return itts.isBusy()
-                || ittXF.isBusy()
-                || iMusicPlayer.isPlaying()
-                || mediaPlayerHelper.isPlaying()
-                || (videoPlayer != null && videoPlayer.isPlaying()
-                || learnEnglish.isLearnning());
+        return isBusy;
+    }
+
+    @Override
+    public void setBusy(boolean isBusy) {
+        this.isBusy = isBusy;
     }
 
     public void destroy() {
@@ -157,5 +154,14 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> {
         if (videoPlayer != null) {
             videoPlayer.stop();
         }
+    }
+
+    @Override
+    public void addCommand(Command command) {
+        addTask(command);
+    }
+
+    public void interrupt() {
+        stopCurrentTask();
     }
 }

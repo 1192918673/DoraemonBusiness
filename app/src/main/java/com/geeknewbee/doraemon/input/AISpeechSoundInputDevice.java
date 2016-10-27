@@ -73,6 +73,7 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
 
     @Override
     public void onWakeUp(double angle, double phis) {
+        isRunning = false;
         EventBus.getDefault().post(new WakeupSuccessEvent(angle, phis));
     }
 

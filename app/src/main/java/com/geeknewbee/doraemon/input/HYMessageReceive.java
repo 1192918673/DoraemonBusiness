@@ -12,8 +12,8 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.entity.event.ASRResultEvent;
 import com.geeknewbee.doraemon.entity.event.SwitchControlTypeEvent;
-import com.geeknewbee.doraemon.entity.event.SwitchMonitorEvent;
 import com.geeknewbee.doraemon.processcenter.ControlType;
+import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
@@ -156,7 +156,7 @@ public class HYMessageReceive implements IMessageReceive {
             LogUtils.d(TAG, "收到来自" + from + "的视频呼叫");
 
             // 1.跳转到通话页面
-            EventBus.getDefault().post(new SwitchMonitorEvent(SoundMonitorType.CLOSE_ALL));
+            Doraemon.getInstance(context).switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
             Intent intent1 = new Intent(mContext, VideoTalkActivity.class);
             intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent1.putExtra("from", from);

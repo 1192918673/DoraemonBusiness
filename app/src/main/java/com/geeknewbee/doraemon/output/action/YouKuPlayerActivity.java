@@ -30,6 +30,7 @@ import org.greenrobot.eventbus.EventBus;
 public class YouKuPlayerActivity extends Activity implements IVideoPlayer {
     public static final String TAG = "YouKuPlayerActivity";
     public static final String EXTRA_VID = "vid";
+    public static final String EXTRA_COMMAND_ID = "command_id";
     private YoukuBasePlayerManager basePlayerManager;
     // 播放器控件
     private YoukuPlayerView mYoukuPlayerView;
@@ -46,6 +47,7 @@ public class YouKuPlayerActivity extends Activity implements IVideoPlayer {
     private boolean isPlaying;
     //是否已经调整过清晰度
     private boolean hadchangedQuality;
+    private String commandId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +162,8 @@ public class YouKuPlayerActivity extends Activity implements IVideoPlayer {
 
     private void endPlay() {
         isPlaying = false;
-        EventBus.getDefault().post(new VideoCompleteEvent());
+        if (commandId != null)
+            EventBus.getDefault().post(new VideoCompleteEvent(commandId));
         finish();
     }
 
@@ -253,6 +256,7 @@ public class YouKuPlayerActivity extends Activity implements IVideoPlayer {
     private void getIntentData(Intent intent) {
         if (intent != null) {
             id = intent.getStringExtra(EXTRA_VID);
+            commandId = intent.getStringExtra(EXTRA_COMMAND_ID);
         }
     }
 
@@ -290,7 +294,7 @@ public class YouKuPlayerActivity extends Activity implements IVideoPlayer {
     public void stop() {
         if (basePlayerManager != null)
             basePlayerManager.onStop();
-        finish();
+        endPlay();
     }
 
     @Override
