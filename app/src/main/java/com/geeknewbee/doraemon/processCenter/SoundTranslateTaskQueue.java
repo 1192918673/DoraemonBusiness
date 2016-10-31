@@ -168,6 +168,7 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             return commands;
         } else if (input.contains("拍") && input.contains("照")) {
             List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand("好的", SoundCommand.InputSource.TIPS));
             commands.add(new Command(CommandType.TAKE_PICTURE, "拍照"));
             return commands;
         } else if (input.contains("温度")) {
