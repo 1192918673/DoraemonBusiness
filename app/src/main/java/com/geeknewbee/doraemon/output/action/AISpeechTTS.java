@@ -93,13 +93,13 @@ public class AISpeechTTS implements ITTS {
 
     @Override
     public boolean stop() {
+        notifyComplete(true, "");
         soundCommands.clear();
         activeCommand = null;
         if (mTTSEngine != null) {
             mTTSEngine.stop();
             isSpeaking = false;
         }
-        notifyComplete(true, "");
         return true;
     }
 

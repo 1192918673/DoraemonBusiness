@@ -6,8 +6,8 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.CommandCompleteEvent;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
+import com.geeknewbee.doraemon.processcenter.CommandQueue;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
-import com.geeknewbee.doraemon.processcenter.SyncQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
 
@@ -34,7 +34,7 @@ public class OtherCommandManager implements IOutput {
     public void addCommand(Command command) {
         switch (command.getType()) {
             case STOP:
-                SyncQueue.getInstance(App.mContext).stop();
+                CommandQueue.getInstance(App.mContext).stop();
                 break;
             case TAKE_PICTURE:
                 App.mContext.sendBroadcast(new Intent(Constants.READSENSE_BROADCAST_TAKE_PICTURE_ACTION));

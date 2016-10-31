@@ -180,12 +180,12 @@ public class XfSpeechTTS implements ITTS {
 
     @Override
     public boolean stop() {
+        notifyComplete(true, "");
         activeCommand = null;
         soundCommands.clear();
         if (mTts != null) {
             mTts.stopSpeaking();
         }
-        notifyComplete(true, "");
         return true;
     }
 

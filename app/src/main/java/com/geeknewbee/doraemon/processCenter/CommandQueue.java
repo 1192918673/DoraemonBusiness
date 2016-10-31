@@ -32,9 +32,9 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class SyncQueue {
-    public static final String TAG = SyncQueue.class.getSimpleName();
-    public static volatile SyncQueue instance;
+public class CommandQueue {
+    public static final String TAG = CommandQueue.class.getSimpleName();
+    public static volatile CommandQueue instance;
     private final Context context;
     //等待执行的SyncCommand 集合
     private final TreeSet<SyncCommand> soundCommands;
@@ -43,7 +43,7 @@ public class SyncQueue {
     private List<SyncCommand> activeCommandList;
     private final Handler mHandler;
 
-    private SyncQueue(Context context) {
+    private CommandQueue(Context context) {
         this.context = context;
         soundCommands = new TreeSet<>();
         activeCommandList = new ArrayList<>();
@@ -59,11 +59,11 @@ public class SyncQueue {
         EventBus.getDefault().register(this);
     }
 
-    public static SyncQueue getInstance(Context context) {
+    public static CommandQueue getInstance(Context context) {
         if (instance == null) {
-            synchronized (SyncQueue.class) {
+            synchronized (CommandQueue.class) {
                 if (instance == null) {
-                    instance = new SyncQueue(context);
+                    instance = new CommandQueue(context);
                 }
             }
         }

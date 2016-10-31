@@ -32,23 +32,12 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     }
 
     public void addCommand(Command command) {
-        LogUtils.d(SyncQueue.TAG, "add command:" + command.getType() + "-" + command.getId());
+        LogUtils.d(CommandQueue.TAG, "add command:" + command.getType() + "-" + command.getId());
 
         SyncCommand syncCommand = new SyncCommand.Builder().setCommandList(Collections.singletonList(command)).build();
-        if (command.getType() == CommandType.PLAY_SOUND) {
-            SoundCommand soundCommand = (SoundCommand) command;
-            if (soundCommand.inputSource == SoundCommand.InputSource.START_WAKE_UP
-                    || soundCommand.inputSource == SoundCommand.InputSource.AFTER_WAKE_UP) {
-                //提示唤醒词、唤醒之后的语音命令执行前不需要进入EDD
-                syncCommand.needSwitchEdd = false;
-            }
-        } else if (command.getType() == CommandType.SHOW_EXPRESSION ||
-                command.getType() == CommandType.BLUETOOTH_CONTROL_FOOT ||
-                command.getType() == CommandType.STOP)
-            //单独的设置Gif、STOP、蓝牙控制脚步执行前不需要进入EDD
-            syncCommand.needSwitchEdd = false;
+        syncCommand.needSwitchEdd = needSwitchEdd(command);
 
-        SyncQueue.getInstance(App.mContext).addCommand(syncCommand);
+        CommandQueue.getInstance(App.mContext).addCommand(syncCommand);
         LogUtils.d(Constants.TAG_COMMAND, "add command:" + command.toString());
     }
 
@@ -57,9 +46,28 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
         for (Command command : commands) {
             logStr += (command.getType().toString() + "-" + command.getId());
         }
-        LogUtils.d(SyncQueue.TAG, logStr);
+        LogUtils.d(CommandQueue.TAG, logStr);
         SyncCommand syncCommand = new SyncCommand.Builder().setCommandList(commands).build();
-        SyncQueue.getInstance(App.mContext).addCommand(syncCommand);
+        if (commands.size() == 1)
+            syncCommand.needSwitchEdd = needSwitchEdd(commands.get(0));
+        CommandQueue.getInstance(App.mContext).addCommand(syncCommand);
+    }
+
+    private boolean needSwitchEdd(Command command) {
+        if (command.getType() == CommandType.PLAY_SOUND) {
+            SoundCommand soundCommand = (SoundCommand) command;
+            if (soundCommand.inputSource == SoundCommand.InputSource.START_WAKE_UP
+                    || soundCommand.inputSource == SoundCommand.InputSource.AFTER_WAKE_UP) {
+                //提示唤醒词、唤醒之后的语音命令执行前不需要进入EDD
+                return false;
+            }
+        } else if (command.getType() == CommandType.SHOW_EXPRESSION ||
+                command.getType() == CommandType.BLUETOOTH_CONTROL_FOOT ||
+                command.getType() == CommandType.STOP)
+            //单独的设置Gif、STOP、蓝牙控制脚步执行前不需要进入EDD
+            return false;
+
+        return true;
     }
 
     @Override
@@ -70,6 +78,6 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     }
 
     public void addCommand(SyncCommand syncCommand) {
-        SyncQueue.getInstance(App.mContext).addCommand(syncCommand);
+        CommandQueue.getInstance(App.mContext).addCommand(syncCommand);
     }
 }

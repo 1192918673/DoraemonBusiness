@@ -249,12 +249,12 @@ public class LimbsManager {
     }
 
     public void stop() {
+        notifyComplete();
         isStopAction = true;
         if (armMoveThread != null) {
             armMoveThread.cancel();
             armMoveThread.interrupt();
         }
-        notifyComplete();
     }
 
     public boolean isBusy() {

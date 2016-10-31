@@ -215,7 +215,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
                 for (int i = 0; i < faces.size(); i++) {
                     int person = faceTrack.identifyPerson(0);
                     if (person != -111) {
-                        if (System.currentTimeMillis() - LAST_SPEAK_PERSON_NAME_TIME > SPEAK_PERSON_NAME_INTERVAL) {
+                        if (person != lastPerson || System.currentTimeMillis() - LAST_SPEAK_PERSON_NAME_TIME > SPEAK_PERSON_NAME_INTERVAL) {
                             LAST_SPEAK_PERSON_NAME_TIME = System.currentTimeMillis();
                             Intent intent = new Intent(Constants.ACTION_DORAEMON_DISCOVERY_PERSON);
                             intent.putExtra(Constants.EXTRA_PERSON_ID, person);
