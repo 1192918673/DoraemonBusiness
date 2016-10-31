@@ -13,7 +13,6 @@ import com.geeknewbee.doraemon.output.action.MediaPlayerHelper;
 import com.geeknewbee.doraemon.output.action.XMLYMusicPlayer;
 import com.geeknewbee.doraemon.output.action.XfSpeechTTS;
 import com.geeknewbee.doraemon.output.action.YouKuPlayerActivity;
-import com.geeknewbee.doraemon.processcenter.LearnEnglish;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
@@ -33,7 +32,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
     private IMusicPlayer iMusicPlayer;
     private MediaPlayerHelper mediaPlayerHelper;
     private IVideoPlayer videoPlayer;
-    private LearnEnglish learnEnglish;
     private boolean isBusy;
 
     private MouthTaskQueue() {
@@ -42,7 +40,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
         ittXF = new XfSpeechTTS();
         iMusicPlayer = new XMLYMusicPlayer();
         mediaPlayerHelper = new MediaPlayerHelper();
-        learnEnglish = new LearnEnglish();
         EventBus.getDefault().register(this);
     }
 
@@ -79,7 +76,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
                     itts.addSoundCommand(soundCommand);
                 break;
             case PLAY_MUSIC:
-//                itts.addSoundCommand(new SoundCommand("正在搜索音乐", SoundCommand.InputSource.TIPS));
                 iMusicPlayer.play(input);
                 break;
             case PLAY_JOKE:
@@ -95,9 +91,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
                 intent.putExtra(YouKuPlayerActivity.EXTRA_VID, input.getContent());
                 intent.putExtra(YouKuPlayerActivity.EXTRA_COMMAND_ID, input.getId());
                 App.mContext.startActivity(intent);
-                break;
-            case LEARN_EN:  //学英语
-                learnEnglish.init();
                 break;
         }
         return true;
@@ -124,7 +117,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
     }
 
     private void stopCurrentTask() {
-        learnEnglish.stop();
         itts.stop();
         ittXF.stop();
         iMusicPlayer.stop();
@@ -146,7 +138,6 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
     }
 
     public void destroy() {
-        learnEnglish.destory();
         itts.destroy();
         ittXF.destroy();
         iMusicPlayer.destroy();

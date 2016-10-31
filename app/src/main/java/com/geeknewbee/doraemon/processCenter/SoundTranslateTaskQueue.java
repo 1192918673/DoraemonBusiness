@@ -14,7 +14,6 @@ import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
-import com.geeknewbee.doraemon.processcenter.command.LearnEnCommand;
 import com.geeknewbee.doraemon.processcenter.command.LocalResourceCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.SportActionSetCommand;
@@ -225,10 +224,6 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             List<Command> commands = new ArrayList<>();
             commands.add(new Command(CommandType.PLAY_MUSIC, soundTranslateInput.starName + " " + soundTranslateInput.musicName));
             commands.add(new SoundCommand(App.mContext.getString(R.string.tips_search_music), SoundCommand.InputSource.TIPS));
-            return commands;
-        } else if (input.contains("学英语")) {
-            List<Command> commands = new ArrayList<>();
-            commands.add(new LearnEnCommand());
             return commands;
         } else if (input.contains("当前版本")) {
             List<Command> commands = new ArrayList<>();

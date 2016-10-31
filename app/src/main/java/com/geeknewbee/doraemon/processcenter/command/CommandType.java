@@ -88,11 +88,6 @@ public enum CommandType {
         public IOutput getOutput() {
             return OtherCommandManager.getInstance();
         }
-    }, LEARN_EN {
-        @Override
-        public IOutput getOutput() {
-            return MouthTaskQueue.getInstance();
-        }
     },
     PERSON_START {
         @Override

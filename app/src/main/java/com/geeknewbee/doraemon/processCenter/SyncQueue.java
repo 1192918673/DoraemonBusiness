@@ -190,7 +190,6 @@ public class SyncQueue {
                         case PLAY_MUSIC: //音乐
                         case PLAY_JOKE: //笑话
                         case PLAY_MOVIE:
-                        case LEARN_EN:  //学英语
                             LogUtils.d(TAG, "add Mouth task");
                             MouthTaskQueue.getInstance().addCommand(command);
                             break;
