@@ -6,20 +6,16 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.entity.event.CommandCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.FaceControlCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.VideoCompleteEvent;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
-import com.geeknewbee.doraemon.output.BLM;
-import com.geeknewbee.doraemon.output.FaceManager;
-import com.geeknewbee.doraemon.output.OtherCommandManager;
-import com.geeknewbee.doraemon.output.ReadFaceManager;
 import com.geeknewbee.doraemon.output.queue.LimbsTaskQueue;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
-import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
 import com.geeknewbee.doraemonsdk.task.Priority;
@@ -183,45 +179,7 @@ public class SyncQueue {
 
                 for (Command command : syncCommand.commandList) {
                     LogUtils.d(TAG, "22222222222-----------command type:" + command.getType());
-
-                    switch (command.getType()) {
-                        case PLAY_SOUND:
-                        case PLAY_LOCAL_RESOURCE:
-                        case PLAY_MUSIC: //音乐
-                        case PLAY_JOKE: //笑话
-                        case PLAY_MOVIE:
-                            LogUtils.d(TAG, "add Mouth task");
-                            MouthTaskQueue.getInstance().addCommand(command);
-                            break;
-                        case SPORT_ACTION_SET:
-                        case BLUETOOTH_CONTROL_FOOT: //蓝牙控制脚步
-                            LimbsTaskQueue.getInstance().addCommand(command);
-                            break;
-                        case PERSON_START:
-                        case PERSON_ADD_FACE:
-                        case PERSON_SET_NAME:
-                        case PERSON_DELETE_ALL:
-                            ReadFaceManager.getInstance(App.mContext).addCommand(command);
-                            break;
-                        case SHOW_EXPRESSION:
-                            ExpressionCommand expressionCommand = (ExpressionCommand) command;
-                            FaceManager.getInstance().addCommand(expressionCommand);
-                            markAndTryDoNextCommand(expressionCommand.getId(), null);//表情的命令执行时调用命令后就认为成功了
-                            break;
-                        case BL://博联遥控
-                        case BL_SP: //博联插座
-                            BLM.getInstance().addCommand(command);
-                            markAndTryDoNextCommand(command.getId(), null);//命令执行时调用命令后就认为成功了
-                            break;
-                        case STOP:
-                        case TAKE_PICTURE: //拍照
-                        case SETTING_WIFI://设置连接WIFI
-                        case SETTING_VOLUME://设置系统音量
-                        case SLEEP:
-                            OtherCommandManager.getInstance().addCommand(command);
-                            markAndTryDoNextCommand(command.getId(), null);//命令执行时调用命令后就认为成功了
-                            break;
-                    }
+                    command.getType().getOutput().addCommand(command);
                 }
             }
         });
@@ -291,6 +249,16 @@ public class SyncQueue {
      */
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onFaceControlComplete(FaceControlCompleteEvent event) {
+        markAndTryDoNextCommand(event.getId(), null);
+    }
+
+    /**
+     * 当其他命令操作完成(设置表情，系统设置,智能家电等)
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onOtherCommandComplete(CommandCompleteEvent event) {
         markAndTryDoNextCommand(event.getId(), null);
     }
 

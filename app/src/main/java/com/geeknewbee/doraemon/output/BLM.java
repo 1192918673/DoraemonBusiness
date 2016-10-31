@@ -6,11 +6,14 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.BLLocalCMD;
 import com.geeknewbee.doraemon.entity.GetAnswerResponse;
 import com.geeknewbee.doraemon.entity.event.BLLocalResponse;
+import com.geeknewbee.doraemon.entity.event.CommandCompleteEvent;
 import com.geeknewbee.doraemon.processcenter.command.BLCommand;
 import com.geeknewbee.doraemon.processcenter.command.BLSPCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
+
+import org.greenrobot.eventbus.EventBus;
 
 import cn.com.broadlink.blnetwork.BLNetwork;
 
@@ -205,12 +208,18 @@ public class BLM implements IOutput {
             case BL:
                 BLCommand blCommand = (BLCommand) command;
                 BLM.broadLinkRMProSend(blCommand.getResponse());
+                notifyComplete(command);
                 break;
             case BL_SP:
                 BLSPCommand blspCommand = (BLSPCommand) command;
                 BLM.modifyPlugbase(blspCommand.getInput(), blspCommand.getMac().trim());
+                notifyComplete(command);
                 break;
         }
+    }
+
+    private void notifyComplete(Command command) {
+        EventBus.getDefault().post(new CommandCompleteEvent(command.getId()));
     }
 
     @Override

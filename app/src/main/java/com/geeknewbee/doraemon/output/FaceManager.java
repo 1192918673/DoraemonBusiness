@@ -1,12 +1,15 @@
 package com.geeknewbee.doraemon.output;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.CommandCompleteEvent;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.ExpressionCommand;
 import com.geeknewbee.doraemon.view.MainActivity;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 
@@ -118,6 +121,11 @@ public class FaceManager implements IOutput {
     public void addCommand(Command command) {
         ExpressionCommand expressionCommand = (ExpressionCommand) command;
         displayGif(expressionCommand.getContent(), expressionCommand.loops);
+        notifyComplete(command);
+    }
+
+    private void notifyComplete(Command command) {
+        EventBus.getDefault().post(new CommandCompleteEvent(command.getId()));
     }
 
     @Override

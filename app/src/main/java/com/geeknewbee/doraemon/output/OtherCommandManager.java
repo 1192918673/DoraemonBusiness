@@ -4,11 +4,14 @@ import android.content.Intent;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemon.entity.event.CommandCompleteEvent;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.SyncQueue;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.WifiCommand;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class OtherCommandManager implements IOutput {
     public static volatile OtherCommandManager instance;
@@ -47,6 +50,11 @@ public class OtherCommandManager implements IOutput {
                 Doraemon.getInstance(App.mContext).switchSoundMonitor(SoundMonitorType.EDD);
                 break;
         }
+        notifyComplete(command);
+    }
+
+    private void notifyComplete(Command command) {
+        EventBus.getDefault().post(new CommandCompleteEvent(command.getId()));
     }
 
     @Override
