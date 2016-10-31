@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.geeknewbee.doraemon.App;
+import com.geeknewbee.doraemon.entity.event.FaceControlCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.MusicCompleteEvent;
 import com.geeknewbee.doraemon.entity.event.TTSCompleteEvent;
@@ -283,6 +284,16 @@ public class SyncQueue {
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onVideoPlayComplete(VideoCompleteEvent event) {
         markAndTryDoNextCommand(event.commandId, SoundMonitorType.ASR);
+    }
+
+    /**
+     * 当人脸操作完成
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onFaceControlComplete(FaceControlCompleteEvent event) {
+        markAndTryDoNextCommand(event.getId(), null);
     }
 
     /**

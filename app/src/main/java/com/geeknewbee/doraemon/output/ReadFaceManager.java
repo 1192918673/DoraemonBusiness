@@ -10,6 +10,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.database.Person;
 import com.geeknewbee.doraemon.database.PersonDao;
 import com.geeknewbee.doraemon.entity.ReadFaceInitParams;
+import com.geeknewbee.doraemon.entity.event.FaceControlCompleteEvent;
 import com.geeknewbee.doraemon.input.bluetooth.WirelessControlServiceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.AddFaceCommand;
@@ -18,10 +19,14 @@ import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import mobile.ReadFace.YMFace;
 import mobile.ReadFace.YMFaceTrack;
@@ -35,12 +40,14 @@ public class ReadFaceManager implements IOutput {
 
     public static volatile ReadFaceManager instance;
     private final Context context;
+    private final ExecutorService executorService;
     private List<Face> facesNew;
     private Map<Integer, String> persons;
     private YMFaceTrack faceTrack;
     private int iw;
     private int ih;
     private boolean isBusy;
+    private Command activeCommand;
 
     private ReadFaceManager(Context context) {
         facesNew = new ArrayList<>();
@@ -50,6 +57,7 @@ public class ReadFaceManager implements IOutput {
         for (Person p : list) {
             persons.put(p.getPersonId(), p.getName());
         }
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     public static ReadFaceManager getInstance(Context context) {
@@ -64,37 +72,67 @@ public class ReadFaceManager implements IOutput {
     }
 
     @Override
-    public void addCommand(Command command) {
-        String data = "";
-        boolean b = false;
-        Gson gson;
+    public void addCommand(final Command command) {
         switch (command.getType()) {
             case PERSON_START:
-                gson = new Gson();
-                ReadFaceInitParams initParams = gson.fromJson(command.getContent(), ReadFaceInitParams.class);
-                b = startAddFace(initParams.orientation, initParams.resizeScale, initParams.iw, initParams.ih);
-                data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_START);
-                WirelessControlServiceManager.getInstance(context).writeToSocket(data);
+                activeCommand = command;
+                isBusy = true;
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        Gson gson = new Gson();
+                        ReadFaceInitParams initParams = gson.fromJson(command.getContent(), ReadFaceInitParams.class);
+                        boolean b = startAddFace(initParams.orientation, initParams.resizeScale, initParams.iw, initParams.ih);
+                        String data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_START);
+                        WirelessControlServiceManager.getInstance(context).writeToSocket(data);
+                        notifyComplete();
+                    }
+                });
                 break;
             case PERSON_ADD_FACE:
-                AddFaceCommand faceCommand = (AddFaceCommand) command;
-                b = addFace(faceCommand);
-                if (faceCommand.faceType == AddFaceType.YUV)
-                    data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_ADD_FACE);
-                else if (faceCommand.faceType == AddFaceType.IMAGE)
-                    data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_ADD_FACE_IMAGE);
-                WirelessControlServiceManager.getInstance(context).writeToSocket(data);
+                activeCommand = command;
+                isBusy = true;
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        String data = "";
+                        AddFaceCommand faceCommand = (AddFaceCommand) command;
+                        boolean b = addFace(faceCommand);
+                        if (faceCommand.faceType == AddFaceType.YUV)
+                            data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_ADD_FACE);
+                        else if (faceCommand.faceType == AddFaceType.IMAGE)
+                            data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_ADD_FACE_IMAGE);
+                        WirelessControlServiceManager.getInstance(context).writeToSocket(data);
+                        notifyComplete();
+                    }
+                });
                 break;
             case PERSON_SET_NAME:
-                String content = command.getContent();
-                b = setPersonName(content);
-                data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_SET_NAME);
-                WirelessControlServiceManager.getInstance(context).writeToSocket(data);
+                activeCommand = command;
+                isBusy = true;
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        String content = command.getContent();
+                        boolean b = setPersonName(content);
+                        String data = getCallbackString(b, WirelessControlServiceManager.TYPE_PERSON_SET_NAME);
+                        WirelessControlServiceManager.getInstance(context).writeToSocket(data);
+                        notifyComplete();
+                    }
+                });
                 break;
             case PERSON_DELETE_ALL:
-                gson = new Gson();
-                ReadFaceInitParams initParams2 = gson.fromJson(command.getContent(), ReadFaceInitParams.class);
-                deleteAddPerson(initParams2.orientation, initParams2.resizeScale);
+                activeCommand = command;
+                isBusy = true;
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        Gson gson = new Gson();
+                        ReadFaceInitParams initParams2 = gson.fromJson(command.getContent(), ReadFaceInitParams.class);
+                        deleteAddPerson(initParams2.orientation, initParams2.resizeScale);
+                        notifyComplete();
+                    }
+                });
                 break;
         }
     }
@@ -243,6 +281,12 @@ public class ReadFaceManager implements IOutput {
         Doraemon.getInstance(context).addCommand(new SoundCommand("删除了所有认识的人", SoundCommand.InputSource.TIPS));
         context.sendBroadcast(new Intent(Constants.ACTION_DORAEMON_REINIT_FACE_TRACK));
         return result;
+    }
+
+    private void notifyComplete() {
+        isBusy = false;
+        if (activeCommand != null)
+            EventBus.getDefault().post(new FaceControlCompleteEvent(activeCommand.getId()));
     }
 
     class Face {
