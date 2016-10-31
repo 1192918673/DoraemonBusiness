@@ -34,7 +34,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     public void addCommand(Command command) {
         LogUtils.d(SyncQueue.TAG, "add command:" + command.getType() + "-" + command.getId());
 
-        SyncCommand syncCommand = new SyncCommand(Collections.singletonList(command));
+        SyncCommand syncCommand = new SyncCommand.Builder().setCommandList(Collections.singletonList(command)).build();
         if (command.getType() == CommandType.PLAY_SOUND) {
             SoundCommand soundCommand = (SoundCommand) command;
             if (soundCommand.inputSource == SoundCommand.InputSource.START_WAKE_UP
@@ -58,7 +58,7 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             logStr += (command.getType().toString() + "-" + command.getId());
         }
         LogUtils.d(SyncQueue.TAG, logStr);
-        SyncCommand syncCommand = new SyncCommand(commands);
+        SyncCommand syncCommand = new SyncCommand.Builder().setCommandList(commands).build();
         SyncQueue.getInstance(App.mContext).addCommand(syncCommand);
     }
 

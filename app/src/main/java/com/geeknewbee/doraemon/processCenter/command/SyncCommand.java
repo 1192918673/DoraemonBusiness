@@ -3,6 +3,7 @@ package com.geeknewbee.doraemon.processcenter.command;
 import com.geeknewbee.doraemonsdk.task.Priority;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -41,7 +42,7 @@ public class SyncCommand implements Comparable<SyncCommand> {
 
     public List<Command> commandList;
 
-    public SyncCommand(Priority priority, List<Command> commandList, int delayTime, int expireTime) {
+    public SyncCommand(Priority priority, List<Command> commandList, int delayTime, int expireTime, boolean needSwitchEdd) {
         this.id = count.getAndIncrement();
         this.priority = priority;
         this.commandList = commandList;
@@ -49,26 +50,11 @@ public class SyncCommand implements Comparable<SyncCommand> {
         this.expireTime = expireTime;
         this.startTimestamp = System.currentTimeMillis() + delayTime;
         this.expireTimestamp = startTimestamp + expireTime;
+        this.needSwitchEdd = needSwitchEdd;
         unFinishIDS = new ArrayList<>();
         for (Command command : commandList) {
             unFinishIDS.add(command.getId());
         }
-    }
-
-    public SyncCommand(Priority priority, int delayTime, List<Command> commandList) {
-        this(priority, commandList, delayTime, DEFAULT_EXPIRE_TIME);
-    }
-
-    public SyncCommand(Priority priority, List<Command> commandList) {
-        this(priority, commandList, 0, DEFAULT_EXPIRE_TIME);
-    }
-
-    public SyncCommand(List<Command> commandList) {
-        this(Priority.NORMAL, commandList);
-    }
-
-    public SyncCommand(List<Command> commandList, int delayTime) {
-        this(Priority.NORMAL, commandList, delayTime, DEFAULT_EXPIRE_TIME);
     }
 
     public List<Command> getCommandList() {
@@ -139,6 +125,48 @@ public class SyncCommand implements Comparable<SyncCommand> {
             return -1;
         } else {
             return id.compareTo(another.id);
+        }
+    }
+
+    public static class Builder {
+        private Priority priority;
+        private int delayTime = 0;
+        private int expireTime = DEFAULT_EXPIRE_TIME;
+        private boolean needSwitchEdd = true;
+        private List<Command> commandList;
+
+        public Builder setPriority(Priority priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        public Builder setDelayTime(int delayTime) {
+            this.delayTime = delayTime;
+            return this;
+        }
+
+        public Builder setExpireTime(int expireTime) {
+            this.expireTime = expireTime;
+            return this;
+        }
+
+        public Builder setNeedSwitchEdd(boolean needSwitchEdd) {
+            this.needSwitchEdd = needSwitchEdd;
+            return this;
+        }
+
+        public Builder setCommand(Command command) {
+            this.commandList = Collections.singletonList(command);
+            return this;
+        }
+
+        public Builder setCommandList(List<Command> commandList) {
+            this.commandList = commandList;
+            return this;
+        }
+
+        public SyncCommand build() {
+            return new SyncCommand(priority, commandList, delayTime, expireTime, needSwitchEdd);
         }
     }
 }

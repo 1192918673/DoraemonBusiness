@@ -307,7 +307,8 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
         List<Command> commandList = new ArrayList<>();
         Command command = new Command(CommandType.STOP);
         commandList.add(command);
-        SyncCommand syncCommand = new SyncCommand(Priority.INTERRUPT, commandList);
+        SyncCommand syncCommand = new SyncCommand.Builder().setPriority(Priority.INTERRUPT)
+                .setCommandList(commandList).build();
         addCommand(syncCommand);
         addCommand(new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
 
@@ -349,7 +350,7 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
                 }
                 List<Command> commandList = new ArrayList<>();
                 commandList.add(new SoundCommand("这个是中断的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
-                SyncCommand syncCommand = new SyncCommand(Priority.INTERRUPT, commandList);
+                SyncCommand syncCommand = new SyncCommand.Builder().setPriority(Priority.INTERRUPT).setCommandList(commandList).build();
                 addCommand(syncCommand);
             }
         }.start();
@@ -357,13 +358,12 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
 
         List<Command> commandList = new ArrayList<>();
         commandList.add(new SoundCommand("这个是延迟15秒的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
-        SyncCommand syncCommand = new SyncCommand(commandList, 15 * 1000);
+        SyncCommand syncCommand = new SyncCommand.Builder().setCommandList(commandList).setDelayTime(15 * 1000).build();
         addCommand(syncCommand);
 
         commandList = new ArrayList<>();
         commandList.add(new SoundCommand("在延迟命令之后添加的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
-        syncCommand = new SyncCommand(commandList);
-        syncCommand.setExpireTime(30 * 1000);
+        syncCommand = new SyncCommand.Builder().setCommandList(commandList).setExpireTime(30 * 1000).build();
         addCommand(syncCommand);
     }
 
@@ -515,7 +515,8 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
                     int personId = intent.getIntExtra(Constants.EXTRA_PERSON_ID, 0);
                     String personName = ReadFaceManager.getInstance(context).getPersonName(personId);
                     if (!TextUtils.isEmpty(personName))
-                        addCommand(new SoundCommand(personName + "你好!", SoundCommand.InputSource.TIPS));
+                        addCommand(new SyncCommand.Builder().setPriority(Priority.INTERRUPT)
+                                .setCommand(new SoundCommand(personName + "你好!", SoundCommand.InputSource.TIPS)).build());
                     break;
                 case Constants.READSENSE_BROADCAST_TIPS_ACTION:
                     LogUtils.d(ReadSenseService.TAG, "收到ReadSense的播报广播");
