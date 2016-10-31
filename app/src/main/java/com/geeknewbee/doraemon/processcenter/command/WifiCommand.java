@@ -6,7 +6,7 @@ public class WifiCommand extends Command {
     public int type;
 
     public WifiCommand(String ssid, String pwd, int type) {
-        super(CommandType.WIFI_MESSAGE);
+        super(CommandType.SETTING_WIFI);
         this.ssid = ssid;
         this.pwd = pwd;
         this.type = type;

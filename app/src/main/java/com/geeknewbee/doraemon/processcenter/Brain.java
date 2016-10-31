@@ -39,12 +39,13 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
             SoundCommand soundCommand = (SoundCommand) command;
             if (soundCommand.inputSource == SoundCommand.InputSource.START_WAKE_UP
                     || soundCommand.inputSource == SoundCommand.InputSource.AFTER_WAKE_UP) {
+                //提示唤醒词、唤醒之后的语音命令执行前不需要进入EDD
                 syncCommand.needSwitchEdd = false;
             }
         } else if (command.getType() == CommandType.SHOW_EXPRESSION ||
                 command.getType() == CommandType.BLUETOOTH_CONTROL_FOOT ||
                 command.getType() == CommandType.STOP)
-            //单独的设置Gif、STOP、蓝牙控制脚步不需要进入EDD
+            //单独的设置Gif、STOP、蓝牙控制脚步执行前不需要进入EDD
             syncCommand.needSwitchEdd = false;
 
         SyncQueue.getInstance(App.mContext).addCommand(syncCommand);

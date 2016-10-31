@@ -26,7 +26,7 @@ public enum CommandType {
             return MouthTaskQueue.getInstance();
         }
     },
-    WIFI_MESSAGE {
+    SETTING_WIFI {
         @Override
         public IOutput getOutput() {
             return OtherCommandManager.getInstance();

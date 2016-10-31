@@ -216,7 +216,7 @@ public class SyncQueue {
                         case STOP:
                         case TAKE_PICTURE: //拍照
 //                            addCommand(new SoundCommand("好的", SoundCommand.InputSource.TIPS));
-                        case WIFI_MESSAGE://设置连接WIFI
+                        case SETTING_WIFI://设置连接WIFI
                         case SETTING_VOLUME://设置系统音量
                         case SLEEP:
                             OtherCommandManager.getInstance().addCommand(command);

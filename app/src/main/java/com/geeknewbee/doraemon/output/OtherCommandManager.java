@@ -36,7 +36,7 @@ public class OtherCommandManager implements IOutput {
             case TAKE_PICTURE:
                 App.mContext.sendBroadcast(new Intent(Constants.READSENSE_BROADCAST_TAKE_PICTURE_ACTION));
                 break;
-            case WIFI_MESSAGE:
+            case SETTING_WIFI:
                 WifiCommand wifiCommand = (WifiCommand) command;
                 SysSettingManager.connectWiFi(wifiCommand.ssid, wifiCommand.pwd, wifiCommand.type);
                 break;
