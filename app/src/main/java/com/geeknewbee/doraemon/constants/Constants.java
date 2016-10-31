@@ -144,7 +144,7 @@ public class Constants {
     public static final String EXTRA_PERSON_ID = "Extra_Person_ID";
     public static final String ACTION_DORAEMON_DISCOVERY_PERSON = "Action_Doraemon_discovery_person";
     public static final String BLE_SECRET = "@DORA%1316";
-    public static final int BLE_SECRET_OUT_TIME = 2000;
+    public static final int BLE_SECRET_OUT_TIME = 3000;
     public static final String ACTION_DORAEMON_REINIT_FACE_TRACK = "action_doraemon_reinit_face_track";
     public static final String GAO_DE_WEATHER_URL = "http://restapi.amap.com/v3/";
     public static final String GAO_DE_WEATHER_KEY = "a869015dcb20f2fda25f0500782af06b";

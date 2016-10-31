@@ -109,8 +109,14 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
 
             BluetoothGattCharacteristic secretCharacteristic = new BluetoothGattCharacteristic(
                     UUID.fromString(BleUuid.CHAR_SET_SECRET_KEY),
-                    BluetoothGattCharacteristic.PROPERTY_WRITE,
-                    BluetoothGattCharacteristic.PERMISSION_WRITE);
+//                    BluetoothGattCharacteristic.PROPERTY_WRITE,
+//                    BluetoothGattCharacteristic.PERMISSION_WRITE
+                    BluetoothGattCharacteristic.PROPERTY_READ |
+                            BluetoothGattCharacteristic.PROPERTY_WRITE |
+                            BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                    BluetoothGattCharacteristic.PERMISSION_READ |
+                            BluetoothGattCharacteristic.PERMISSION_WRITE);
+
             secret.addCharacteristic(secretCharacteristic);
             mGattServer.addService(secret);
         }
@@ -133,8 +139,8 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             bleDataReader.clearData();
             hadSetSecret = false;
 
-//            mHandler.removeCallbacks(secret_runnable);
-//            mHandler.postDelayed(secret_runnable, Constants.BLE_SECRET_OUT_TIME);
+            mHandler.removeCallbacks(secret_runnable);
+            mHandler.postDelayed(secret_runnable, Constants.BLE_SECRET_OUT_TIME);
 
             LogUtils.d(TAG, "start countDownTimer");
         } else {
@@ -153,6 +159,7 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
             case BleUuid.CHAR_SET_TTS_STRING:
             case BleUuid.CHAR_NOTIFY_WIFI_STRING:
             case BleUuid.CHAR_NOTIFY_TTS_STRING:
+            case BleUuid.CHAR_SET_SECRET_KEY:
                 characteristic.setValue("Name:NONE");
                 mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                         characteristic.getValue());
@@ -165,19 +172,20 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                                              boolean responseNeeded, int offset, byte[] value) {
         Log.d(TAG, "onCharacteristicWriteRequest requestId=" + requestId + " preparedWrite="
                 + Boolean.toString(preparedWrite) + " responseNeeded="
-                + Boolean.toString(responseNeeded) + " offset=" + offset);
+                + Boolean.toString(responseNeeded) + " offset=" + offset
+                + " value=" + new String(value));
         switch (characteristic.getUuid().toString()) {
             case BleUuid.CHAR_SET_WIFI_STRING:
             case BleUuid.CHAR_SET_CONTROL_STRING:
             case BleUuid.CHAR_SET_TTS_STRING:
-//                if (!hadSetSecret)
-//                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
-//                            null);
-//                else {
-                receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
-                mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
-                        null);
-//                }
+                if (!hadSetSecret)
+                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
+                            null);
+                else {
+                    receiveCharacteristicData(characteristic, value, Constants.MESSAGE_BLE_CONTROL);
+                    mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                            null);
+                }
                 break;
             case BleUuid.CHAR_SET_SECRET_KEY:
                 if (value == null)
@@ -187,9 +195,11 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                     String secret = new String(value);
                     if (secret.equals(Constants.BLE_SECRET)) {
                         hadSetSecret = true;
+                        mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
+                                null);
+                    }else
                         mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
                                 null);
-                    }
                 }
                 break;
         }

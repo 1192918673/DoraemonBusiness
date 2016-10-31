@@ -96,7 +96,6 @@ public class XfSpeechTTS implements ITTS {
 
         @Override
         public void onCompleted(SpeechError error) {
-            notifyComplete(error == null, error == null ? Constants.EMPTY_STRING : error.getErrorDescription());
             if (error == null) {
                 LogUtils.d(TAG, "播放完成");
             } else {
@@ -104,7 +103,9 @@ public class XfSpeechTTS implements ITTS {
             }
             if (onTTSCompleteListener != null) {
                 onTTSCompleteListener.onTtsComplete();
+                return;
             }
+            notifyComplete(error == null, error == null ? Constants.EMPTY_STRING : error.getErrorDescription());
         }
 
         @Override
@@ -244,7 +245,7 @@ public class XfSpeechTTS implements ITTS {
         // 设置合成发音人
         mTts.setParameter(SpeechConstant.VOICE_NAME, voicer);
         //设置合成语速
-        mTts.setParameter(SpeechConstant.SPEED, mSharedPreferences.getString("speed_preference", "100"));
+        mTts.setParameter(SpeechConstant.SPEED, mSharedPreferences.getString("speed_preference", "70"));
         //设置合成音调
         mTts.setParameter(SpeechConstant.PITCH, mSharedPreferences.getString("pitch_preference", "50"));
         //设置合成音量
