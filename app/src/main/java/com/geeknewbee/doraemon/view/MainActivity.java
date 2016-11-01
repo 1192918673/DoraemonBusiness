@@ -152,9 +152,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(receiverBattery);
-        unregisterReceiver(receiverNetWork);
-        Doraemon.getInstance(getApplicationContext()).destroy();
-        WeatherManager.getInstance().destroy();
+        try {
+            unregisterReceiver(receiverBattery);
+            unregisterReceiver(receiverNetWork);
+            Doraemon.getInstance(getApplicationContext()).destroy();
+            WeatherManager.getInstance().destroy();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

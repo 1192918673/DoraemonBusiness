@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.text.TextUtils;
 
 import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
@@ -62,6 +63,11 @@ public class SysSettingManager {
             config.wepTxKeyIndex = 0;
         } else if (type == 3) {
             //WPA连接方式
+            if (TextUtils.isEmpty(pwd)) {
+                Doraemon.getInstance(App.mContext).addCommand(new SoundCommand(Constants.TIPS_CONNECT_WIFI_FAIL, SoundCommand.InputSource.TIPS));
+                EventBus.getDefault().post(new SetWifiCompleteEvent(result, ssid));//告知手机端连接失败
+                return false;
+            }
             config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
             config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
