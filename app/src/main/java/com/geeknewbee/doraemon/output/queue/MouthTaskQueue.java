@@ -125,6 +125,7 @@ public class MouthTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
             videoPlayer.stop();
             videoPlayer = null;
         }
+        isBusy = false;
     }
 
     @Override

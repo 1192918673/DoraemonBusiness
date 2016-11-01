@@ -57,6 +57,7 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
     public void stop() {
         clearTasks();
         LimbsManager.getInstance().stop();
+        isBusy = false;
     }
 
     @Override
@@ -76,5 +77,6 @@ public class LimbsTaskQueue extends AbstractTaskQueue<Command, Boolean> implemen
 
     public void interrupt() {
         LimbsManager.getInstance().stop();
+        isBusy = false;
     }
 }
