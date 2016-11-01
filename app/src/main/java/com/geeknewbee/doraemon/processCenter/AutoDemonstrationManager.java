@@ -57,7 +57,7 @@ public class AutoDemonstrationManager {
 
         commands = new ArrayList<>();
         commands.add(new SoundCommand(Constants.SELF_POEM, SoundCommand.InputSource.TIPS));
-        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).build());
+        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
 
         WeatherResponse.Weather weather = WeatherManager.getInstance().getWeatherReport();
         if (weather != null) {
@@ -65,34 +65,34 @@ public class AutoDemonstrationManager {
             commands.add(new SoundCommand(String.format(context.getString(R.string.tips_weather),
                     weather.getCity(), weather.getWeather(), weather.getWindpower(), weather.getWinddirection(),
                     weather.getTemperature(), weather.getHumidity()), SoundCommand.InputSource.TIPS));
-            CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).build());
+            CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
         }
 
         commands = new ArrayList<>();
         commands.add(new SoundCommand("下面我给大家跳支舞", SoundCommand.InputSource.TIPS));
-        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).build());
+        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
 
         commands = new ArrayList<>();
         commands.add(new LocalResourceCommand(R.raw.little_apple_short));
         commands.add(LocalResourceManager.getInstance().getDanceCommand(LocalResourceManager.XIAO_PING_GUO_SHORT));
-        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).build());
+        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
 
         commands = new ArrayList<>();
         commands.add(new SoundCommand(Constants.SELF_INTRODUCTION_2, SoundCommand.InputSource.TIPS));
-        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).build());
+        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
 
         commands = new ArrayList<>();
         commands.add(new SoundCommand(Constants.SELF_INTRODUCTION_3, SoundCommand.InputSource.TIPS));
-        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).build());
+        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
 
         commands = new ArrayList<>();
         commands.add(new SoundCommand(Constants.SELF_INTRODUCTION_4, SoundCommand.InputSource.TIPS));
-        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).build());
+        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
 
         commands = new ArrayList<>();
         commands.add(new SoundCommand(Constants.END, SoundCommand.InputSource.TIPS));
         commands.add(LocalResourceManager.getInstance().getActionSetCommand(LocalResourceManager.ACTION_THANK_YOU));
-        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).build());
+        CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
     }
 
     public void stop() {

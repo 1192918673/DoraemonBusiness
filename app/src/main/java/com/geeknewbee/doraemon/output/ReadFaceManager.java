@@ -46,7 +46,6 @@ public class ReadFaceManager implements IOutput {
     private YMFaceTrack faceTrack;
     private int iw;
     private int ih;
-    private boolean isBusy;
     private Command activeCommand;
 
     private ReadFaceManager(Context context) {
@@ -76,7 +75,6 @@ public class ReadFaceManager implements IOutput {
         switch (command.getType()) {
             case PERSON_START:
                 activeCommand = command;
-                isBusy = true;
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
@@ -91,7 +89,6 @@ public class ReadFaceManager implements IOutput {
                 break;
             case PERSON_ADD_FACE:
                 activeCommand = command;
-                isBusy = true;
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
@@ -109,7 +106,6 @@ public class ReadFaceManager implements IOutput {
                 break;
             case PERSON_SET_NAME:
                 activeCommand = command;
-                isBusy = true;
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
@@ -123,7 +119,6 @@ public class ReadFaceManager implements IOutput {
                 break;
             case PERSON_DELETE_ALL:
                 activeCommand = command;
-                isBusy = true;
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
@@ -139,12 +134,12 @@ public class ReadFaceManager implements IOutput {
 
     @Override
     public boolean isBusy() {
-        return isBusy;
+        //可以一直的添加任务
+        return false;
     }
 
     @Override
     public void setBusy(boolean isBusy) {
-        this.isBusy = isBusy;
     }
 
     private String getCallbackString(boolean b, byte type) {
@@ -284,7 +279,6 @@ public class ReadFaceManager implements IOutput {
     }
 
     private void notifyComplete() {
-        isBusy = false;
         if (activeCommand != null)
             EventBus.getDefault().post(new FaceControlCompleteEvent(activeCommand.getId()));
     }
