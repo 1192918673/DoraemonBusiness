@@ -115,7 +115,7 @@ public class ReadSenseService extends Service implements TextureView.SurfaceText
         //让该service前台运行，避免手机休眠时系统自动杀掉该服务
         //如果 id 为 0 ，那么状态栏的 notification 将不会显示。
         startForeground(999, notification);
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override

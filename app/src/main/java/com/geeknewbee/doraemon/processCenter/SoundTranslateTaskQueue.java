@@ -39,6 +39,7 @@ import retrofit2.Retrofit;
  * 按照先来后到的顺序去执行。
  */
 public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInput, List<Command>> {
+    public static final String OK = "好的";
     private volatile static SoundTranslateTaskQueue instance;
     private OnTranslatorListener translatorListener;
 
@@ -161,14 +162,14 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             commands.add(new SoundCommand(Constants.SELF_INTRODUCTION, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         } else if (input.contains("笑话") && (input.contains("将") || input.contains("说") || input.contains("讲"))) {
-            return Arrays.asList(new SoundCommand("好的", SoundCommand.InputSource.TIPS), new Command(CommandType.PLAY_JOKE));
+            return Arrays.asList(new SoundCommand(OK, SoundCommand.InputSource.TIPS), new Command(CommandType.PLAY_JOKE));
         } else if (input.contains("背") && input.contains("诗")) {
             List<Command> commands = new ArrayList<>();
             commands.add(new SoundCommand(Constants.TANG_SHI, SoundCommand.InputSource.SOUND_TRANSLATE));
             return commands;
         } else if (input.contains("拍") && input.contains("照")) {
             List<Command> commands = new ArrayList<>();
-            commands.add(new SoundCommand("好的", SoundCommand.InputSource.TIPS));
+            commands.add(new SoundCommand(OK, SoundCommand.InputSource.TIPS));
             commands.add(new Command(CommandType.TAKE_PICTURE, "拍照"));
             return commands;
         } else if (input.contains("温度")) {
@@ -185,18 +186,22 @@ public class SoundTranslateTaskQueue extends AbstractTaskQueue<SoundTranslateInp
             return commands;
         } else if (input.contains("前") && (input.contains("进") || input.contains("向") || input.contains("走"))) {
             List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand(OK, SoundCommand.InputSource.TIPS));
             commands.add(LocalResourceManager.getInstance().getActionSetCommand("forward"));
             return commands;
         } else if (input.contains("后") && (input.contains("退") || input.contains("向") || input.contains("走"))) {
             List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand(OK, SoundCommand.InputSource.TIPS));
             commands.add(LocalResourceManager.getInstance().getActionSetCommand("backward"));
             return commands;
         } else if (input.contains("左") && (input.contains("转") || input.contains("向"))) {
             List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand(OK, SoundCommand.InputSource.TIPS));
             commands.add(LocalResourceManager.getInstance().getActionSetCommand("left"));
             return commands;
         } else if (input.contains("右") && (input.contains("转") || input.contains("向"))) {
             List<Command> commands = new ArrayList<>();
+            commands.add(new SoundCommand(OK, SoundCommand.InputSource.TIPS));
             commands.add(LocalResourceManager.getInstance().getActionSetCommand("right"));
             return commands;
         } else if (input.contains("举手") || input.contains("伸胳膊") || input.contains("抬头")) {
