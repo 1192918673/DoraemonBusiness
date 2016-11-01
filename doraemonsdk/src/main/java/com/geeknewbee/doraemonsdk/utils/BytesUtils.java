@@ -52,6 +52,43 @@ public class BytesUtils {
     }
 
     /**
+     * int 转为char array
+     * 无符号右移，高位补0
+     * 0xff的值为[00000000][00000000][00000000][11111111] 一直保留最后8位不变,其他都为0
+     *
+     * @param num
+     * @return
+     */
+    public static byte[] int2bytes2(int num) {
+        byte[] b = new byte[4];
+        int mask = 0xff;
+        for (int i = 0; i < 4; i++) {
+            b[i] = (byte) ((num >>> (24 - i * 8)) & mask);
+        }
+        return b;
+    }
+
+
+    /**
+     * byte[] 4位转为int
+     * 高位在前，低位在后
+     *
+     * @param bytes
+     * @return
+     */
+    public static int bytes2int(byte[] bytes) {
+        int result = 0;
+        if (bytes.length == 4) {
+            int a = (bytes[0] & 0xff) << 24;
+            int b = (bytes[1] & 0xff) << 16;
+            int c = (bytes[2] & 0xff) << 8;
+            int d = (bytes[3] & 0xff);
+            result = a | b | c | d;
+        }
+        return result;
+    }
+
+    /**
      * 根据 高，低 char 获取int value
      *
      * @param highChar
