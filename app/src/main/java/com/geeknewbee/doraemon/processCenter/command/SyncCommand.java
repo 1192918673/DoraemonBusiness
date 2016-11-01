@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class SyncCommand implements Comparable<SyncCommand> {
-    private static final int DEFAULT_EXPIRE_TIME = 6 * 1000;
+    private static final int DEFAULT_EXPIRE_TIME = 5 * 1000;
     private Priority priority;
     private List<String> unFinishIDS;
     private Long id;
@@ -129,7 +129,7 @@ public class SyncCommand implements Comparable<SyncCommand> {
     }
 
     public static class Builder {
-        private Priority priority;
+        private Priority priority = Priority.NORMAL;
         private int delayTime = 0;
         private int expireTime = DEFAULT_EXPIRE_TIME;
         private boolean needSwitchEdd = true;
