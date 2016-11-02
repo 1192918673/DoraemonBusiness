@@ -10,9 +10,10 @@ import com.geeknewbee.doraemon.App;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.SetWifiCompleteEvent;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
-import com.geeknewbee.doraemon.processcenter.ShowQRTask;
+import com.geeknewbee.doraemon.processcenter.GetBindInfoTask;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemonsdk.BaseApplication;
+import com.geeknewbee.doraemonsdk.utils.DeviceUtil;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -65,7 +66,9 @@ public class SysSettingManager {
             //WPA连接方式
             if (TextUtils.isEmpty(pwd)) {
                 Doraemon.getInstance(App.mContext).addCommand(new SoundCommand(Constants.TIPS_CONNECT_WIFI_FAIL, SoundCommand.InputSource.TIPS));
-                EventBus.getDefault().post(new SetWifiCompleteEvent(false, ssid));//告知手机端连接失败
+                //告知手机端连接失败
+                EventBus.getDefault().post(new SetWifiCompleteEvent
+                        (false, false, ssid, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(App.mContext), DeviceUtil.getWIFILocalIpAdress(App.mContext)));
                 return false;
             }
             config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
@@ -85,10 +88,12 @@ public class SysSettingManager {
         if (res != -1) {
             result = wm.enableNetwork(res, true);
         }
-        if (result) new ShowQRTask(ssid).start();
+        if (result) new GetBindInfoTask(ssid).start();
         else {
             Doraemon.getInstance(App.mContext).addCommand(new SoundCommand(Constants.TIPS_CONNECT_WIFI_FAIL, SoundCommand.InputSource.TIPS));
-            EventBus.getDefault().post(new SetWifiCompleteEvent(result, ssid));//告知手机端连接失败
+            //告知手机端连接失败
+            EventBus.getDefault().post(new SetWifiCompleteEvent
+                    (false, false, ssid, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(App.mContext), DeviceUtil.getWIFILocalIpAdress(App.mContext)));
         }
         return result;
     }

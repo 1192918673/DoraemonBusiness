@@ -11,7 +11,7 @@ import com.geeknewbee.doraemon.database.Person;
 import com.geeknewbee.doraemon.database.PersonDao;
 import com.geeknewbee.doraemon.entity.ReadFaceInitParams;
 import com.geeknewbee.doraemon.entity.event.FaceControlCompleteEvent;
-import com.geeknewbee.doraemon.input.bluetooth.WirelessControlServiceManager;
+import com.geeknewbee.doraemon.input.wireless.WirelessControlServiceManager;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.AddFaceCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;

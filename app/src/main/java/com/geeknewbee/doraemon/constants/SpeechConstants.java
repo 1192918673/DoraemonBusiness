@@ -7,7 +7,6 @@ public class SpeechConstants {
     public static final String APPKEY = "1462760478859598";// 测试激活码用的appkey
     public static final String SECRETKEY = "c5443d07cec8872e7475c664768a78d0";// 添加您的SECRETKEY"
     public static final String APP_CONSTANT = "";// 0c8c-d47c-049d-2856(思必驰上一个版本是它，该版本为空了)
-    public static final String EMPTY_SOUND = "啥也没听清，请再说一遍吧";
 
     public static String local_asr_net_bin = "local.net.bin";// 网络资源
 

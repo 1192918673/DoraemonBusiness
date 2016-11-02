@@ -1,4 +1,4 @@
-package com.geeknewbee.doraemon.input.bluetooth;
+package com.geeknewbee.doraemon.input.wireless;
 
 /**
  * 回传给手机的蓝牙命令格式

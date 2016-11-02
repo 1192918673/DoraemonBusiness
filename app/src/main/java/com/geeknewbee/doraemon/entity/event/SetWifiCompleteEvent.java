@@ -10,11 +10,6 @@ public class SetWifiCompleteEvent {
     public boolean hadBound;
     public String ipAddress;
 
-    public SetWifiCompleteEvent(boolean isSuccess, String ssid) {
-        this.isSuccess = isSuccess;
-        this.SSID = ssid;
-    }
-
     public SetWifiCompleteEvent(boolean isSuccess, boolean hadBound, String SSID, String content, String ipAddress) {
         this.isSuccess = isSuccess;
         this.SSID = SSID;
