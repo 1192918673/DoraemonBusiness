@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.geeknewbee.doraemon.constants.Constants;
+import com.geeknewbee.doraemonsdk.utils.BytesUtils;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class SocketService {
 
     public static final int PORT = 9000;
     public static final String TAG = SocketService.class.getSimpleName();
+    public static final int DATA_LENGTH = 4;
     private final Handler mHandler;
     private AcceptThread acceptThread;
     private ConnectedThread connectedThread;
@@ -133,22 +135,116 @@ public class SocketService {
 
         public void run() {
             Log.i(TAG, "BEGIN mConnectedThread");
-            byte[] buffer = new byte[1024 * 20];
-            int bytes;
+            byte[] buffer;
+            //读取到的bytes length
+            int resultBytes = 0;
+            //需要读取的bytes length
+            int readBytes = 0;
+            //每次读取的最大长度
+            int maxBufferSize = 1024;
+            //是否是读取数据包的开头包
+            boolean isFirstPackage = true;
+            //是否是读取数据的最后的一个包
+            //读取数据的需要的总次数
+            int readDataCount = 1;
+            //当前读取数据的次数
+            int currentReadCount = 0;
+            //数据长度
+            int dataLength = 0;
+            //读取到的数据
+            byte[] data = null;
+            int read = 0;
+
+            int prefixLength = Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET.length();
+            int suffixLength = Constants.COMMAND_ROBOT_SUFFIX_FOR_SOCKET.length();
 
             while (!isExit) {
                 try {
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-                    if (bytes == -1) {
-                        Log.e(TAG, "disconnected");
-                        cancel();//断开连接
-                        break;
-                    }
-                    byte[] result = socketReader.readData(Arrays.copyOfRange(buffer, 0, bytes));
-                    if (result != null)
-                        mHandler.obtainMessage(Constants.MESSAGE_SOCKET_CONTROL, result.length, -1, result)
+                    if (isFirstPackage) {
+                        LogUtils.d(TAG, "isFirstPackage");
+                        //读取数据包的开头标示和数据长度的byte[]
+                        resultBytes = 0;
+                        readBytes = prefixLength + DATA_LENGTH;
+                        buffer = new byte[readBytes];
+                        while (resultBytes < readBytes) {
+                            read = mmInStream.read(buffer, resultBytes, readBytes - resultBytes);
+                            if (read == -1) {
+                                Log.e(TAG, "disconnected");
+                                cancel();//断开连接
+                                return;
+                            }
+                            resultBytes += read;
+                        }
+
+                        String prefixDataStr = new String(buffer, 0, prefixLength);
+                        if (!prefixDataStr.equals(Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET))
+                            //不满足通讯规则直接抛掉 (没有头)
+                            continue;
+
+                        //计算数据的长度
+                        dataLength = BytesUtils.bytes2int(Arrays.copyOfRange(buffer, prefixLength, readBytes));
+                        readBytes = dataLength + suffixLength;//设置下次要读取的数据长度
+                        isFirstPackage = false;
+                        if (readBytes > maxBufferSize) {
+                            //如果需要读取的数据长度大于最大的buffer size，需要分次读取
+                            readDataCount = (readBytes % maxBufferSize == 0 ? readBytes / maxBufferSize : (readBytes / maxBufferSize + 1));
+                        }
+                    } else if (currentReadCount == readDataCount - 1) {
+                        LogUtils.d(TAG, "last number read data: " + currentReadCount);
+                        resultBytes = 0;
+                        //最后一次读取数据域
+                        readBytes = (dataLength + suffixLength) - maxBufferSize * (currentReadCount);
+                        buffer = new byte[readBytes];
+                        while (resultBytes < readBytes) {
+                            read = mmInStream.read(buffer, resultBytes, readBytes - resultBytes);
+                            if (read == -1) {
+                                Log.e(TAG, "disconnected");
+                                cancel();//断开连接
+                                return;
+                            }
+                            resultBytes += read;
+                        }
+
+                        String suffixDataStr = new String(buffer, readBytes - suffixLength, suffixLength);
+                        if (!suffixDataStr.equals(Constants.COMMAND_ROBOT_SUFFIX_FOR_SOCKET)) {
+                            //不满足通讯规则直接抛掉 (没有尾)
+                            isFirstPackage = true;
+                            dataLength = 0;
+                            currentReadCount = 0;
+                            readDataCount = 1;
+                            data = null;
+                            continue;
+                        }
+
+                        //获取中间的数据
+                        byte[] result = Arrays.copyOfRange(buffer, 0, readBytes - suffixLength);
+                        data = BytesUtils.concat(data, result);
+                        mHandler.obtainMessage(Constants.MESSAGE_SOCKET_CONTROL, data.length, -1, data)
                                 .sendToTarget();
+                        isFirstPackage = true;
+                        dataLength = 0;
+                        currentReadCount = 0;
+                        readDataCount = 1;
+                        data = null;
+                    } else {
+                        //读取中间的数据
+                        LogUtils.d(TAG, "read data: " + currentReadCount);
+                        resultBytes = 0;
+                        readBytes = maxBufferSize;
+                        buffer = new byte[readBytes];
+                        while (resultBytes < readBytes) {
+                            read = mmInStream.read(buffer, resultBytes, readBytes - resultBytes);
+                            if (read == -1) {
+                                Log.e(TAG, "disconnected");
+                                cancel();//断开连接
+                                return;
+                            }
+                            resultBytes += read;
+                        }
+
+                        currentReadCount++;
+                        data = BytesUtils.concat(data, buffer);
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     cancel();//断开连接
