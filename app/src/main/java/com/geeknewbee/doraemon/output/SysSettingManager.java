@@ -65,7 +65,7 @@ public class SysSettingManager {
             //WPA连接方式
             if (TextUtils.isEmpty(pwd)) {
                 Doraemon.getInstance(App.mContext).addCommand(new SoundCommand(Constants.TIPS_CONNECT_WIFI_FAIL, SoundCommand.InputSource.TIPS));
-                EventBus.getDefault().post(new SetWifiCompleteEvent(result, ssid));//告知手机端连接失败
+                EventBus.getDefault().post(new SetWifiCompleteEvent(false, ssid));//告知手机端连接失败
                 return false;
             }
             config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);

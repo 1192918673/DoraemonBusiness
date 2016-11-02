@@ -15,17 +15,12 @@ public class SetWifiCompleteEvent {
         this.SSID = ssid;
     }
 
-    public SetWifiCompleteEvent(boolean isSuccess, String SSID, String content, String ipAddress) {
+    public SetWifiCompleteEvent(boolean isSuccess, boolean hadBound, String SSID, String content, String ipAddress) {
         this.isSuccess = isSuccess;
         this.SSID = SSID;
         this.content = content;
-        this.ipAddress = ipAddress;
-    }
-
-    public SetWifiCompleteEvent(boolean isSuccess, String SSID, boolean hadBound, String ipAddress) {
-        this.isSuccess = isSuccess;
-        this.SSID = SSID;
         this.hadBound = hadBound;
         this.ipAddress = ipAddress;
     }
+
 }

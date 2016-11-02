@@ -61,10 +61,11 @@ public class ShowQRTask extends Thread {
                     if (response.isSuccessful() && response.body().isSuccess()) {
                         if (response.body().getData().count == 0) {
                             EventBus.getDefault().post(new SetWifiCompleteEvent
-                                    (true, ssid, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context), DeviceUtil.getWIFILocalIpAdress(context)));//告知手机端连接成功
+                                    (true, false, ssid, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context), DeviceUtil.getWIFILocalIpAdress(context)));//告知手机端连接成功
                             break;
                         } else {
-                            EventBus.getDefault().post(new SetWifiCompleteEvent(true, ssid, true, DeviceUtil.getWIFILocalIpAdress(context)));//告知手机端连接失败
+                            EventBus.getDefault().post(new SetWifiCompleteEvent
+                                    (true, true, ssid, "http://doraemon.microfastup.com/qr/" + DeviceUtil.getWifiMAC(context), DeviceUtil.getWIFILocalIpAdress(context)));//告知手机端连接失败
                             LogUtils.d(TAG, "二次绑定不用显示二维码，绑定用户数：" + response.body().getData().count);
                             break;
                         }
@@ -76,7 +77,7 @@ public class ShowQRTask extends Thread {
 
             index++;
             try {
-                Thread.sleep(500);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
