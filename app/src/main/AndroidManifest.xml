@@ -128,12 +128,12 @@
             android:value="sangebaba#doraemon" />
         <!-- 声明SDK所需的service SDK核心功能-->
         <service
-            android:name="com.hyphenate.chat.EMChatService"
+            android:name="com.easemob.chat.EMChatService"
             android:exported="true"
             android:process=":EMChatService" />
 
         <!-- 声明SDK所需的receiver -->
-        <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
+        <receiver android:name="com.easemob.chat.EMMonitorReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
                 <data android:scheme="package" />

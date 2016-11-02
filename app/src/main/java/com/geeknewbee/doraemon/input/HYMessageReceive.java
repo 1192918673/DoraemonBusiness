@@ -8,6 +8,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 
+import com.easemob.EMCallBack;
+import com.easemob.EMConnectionListener;
+import com.easemob.EMError;
+import com.easemob.chat.CmdMessageBody;
+import com.easemob.chat.EMChat;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMGroupManager;
+import com.easemob.chat.EMMessage;
+import com.easemob.util.NetUtils;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.AuthRobotResponse;
 import com.geeknewbee.doraemon.entity.event.ASRResultEvent;
@@ -20,15 +29,6 @@ import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemon.view.VideoTalkActivity;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-import com.hyphenate.EMCallBack;
-import com.hyphenate.EMConnectionListener;
-import com.hyphenate.EMError;
-import com.hyphenate.EMMessageListener;
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMCmdMessageBody;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMOptions;
-import com.hyphenate.util.NetUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,6 +48,7 @@ public class HYMessageReceive implements IMessageReceive {
     public static final int LOGIN_FAILED = 1;
     public static final int STATE_CONNECTED = 2;
     public static final int STATE_DISCONNECTED = 3;
+    public static final int RECEIVE_VIDEO_CALL = 4;
     public static String TAG = HYMessageReceive.class.getSimpleName();
     private static HYMessageReceive instance;
     private Context mContext;
@@ -56,49 +57,22 @@ public class HYMessageReceive implements IMessageReceive {
     private String hxPassword;
     private boolean isLogined;
     private IMessageReceive.MessageListener messageListener;
+    private String from;
     /**
-     * 消息接受监听
+     * cmd消息BroadcastReceiver
      */
-    private EMMessageListener msgListener = new EMMessageListener() {
+    private BroadcastReceiver cmdMessageReceiver = new BroadcastReceiver() {
 
         @Override
-        public void onMessageReceived(List<EMMessage> messages) {
-            // 收到消息
-            LogUtils.d(TAG, "收到消息");
-        }
-
-        @Override
-        public void onCmdMessageReceived(List<EMMessage> messages) {
-            LogUtils.d(TAG, "收到Cmd消息" + messages.toString());
-            // 收到透传消息
-
-            if (messages != null && messages.size() > 0) {
-                String str = "收到Cmd消息\n";
-                for (int i = 0; i < messages.size(); i++) {
-                    String action = ((EMCmdMessageBody) messages.get(i).getBody()).action();
-                    str += messages.get(i).getFrom() + " : " + action + "\n";
-                    parseEMCMDData(action);
-                }
-                LogUtils.d(TAG, str);
-            }
-        }
-
-        @Override
-        public void onMessageReadAckReceived(List<EMMessage> messages) {
-            // 收到已读回执
-            LogUtils.d(TAG, "消息已读回执");
-        }
-
-        @Override
-        public void onMessageDeliveryAckReceived(List<EMMessage> message) {
-            // 收到已送达回执
-            LogUtils.d(TAG, "收到已送达回执");
-        }
-
-        @Override
-        public void onMessageChanged(EMMessage message, Object change) {
-            // 消息状态变动
-            LogUtils.d(TAG, "消息状态变动");
+        public void onReceive(Context context, Intent intent) {
+            //获取cmd message对象
+            String msgId = intent.getStringExtra("msgid");
+            EMMessage message = intent.getParcelableExtra("message");
+            LogUtils.d(TAG, "收到CMD消息：" + message);
+            //获取消息body
+            CmdMessageBody cmdMsgBody = (CmdMessageBody) message.getBody();
+            String action = cmdMsgBody.action;//获取自定义action
+            parseEMCMDData(action);
         }
     };
     private Handler mHandler = new Handler() {
@@ -108,12 +82,11 @@ public class HYMessageReceive implements IMessageReceive {
             switch (msg.what) {
                 case LOGIN_SUCCESS:// 登录成功
                     //以下两个方法是为了保证进入主页面后本地会话和群组都load完毕
-                    EMClient.getInstance().groupManager().loadAllGroups();
-                    EMClient.getInstance().chatManager().loadAllConversations();
-                    // ★★★ 登录成功后，开始监听接受消息
-                    EMClient.getInstance().groupManager().loadAllGroups();
-                    EMClient.getInstance().chatManager().loadAllConversations();
-                    EMClient.getInstance().chatManager().addMessageListener(msgListener);
+                    EMGroupManager.getInstance().loadAllGroups();
+                    EMChatManager.getInstance().loadAllConversations();
+                    // ★★★ 登录成功后，注册一个cmd消息的BroadcastReceiver
+                    IntentFilter cmdIntentFilter = new IntentFilter(EMChatManager.getInstance().getCmdMessageBroadcastAction());
+                    mContext.registerReceiver(cmdMessageReceiver, cmdIntentFilter);
                     break;
                 case LOGIN_FAILED:// 登录失败
                     hxUsername = PrefUtils.getString(mContext, Constants.KEY_HX_USERNAME, null);
@@ -128,9 +101,9 @@ public class HYMessageReceive implements IMessageReceive {
                     if (error == EMError.USER_REMOVED) {
                         // 显示帐号已经被移除
                         LogUtils.d(TAG, "显示帐号已经被移除");
-                    } else if (error == EMError.USER_LOGIN_ANOTHER_DEVICE) {
+                    /*} else if (error == EMError.USER_LOGIN_ANOTHER_DEVICE) {
                         // 显示帐号在其他设备登陆
-                        LogUtils.d(TAG, "显示帐号在其他设备登陆");
+                        LogUtils.d(TAG, "显示帐号在其他设备登陆");*/
                     } else {
                         if (NetUtils.hasNetwork(mContext)) {
                             //连接不到聊天服务器
@@ -144,19 +117,19 @@ public class HYMessageReceive implements IMessageReceive {
             }
         }
     };
-
     // 接受视频呼叫的广播接受者
     private BroadcastReceiver emIncomingCallReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // 拨打方username
-            String from = intent.getStringExtra("from");
+            from = intent.getStringExtra("from");
             // call type
             String type = intent.getStringExtra("type");
             LogUtils.d(TAG, "收到来自" + from + "的视频呼叫");
 
             // 1.跳转到通话页面
-            Doraemon.getInstance(context).switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
+            Doraemon.getInstance(mContext).switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
+            Doraemon.getInstance(mContext).stopAFR();// 停止人脸检测
             Intent intent1 = new Intent(mContext, VideoTalkActivity.class);
             intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent1.putExtra("from", from);
@@ -167,8 +140,16 @@ public class HYMessageReceive implements IMessageReceive {
     private HYMessageReceive(Context context) {
         this.mContext = context;
         EventBus.getDefault().register(this);
+        // 1.注册视频通话的广播接受者
         EMInit();
+        // 2.注册连接状态监听、登录；登录成功后注册接受CMD消息的广播接受者
         initLogin();
+
+        // 当 APP 在后台时，SDK 默认以 notification 的形式通知有新消息，不会走广播，
+        // 如果需要走广播，可以调用以下 SDK 关闭 notification 通知，这样新消息还是走发送广播的形式
+        EMChatManager.getInstance().getChatOptions().setShowNotificationInBackgroud(false);
+        // 防止没有注册广播接收者，导致漏接消息的情况，只需调用一次即可
+        EMChat.getInstance().setAppInited();
     }
 
     public static HYMessageReceive getInstance(Context context) {
@@ -189,17 +170,17 @@ public class HYMessageReceive implements IMessageReceive {
         hxPassword = PrefUtils.getString(mContext, Constants.KEY_HX_USERPWD, null);
 
         // 2.注册一个监听连接状态的listener
-        if (null == EMClient.getInstance()) {
-            EMOptions options = new EMOptions();
-            // 默认添加好友时，是不需要验证的，改成需要验证
-            options.setAcceptInvitationAlways(true);
-            options.setAutoLogin(true);
-            //初始化
-            EMClient.getInstance().init(mContext, options);
-            //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
-            EMClient.getInstance().setDebugMode(false);
+        if (null == EMChat.getInstance()) {
+            EMChat.getInstance().init(mContext);
+
+            /**
+             * debugMode == true 时为打开，SDK会在log里输入调试信息
+             * @param debugMode
+             * 在做代码混淆的时候需要设置成false
+             */
+            EMChat.getInstance().setDebugMode(false);//在做打包混淆时，要关闭debug模式，避免消耗不必要的资源
         }
-        EMClient.getInstance().addConnectionListener(new MyEMConnectionListener());
+        EMChatManager.getInstance().addConnectionListener(new MyEMConnectionListener());
 
         // 2.登录
         if (!isLogined) {
@@ -221,14 +202,14 @@ public class HYMessageReceive implements IMessageReceive {
      * @param pwd
      */
     private void EMLogin(String name, String pwd) {
-        LogUtils.d(TAG, "authToken:" + authToken + ",hxUsername:" + hxUsername + ",hxPassword:" + hxPassword);
+        LogUtils.d(TAG, "环信登录：authToken:" + authToken + ",hxUsername:" + hxUsername + ",hxPassword:" + hxPassword);
 
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(pwd)) {
             mHandler.sendEmptyMessageDelayed(LOGIN_FAILED, 5000);
             return;
         }
 
-        EMClient.getInstance().login(name, pwd, new EMCallBack() {
+        EMChatManager.getInstance().login(name, pwd, new EMCallBack() {
             @Override
             public void onSuccess() {
                 LogUtils.d(TAG, "登陆聊天服务器成功！");
@@ -245,7 +226,6 @@ public class HYMessageReceive implements IMessageReceive {
                 mHandler.sendEmptyMessageDelayed(LOGIN_FAILED, 5000);
             }
         });
-
     }
 
     /**
@@ -360,7 +340,7 @@ public class HYMessageReceive implements IMessageReceive {
      */
     private void EMInit() {
         try {
-            String broadcastAction = EMClient.getInstance().callManager().getIncomingCallBroadcastAction();
+            String broadcastAction = EMChatManager.getInstance().getIncomingCallBroadcastAction();
             IntentFilter callFilter = new IntentFilter(broadcastAction);
             callFilter.setPriority(1000);
             mContext.registerReceiver(emIncomingCallReceiver, callFilter);
@@ -375,7 +355,7 @@ public class HYMessageReceive implements IMessageReceive {
      * 退出登录
      */
     public void logout() {
-        EMClient.getInstance().logout(true, new EMCallBack() {
+        EMChatManager.getInstance().logout(true, new EMCallBack() {
 
             @Override
             public void onSuccess() {

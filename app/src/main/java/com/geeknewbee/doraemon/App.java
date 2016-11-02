@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.multidex.MultiDex;
 
 import com.aispeech.common.AIConstant;
+import com.easemob.chat.EMChat;
 import com.facebook.stetho.Stetho;
 import com.geeknewbee.doraemon.database.DaoMaster;
 import com.geeknewbee.doraemon.database.DaoSession;
@@ -17,8 +18,6 @@ import com.geeknewbee.doraemon.output.BLM;
 import com.geeknewbee.doraemon.output.action.YouKuPlayerActivity;
 import com.geeknewbee.doraemonsdk.BaseApplication;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMOptions;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 import com.youku.player.YoukuPlayerBaseConfiguration;
@@ -84,14 +83,14 @@ public class App extends BaseApplication {
      * 环信初始化
      */
     private void initHuanXinSDK() {
-        EMOptions options = new EMOptions();
-        // 默认添加好友时，是不需要验证的，改成需要验证
-        options.setAcceptInvitationAlways(true);
-        options.setAutoLogin(true);
-        //初始化
-        EMClient.getInstance().init(getApplicationContext(), options);
-        //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
-        EMClient.getInstance().setDebugMode(true);
+        EMChat.getInstance().init(this);
+
+        /**
+         * debugMode == true 时为打开，SDK会在log里输入调试信息
+         * @param debugMode
+         * 在做代码混淆的时候需要设置成false
+         */
+        EMChat.getInstance().setDebugMode(true);//在做打包混淆时，要关闭debug模式，避免消耗不必要的资源
     }
 
     @Override
