@@ -23,16 +23,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 /**
- * 在每次设置wifi 后需要根据是有绑定的成员判断是否需要要显示二维码
- * 只有在机器猫还没有人绑定的时候会显示
+ * 在每次设置wifi 后需要根据告知手机端是否已经绑定以及对应的IP
  */
-public class ShowQRTask extends Thread {
-    private static final String TAG = ShowQRTask.class.getSimpleName();
+public class GetBindInfoTask extends Thread {
+    private static final String TAG = GetBindInfoTask.class.getSimpleName();
     private static boolean TTS_TIPS_FLAG;
     private int number = 40;
     private String ssid;
 
-    public ShowQRTask(String ssid) {
+    public GetBindInfoTask(String ssid) {
         this.ssid = ssid;
     }
 
