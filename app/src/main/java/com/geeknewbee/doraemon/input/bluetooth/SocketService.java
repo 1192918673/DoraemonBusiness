@@ -22,11 +22,9 @@ public class SocketService {
     private final Handler mHandler;
     private AcceptThread acceptThread;
     private ConnectedThread connectedThread;
-    private SocketReader socketReader;
 
     public SocketService(Handler mHandler) {
         this.mHandler = mHandler;
-        socketReader = new SocketReader();
     }
 
     public void start() {
@@ -104,7 +102,6 @@ public class SocketService {
             connectedThread.cancel();
             connectedThread = null;
         }
-        socketReader.clearData();
         connectedThread = new ConnectedThread(client);
         connectedThread.start();
     }
