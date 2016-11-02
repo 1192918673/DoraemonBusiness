@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.DanceMusicStopEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
-import com.geeknewbee.doraemon.input.bluetooth.ImmediateAlertService;
+import com.geeknewbee.doraemon.input.wireless.ImmediateAlertService;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;

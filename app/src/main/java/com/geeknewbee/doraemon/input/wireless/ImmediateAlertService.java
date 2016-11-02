@@ -1,5 +1,5 @@
 
-package com.geeknewbee.doraemon.input.bluetooth;
+package com.geeknewbee.doraemon.input.wireless;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;

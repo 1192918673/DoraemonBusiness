@@ -29,7 +29,7 @@ import com.geeknewbee.doraemon.input.IMessageReceive;
 import com.geeknewbee.doraemon.input.ISoundInputDevice;
 import com.geeknewbee.doraemon.input.ReadSenseService;
 import com.geeknewbee.doraemon.input.SoundMonitorType;
-import com.geeknewbee.doraemon.input.bluetooth.WirelessControlServiceManager;
+import com.geeknewbee.doraemon.input.wireless.WirelessControlServiceManager;
 import com.geeknewbee.doraemon.output.ReadFaceManager;
 import com.geeknewbee.doraemon.output.queue.MouthTaskQueue;
 import com.geeknewbee.doraemon.processcenter.InputTimeoutMonitorTask.TimeOutMonitorType;
