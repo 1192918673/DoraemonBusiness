@@ -153,6 +153,7 @@ public class SocketService {
             int dataLength = 0;
             //读取到的数据
             byte[] data = null;
+            //每次实际读取的个数
             int read = 0;
 
             int prefixLength = Constants.COMMAND_ROBOT_PREFIX_FOR_SOCKET.length();
@@ -190,7 +191,6 @@ public class SocketService {
                             readDataCount = (readBytes % maxBufferSize == 0 ? readBytes / maxBufferSize : (readBytes / maxBufferSize + 1));
                         }
                     } else if (currentReadCount == readDataCount - 1) {
-                        LogUtils.d(TAG, "last number read data: " + currentReadCount);
                         resultBytes = 0;
                         //最后一次读取数据域
                         readBytes = (dataLength + suffixLength) - maxBufferSize * (currentReadCount);
@@ -228,7 +228,6 @@ public class SocketService {
                         data = null;
                     } else {
                         //读取中间的数据
-                        LogUtils.d(TAG, "read data: " + currentReadCount);
                         resultBytes = 0;
                         readBytes = maxBufferSize;
                         buffer = new byte[readBytes];
@@ -251,6 +250,7 @@ public class SocketService {
                     break;
                 }
             }
+
             Log.i(TAG, "END mConnectedThread");
         }
 
