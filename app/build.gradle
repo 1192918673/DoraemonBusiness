@@ -90,6 +90,7 @@ android {
             shrinkResources true // 是否去除无效的资源文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "BLUETOOTH_NAME", BLNAME
+            buildConfigField "boolean", "NEED_DEBUG", "false"
         }
 
         debug {
@@ -111,7 +112,6 @@ android {
         }
         //测试版
         Beta {
-            buildConfigField "boolean", "NEED_DEBUG", "false"
             versionName TestVersion
             versionCode TestVersionCode
             buildConfigField "String", "URLDOMAIN", BetaURLDOMAIN
@@ -121,7 +121,6 @@ android {
 
         //发布版
         Online {
-            buildConfigField "boolean", "NEED_DEBUG", "false"
             buildConfigField "String", "URLDOMAIN", OnlineURLDOMAIN
             manifestPlaceholders = ["UMENG_APPKEY" : OnlineUMengAppKey,
                                     "UMENG_CHANNEL": "Fir"]

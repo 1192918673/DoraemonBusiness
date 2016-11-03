@@ -5,7 +5,7 @@ import android.util.Log;
 
 
 public class LogUtils {
-    public static boolean LOG_DEBUG = true;
+    public static boolean LOG_DEBUG = false;
     public static boolean LOG_FILE = LOG_DEBUG;
 
     public static void v(String tag, String msg) {
