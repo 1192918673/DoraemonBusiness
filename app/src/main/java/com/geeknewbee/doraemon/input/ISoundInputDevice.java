@@ -23,4 +23,6 @@ public interface ISoundInputDevice {
     void onWakeUp(double angle, double phis);
 
     void destroy();
+
+    boolean isRunning();
 }

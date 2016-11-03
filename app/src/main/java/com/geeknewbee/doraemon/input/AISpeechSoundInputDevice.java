@@ -85,6 +85,10 @@ public class AISpeechSoundInputDevice implements ISoundInputDevice {
         }
     }
 
+    public boolean isRunning() {
+        return isRunning;
+    }
+
     private class AISpeechListenerImpl implements AILocalEddListener {
 
         @Override

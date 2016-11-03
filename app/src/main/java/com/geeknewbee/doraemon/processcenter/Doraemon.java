@@ -134,8 +134,10 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
      * 启动唤醒  Waiting For Wakeup
      */
     public void startWakeup() {
-        soundInputDevice.start();
-        addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
+        if (!soundInputDevice.isRunning()) {
+            soundInputDevice.start();
+            addCommand(new ExpressionCommand(Constants.DEFAULT_GIF, 0));
+        }
     }
 
     /**

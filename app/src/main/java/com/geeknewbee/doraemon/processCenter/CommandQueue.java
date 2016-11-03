@@ -44,7 +44,6 @@ public class CommandQueue {
     private List<SyncCommand> activeCommandList;
     private final Handler mHandler;
     private ReentrantLock commandSetLock = new ReentrantLock();
-    private ReentrantLock activeCommandListLock = new ReentrantLock();
 
     private CommandQueue(Context context) {
         this.context = context;
@@ -176,12 +175,7 @@ public class CommandQueue {
             command.getType().getOutput().setBusy(true);
         }
 
-//        activeCommandListLock.lock();
-//        try {
         activeCommandList.add(syncCommand);
-//        } finally {
-//            activeCommandListLock.unlock();
-//        }
 
         executorService.submit(new Runnable() {
             @Override
@@ -287,8 +281,7 @@ public class CommandQueue {
      * @param monitorType
      */
     private void markAndTryDoNextCommand(String commandID, SoundMonitorType monitorType) {
-//        activeCommandListLock.lock();
-        activeCommandListLock.lock();
+        commandSetLock.lock();
         try {
             if (activeCommandList != null && activeCommandList.size() > 0) {
 //            LogUtils.d(TAG, "complete command id:" + commandID);
@@ -311,8 +304,7 @@ public class CommandQueue {
             } else
                 LogUtils.d(TAG, "activeCommandList is null");
         } finally {
-//            activeCommandListLock.unlock();
-            activeCommandListLock.unlock();
+            commandSetLock.unlock();
         }
     }
 

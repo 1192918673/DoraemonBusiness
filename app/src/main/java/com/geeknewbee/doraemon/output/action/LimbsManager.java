@@ -68,49 +68,53 @@ public class LimbsManager {
     }
 
     public void perform(SportActionSetCommand command) {
-        activeCommand = command;
-        isStopAction = false;
-        isBusy = true;
+        reentrantLock.lock();
+        try {
+            activeCommand = command;
+            isStopAction = false;
+            isBusy = true;
 
-        if (command.sportActions == null || command.sportActions.isEmpty()) {
-            inputSource = null;
-            notifyComplete();
-            return;
-        }
-        inputSource = command.inputSource;
-        for (SportAction sportAction : command.sportActions) {
-            if (isStopAction) {
-                armsAndHead.reset();
-                if (isUseLeXing)
-                    stopFoot(0);
-                else
-                    stopFootLuGong(0);
-                break;
+            if (command.sportActions == null || command.sportActions.isEmpty()) {
+                inputSource = null;
+                notifyComplete();
+                return;
             }
+            inputSource = command.inputSource;
+            for (SportAction sportAction : command.sportActions) {
+                if (isStopAction) {
+                    armsAndHead.reset();
+                    if (isUseLeXing)
+                        stopFoot(0);
+                    else
+                        stopFootLuGong(0);
+                    break;
+                }
 
-            if (!TextUtils.isEmpty(sportAction.expressionName))
-                Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 3));
+                if (!TextUtils.isEmpty(sportAction.expressionName))
+                    Doraemon.getInstance(BaseApplication.mContext).addCommand(new ExpressionCommand(sportAction.expressionName, 3));
 
-            sendTopCommand(sportAction.topCommand);
+                sendTopCommand(sportAction.topCommand);
 
-            if (!TextUtils.isEmpty(sportAction.footCommand)) {
-                if (isUseLeXing) {
-                    sendLeXingFootCommand(sportAction.footCommand);
-                    stopFoot(sportAction.delayTime);
-                } else {
-                    //连续发送串口命令，中控板会反应不过来,这里暂停了20ms
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                if (!TextUtils.isEmpty(sportAction.footCommand)) {
+                    if (isUseLeXing) {
+                        sendLeXingFootCommand(sportAction.footCommand);
+                        stopFoot(sportAction.delayTime);
+                    } else {
+                        //连续发送串口命令，中控板会反应不过来,这里暂停了20ms
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
+                        stopFootLuGong(sportAction.delayTime);
                     }
-                    sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
-                    stopFootLuGong(sportAction.delayTime);
                 }
             }
+            notifyComplete();
+        } finally {
+            reentrantLock.unlock();
         }
-
-        notifyComplete();
     }
 
     public void perform(BluetoothControlFootCommand command) {
@@ -118,18 +122,23 @@ public class LimbsManager {
 //            stopMoveThread();
 //        } else
 //            startMoveThread();
-        LogUtils.d(CommandQueue.TAG, "BluetoothControlFootCommand  v:" + command.v + " w:" + command.w);
-        activeCommand = command;
-        isStopAction = false;
-        isBusy = true;
-        inputSource = SportActionSetCommand.InputSource.REMOTE_CONTROL;
+        reentrantLock.lock();
+        try {
+            LogUtils.d(CommandQueue.TAG, "BluetoothControlFootCommand  v:" + command.v + " w:" + command.w);
+            activeCommand = command;
+            isStopAction = false;
+            isBusy = true;
+            inputSource = SportActionSetCommand.InputSource.REMOTE_CONTROL;
 
-        if (isUseLeXing)
-            sendLeXingFootCommand(command.v, command.w);
-        else
-            sendLeXingFootCommandByLuGong(command.v, command.w);
+            if (isUseLeXing)
+                sendLeXingFootCommand(command.v, command.w);
+            else
+                sendLeXingFootCommandByLuGong(command.v, command.w);
 
-        notifyComplete();
+            notifyComplete();
+        } finally {
+            reentrantLock.unlock();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
