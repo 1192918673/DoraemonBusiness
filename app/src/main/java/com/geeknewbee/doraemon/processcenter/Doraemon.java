@@ -61,7 +61,6 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
     private final InputTimeoutMonitorTask inputTimeOutMonitorTask;
     private final AISpeechAuth speechAuth;
     private IEar ear;
-    //    private IEye eye;
     private IMessageReceive receive;
     private ISoundInputDevice soundInputDevice;
     private Brain brain;
@@ -78,7 +77,6 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
         this.context = context;
         speechAuth = new AISpeechAuth();
         ear = new AISpeechEar();
-//        eye = ReadSenseEye.getInstance();
         receive = HYMessageReceive.getInstance(context);
         brain = new Brain();
         soundInputDevice = new AISpeechSoundInputDevice();
@@ -303,6 +301,7 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
     public void onWakeup(WakeupSuccessEvent event) {
         //当唤醒的时候停止当前的动作
         this.wakePhis = event.mPhis;
+        this.controlType = ControlType.LOCAL;
 
         List<Command> commandList = new ArrayList<>();
         Command command = new Command(CommandType.STOP);
@@ -339,16 +338,16 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSwitchControlType(SwitchControlTypeEvent event) {
         if (event.type == ControlType.REMOTE) {
-            AutoDemonstrationManager.getInstance(context).stop();
+            CommandQueue.getInstance(context).stop();
             this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
         } else if (event.type == ControlType.LOCAL) {
-            AutoDemonstrationManager.getInstance(context).stop();
+            CommandQueue.getInstance(context).stop();
             this.controlType = event.type;
             switchSoundMonitor(SoundMonitorType.EDD);
         } else if (event.type == ControlType.AUTO) {
             this.controlType = event.type;
-            switchSoundMonitor(SoundMonitorType.CLOSE_ALL);
+            switchSoundMonitor(SoundMonitorType.EDD);
             AutoDemonstrationManager.getInstance(context).start();
         }
     }
@@ -365,7 +364,6 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
             AutoDemonstrationManager.getInstance(context).circle();
     }
 
-
     public void switchSoundMonitor(SoundMonitorType type) {
         inputTimeOutMonitorTask.stopMonitor();
         switch (type) {
@@ -379,8 +377,7 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
                 }
                 break;
             case EDD:
-                //只有AUTO模式不能进入EDD
-                if (BuildConfig.HAVE_SPEECH_DEVCE && controlType != ControlType.AUTO) {
+                if (BuildConfig.HAVE_SPEECH_DEVCE) {
                     switchMonitorLock.lock();
                     stopASR();
                     startWakeup();

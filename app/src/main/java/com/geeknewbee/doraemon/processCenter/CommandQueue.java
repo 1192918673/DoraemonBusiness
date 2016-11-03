@@ -74,7 +74,7 @@ public class CommandQueue {
         synchronized (soundCommands) {
             if (command == null || command.commandList == null || command.commandList.isEmpty())
                 return;
-            
+
             soundCommands.add(command);
             LogUtils.d(TAG, "add SyncCommand:" + command + " soundCommands size:" + soundCommands.size());
             if (command.getDelayTime() > 0) {

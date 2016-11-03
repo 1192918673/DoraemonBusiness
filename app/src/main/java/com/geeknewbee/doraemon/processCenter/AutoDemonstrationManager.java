@@ -95,7 +95,7 @@ public class AutoDemonstrationManager {
         CommandQueue.getInstance(context).addCommand(new SyncCommand.Builder().setCommandList(commands).setExpireTime(30 * 60 * 1000).build());
     }
 
-    public void stop() {
+    private void stop() {
         CommandQueue.getInstance(context).stop();
     }
 
