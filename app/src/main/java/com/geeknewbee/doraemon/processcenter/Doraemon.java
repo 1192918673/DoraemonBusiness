@@ -331,42 +331,6 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
 //        mEngine.setDoaChannel(6);//每次都是头对着用户
     }
 
-    private void testSyncQueue() {
-        addCommand(new Command(CommandType.STOP),
-                new SoundCommand(LocalResourceManager.getInstance().getWakeUpString(), SoundCommand.InputSource.AFTER_WAKE_UP));
-        addCommand(new SoundCommand("测试下占用的情况1", SoundCommand.InputSource.AFTER_WAKE_UP));
-        addCommand(new SoundCommand("测试下占用的情况2", SoundCommand.InputSource.AFTER_WAKE_UP));
-        addCommand(new SoundCommand("测试下占用的情况3", SoundCommand.InputSource.AFTER_WAKE_UP));
-
-
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                try {
-                    Thread.sleep(3 * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                List<Command> commandList = new ArrayList<>();
-                commandList.add(new SoundCommand("这个是中断的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
-                SyncCommand syncCommand = new SyncCommand.Builder().setPriority(Priority.INTERRUPT).setCommandList(commandList).build();
-                addCommand(syncCommand);
-            }
-        }.start();
-
-
-        List<Command> commandList = new ArrayList<>();
-        commandList.add(new SoundCommand("这个是延迟15秒的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
-        SyncCommand syncCommand = new SyncCommand.Builder().setCommandList(commandList).setDelayTime(15 * 1000).build();
-        addCommand(syncCommand);
-
-        commandList = new ArrayList<>();
-        commandList.add(new SoundCommand("在延迟命令之后添加的命令", SoundCommand.InputSource.AFTER_WAKE_UP));
-        syncCommand = new SyncCommand.Builder().setCommandList(commandList).setExpireTime(30 * 1000).build();
-        addCommand(syncCommand);
-    }
-
     /**
      * 控制模式发生变化
      *
