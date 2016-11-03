@@ -92,11 +92,11 @@ public class LimbsManager {
 
             sendTopCommand(sportAction.topCommand);
 
-            if (isUseLeXing) {
-                sendLeXingFootCommand(sportAction.footCommand);
-                stopFoot(sportAction.delayTime);
-            } else {
-                if (!TextUtils.isEmpty(sportAction.footCommand)) {
+            if (!TextUtils.isEmpty(sportAction.footCommand)) {
+                if (isUseLeXing) {
+                    sendLeXingFootCommand(sportAction.footCommand);
+                    stopFoot(sportAction.delayTime);
+                } else {
                     //连续发送串口命令，中控板会反应不过来,这里暂停了20ms
                     try {
                         Thread.sleep(20);
@@ -104,9 +104,8 @@ public class LimbsManager {
                         e.printStackTrace();
                     }
                     sendLeXingFootCommandByLuGong(sportAction.footCommand);//暂时采用折中的方案通过路工的中控板控制行走
+                    stopFootLuGong(sportAction.delayTime);
                 }
-
-                stopFootLuGong(sportAction.delayTime);
             }
         }
 
