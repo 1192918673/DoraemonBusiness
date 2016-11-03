@@ -390,7 +390,7 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
     }
 
     /**
-     * 当SyncQueue 队列任务都完成的时候触发 现在是为了实习自动演示的功能
+     * 当CommandQueue 队列任务都完成的时候触发 现在是为了实现自动循环演示的功能
      * 2016-10-17
      *
      * @param event
