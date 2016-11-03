@@ -296,6 +296,9 @@ public class CommandQueue {
 
     public void stop() {
         LogUtils.d(TAG, "stop");
+        synchronized (soundCommands) {
+            soundCommands.clear();
+        }
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();
     }

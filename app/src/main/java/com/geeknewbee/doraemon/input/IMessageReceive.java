@@ -1,6 +1,7 @@
 package com.geeknewbee.doraemon.input;
 
 import com.geeknewbee.doraemon.processcenter.command.Command;
+import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ public interface IMessageReceive {
          * @param commands
          */
         void onReceivedMessage(List<Command> commands);
+
+        void onReceivedMessage(SyncCommand command);
     }
 
     void destroy();

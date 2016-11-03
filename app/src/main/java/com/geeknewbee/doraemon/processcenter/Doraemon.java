@@ -197,6 +197,11 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
         addCommand(commands);
     }
 
+    @Override
+    public void onReceivedMessage(SyncCommand command) {
+        brain.addCommand(command);
+    }
+
     /**
      * ASR监听请说话：无语音超时计时开始
      *

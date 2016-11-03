@@ -26,8 +26,10 @@ import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
+import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
 import com.geeknewbee.doraemon.utils.PrefUtils;
 import com.geeknewbee.doraemon.view.VideoTalkActivity;
+import com.geeknewbee.doraemonsdk.task.Priority;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -258,7 +260,7 @@ public class HYMessageReceive implements IMessageReceive {
 
                     commands.add(new SoundCommand(Constants.TIP_BEFORE_PLAY_MOVIE, SoundCommand.InputSource.TIPS));
                     commands.add(new Command(CommandType.PLAY_MOVIE, readData));
-                    messageListener.onReceivedMessage(commands);
+                    messageListener.onReceivedMessage(new SyncCommand.Builder().setCommandList(commands).setPriority(Priority.INTERRUPT).build());
                 } else if (type == 4) {// 透传动作控制
                 } else if (type == 5) {// 手机识别
                     if ("_open".equals(pushData.getString("data"))) {
