@@ -26,6 +26,7 @@ import com.geeknewbee.doraemon.processcenter.command.BluetoothCommand;
 import com.geeknewbee.doraemon.processcenter.command.Command;
 import com.geeknewbee.doraemon.processcenter.command.CommandType;
 import com.geeknewbee.doraemon.processcenter.command.SoundCommand;
+import com.geeknewbee.doraemon.processcenter.command.SyncCommand;
 import com.geeknewbee.doraemonsdk.utils.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -160,6 +161,11 @@ public class WirelessControlServiceManager {
             }
         }
     };
+
+    private void receiveCommands(SyncCommand commands) {
+        if (receiveCommandListener != null)
+            receiveCommandListener.onReceiveCommand(commands);
+    }
 
     private void receiveCommands(List<Command> commands) {
         if (receiveCommandListener != null)
@@ -380,5 +386,7 @@ public class WirelessControlServiceManager {
 
     public interface OnReceiveCommandListener {
         void onReceiveCommand(List<Command> command);
+
+        void onReceiveCommand(SyncCommand command);
     }
 }

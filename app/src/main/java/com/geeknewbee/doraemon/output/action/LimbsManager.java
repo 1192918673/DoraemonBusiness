@@ -6,6 +6,7 @@ import com.geeknewbee.doraemon.constants.Constants;
 import com.geeknewbee.doraemon.entity.event.DanceMusicStopEvent;
 import com.geeknewbee.doraemon.entity.event.LimbActionCompleteEvent;
 import com.geeknewbee.doraemon.input.wireless.ImmediateAlertService;
+import com.geeknewbee.doraemon.processcenter.CommandQueue;
 import com.geeknewbee.doraemon.processcenter.Doraemon;
 import com.geeknewbee.doraemon.processcenter.LocalResourceManager;
 import com.geeknewbee.doraemon.processcenter.command.BluetoothControlFootCommand;
@@ -117,6 +118,7 @@ public class LimbsManager {
 //            stopMoveThread();
 //        } else
 //            startMoveThread();
+        LogUtils.d(CommandQueue.TAG, "BluetoothControlFootCommand  v:" + command.v + " w:" + command.w);
         activeCommand = command;
         isStopAction = false;
         isBusy = true;

@@ -78,6 +78,8 @@ public class Brain implements SoundTranslateTaskQueue.OnTranslatorListener {
     }
 
     public void addCommand(SyncCommand syncCommand) {
+        if (syncCommand.commandList.size() == 1)
+            syncCommand.needSwitchEdd = needSwitchEdd(syncCommand.commandList.get(0));
         CommandQueue.getInstance(App.mContext).addCommand(syncCommand);
     }
 }

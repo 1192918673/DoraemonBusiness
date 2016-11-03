@@ -472,6 +472,11 @@ public class Doraemon implements IMessageReceive.MessageListener, WirelessContro
         addCommand(commands);
     }
 
+    @Override
+    public void onReceiveCommand(SyncCommand command) {
+        addCommand(command);
+    }
+
     class ReadSenseTTSReceiver extends BroadcastReceiver {
 
         @Override

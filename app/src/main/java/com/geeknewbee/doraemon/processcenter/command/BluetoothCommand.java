@@ -88,7 +88,8 @@ public class BluetoothCommand {
      *
      * @return
      */
-    public List<Command> getCommand() {
+    public SyncCommand getCommand() {
+        boolean isBluetoothFootCommand = false;
         List<Command> commands = new ArrayList<>();
         if (!TextUtils.isEmpty(faceName)) {
             commands.add(new ExpressionCommand(faceName, loop <= 0 ? 1 : loop));
@@ -130,6 +131,7 @@ public class BluetoothCommand {
 
         if (bluetoothFootCommand != null) {
             commands.add(new BluetoothControlFootCommand(bluetoothFootCommand.v, bluetoothFootCommand.w));
+            isBluetoothFootCommand = true;
         }
 
         if (!TextUtils.isEmpty(tts)) {
@@ -191,7 +193,10 @@ public class BluetoothCommand {
             }
         }
 
-        return commands;
+        return new SyncCommand.Builder()
+                .setCommandList(commands)
+                .setExpireTime(isBluetoothFootCommand ? 1000 : SyncCommand.DEFAULT_EXPIRE_TIME)
+                .build();
     }
 
     private static class WifiInfo {

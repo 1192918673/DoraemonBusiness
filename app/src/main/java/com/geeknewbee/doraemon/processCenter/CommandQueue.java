@@ -31,21 +31,24 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CommandQueue {
     public static final String TAG = CommandQueue.class.getSimpleName();
     public static volatile CommandQueue instance;
     private final Context context;
     //等待执行的SyncCommand 集合
-    private final TreeSet<SyncCommand> soundCommands;
+    private final TreeSet<SyncCommand> commandsSet;
     private ExecutorService executorService;
     //正在执行的SyncCommand Queue
     private List<SyncCommand> activeCommandList;
     private final Handler mHandler;
+    private ReentrantLock commandSetLock = new ReentrantLock();
+    private ReentrantLock activeCommandListLock = new ReentrantLock();
 
     private CommandQueue(Context context) {
         this.context = context;
-        soundCommands = new TreeSet<>();
+        commandsSet = new TreeSet<>();
         activeCommandList = new ArrayList<>();
         executorService = Executors.newSingleThreadExecutor();
         mHandler = new Handler(Looper.getMainLooper()) {
@@ -71,12 +74,13 @@ public class CommandQueue {
     }
 
     public void addCommand(final SyncCommand command) {
-        synchronized (soundCommands) {
-            if (command == null || command.commandList == null || command.commandList.isEmpty())
-                return;
+        if (command == null || command.commandList == null || command.commandList.isEmpty())
+            return;
 
-            soundCommands.add(command);
-            LogUtils.d(TAG, "add SyncCommand:" + command + " soundCommands size:" + soundCommands.size());
+        commandSetLock.lock();
+        try {
+            commandsSet.add(command);
+            LogUtils.d(TAG, "add SyncCommand:" + command + " commandsSet size:" + commandsSet.size());
             if (command.getDelayTime() > 0) {
                 //为delay command开启定时
                 LogUtils.d(TAG, "is delay command :" + command.getDelayTime());
@@ -84,6 +88,8 @@ public class CommandQueue {
             }
 
             tryPerformCommand(null);
+        } finally {
+            commandSetLock.unlock();
         }
     }
 
@@ -93,16 +99,17 @@ public class CommandQueue {
      * @param soundMonitorType 如果当前命令集合中没有命令可以执行，需要切换的模式
      */
     private void tryPerformCommand(SoundMonitorType soundMonitorType) {
-        synchronized (soundCommands) {
-            LogUtils.d(TAG, "tryPerformCommand: size:" + soundCommands.size() + " thread:" + Thread.currentThread());
-            if (soundCommands.size() < 1) {
+        commandSetLock.lock();
+        try {
+            LogUtils.d(TAG, "tryPerformCommand: size:" + commandsSet.size() + " thread:" + Thread.currentThread());
+            if (commandsSet.size() < 1) {
                 //一直等到最后一个任务执行完成再进行，声音模式的切换。不用每次执行完成都进行切换
                 if (soundMonitorType != null)
                     Doraemon.getInstance(App.mContext).switchSoundMonitor(soundMonitorType);
                 return;
             }
 
-            Iterator<SyncCommand> iter = soundCommands.iterator();
+            Iterator<SyncCommand> iter = commandsSet.iterator();
             while (iter.hasNext()) {
                 SyncCommand next = iter.next();
                 if (canPerform(next)) {
@@ -121,6 +128,8 @@ public class CommandQueue {
                 } else
                     LogUtils.d(TAG, "can not perform" + next);
             }
+        } finally {
+            commandSetLock.unlock();
         }
     }
 
@@ -167,10 +176,16 @@ public class CommandQueue {
             command.getType().getOutput().setBusy(true);
         }
 
+//        activeCommandListLock.lock();
+//        try {
+        activeCommandList.add(syncCommand);
+//        } finally {
+//            activeCommandListLock.unlock();
+//        }
+
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                activeCommandList.add(syncCommand);
                 //1.如果是中断的，需要先中断当前的任务
                 if (syncCommand.getPriority() == Priority.INTERRUPT) {
                     LogUtils.d(TAG, "3333333333333-----------interrupt");
@@ -272,32 +287,42 @@ public class CommandQueue {
      * @param monitorType
      */
     private void markAndTryDoNextCommand(String commandID, SoundMonitorType monitorType) {
-        if (activeCommandList != null && activeCommandList.size() > 0) {
+//        activeCommandListLock.lock();
+        activeCommandListLock.lock();
+        try {
+            if (activeCommandList != null && activeCommandList.size() > 0) {
 //            LogUtils.d(TAG, "complete command id:" + commandID);
-            for (SyncCommand syncCommand : activeCommandList) {
-                if (syncCommand.contains(commandID)) {
-                    syncCommand.executeComplete(commandID);
-                    if (syncCommand.isComplete()) {
-                        //执行完成后释放先占用输出通道
-                        for (Command command : syncCommand.commandList) {
-                            command.getType().getOutput().setBusy(false);
-                        }
-                        activeCommandList.remove(syncCommand);
-                        LogUtils.d(TAG, "syncCommand complete " + syncCommand.toString() + " activeCommandList size:" + activeCommandList.size());
-                        tryPerformCommand(monitorType);
-                    } else
-                        LogUtils.d(TAG, "activeCommandList not complete" + " activeCommandList size:" + activeCommandList.size());
-                    break;
+                for (SyncCommand syncCommand : activeCommandList) {
+                    if (syncCommand.contains(commandID)) {
+                        syncCommand.executeComplete(commandID);
+                        if (syncCommand.isComplete()) {
+                            //执行完成后释放先占用输出通道
+                            for (Command command : syncCommand.commandList) {
+                                command.getType().getOutput().setBusy(false);
+                            }
+                            activeCommandList.remove(syncCommand);
+                            LogUtils.d(TAG, "syncCommand complete " + syncCommand.toString() + " activeCommandList size:" + activeCommandList.size());
+                            tryPerformCommand(monitorType);
+                        } else
+                            LogUtils.d(TAG, "activeCommandList not complete" + " activeCommandList size:" + activeCommandList.size());
+                        break;
+                    }
                 }
-            }
-        } else
-            LogUtils.d(TAG, "activeCommandList is null");
+            } else
+                LogUtils.d(TAG, "activeCommandList is null");
+        } finally {
+//            activeCommandListLock.unlock();
+            activeCommandListLock.unlock();
+        }
     }
 
     public void stop() {
         LogUtils.d(TAG, "stop");
-        synchronized (soundCommands) {
-            soundCommands.clear();
+        commandSetLock.lock();
+        try {
+            commandsSet.clear();
+        } finally {
+            commandSetLock.unlock();
         }
         MouthTaskQueue.getInstance().stop();
         LimbsTaskQueue.getInstance().stop();

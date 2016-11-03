@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class SyncCommand implements Comparable<SyncCommand> {
-    private static final int DEFAULT_EXPIRE_TIME = 10 * 1000;
+    protected static final int DEFAULT_EXPIRE_TIME = 10 * 1000;
     private Priority priority;
     private List<String> unFinishIDS;
     private Long id;
