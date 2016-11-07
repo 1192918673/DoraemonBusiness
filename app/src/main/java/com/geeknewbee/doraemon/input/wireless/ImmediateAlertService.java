@@ -197,7 +197,7 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
                         hadSetSecret = true;
                         mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset,
                                 null);
-                    }else
+                    } else
                         mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, offset,
                                 null);
                 }
@@ -207,9 +207,7 @@ public class ImmediateAlertService extends BluetoothGattServerCallback {
 
     private void receiveCharacteristicData(BluetoothGattCharacteristic characteristic, byte[] value, int messageWhat) {
         if (value != null && value.length > 0) {
-            String readMessage = new String(value, 0, value.length);
-            LogUtils.d(TAG, "receive value:" + readMessage);
-            String result = bleDataReader.readData(characteristic, readMessage);
+            String result = bleDataReader.readData(characteristic, value);
             if (!TextUtils.isEmpty(result))
                 mHandler.obtainMessage(messageWhat, result.length(), -1, result)
                         .sendToTarget();
