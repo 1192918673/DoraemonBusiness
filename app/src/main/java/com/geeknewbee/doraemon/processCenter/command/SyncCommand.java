@@ -132,12 +132,13 @@ public class SyncCommand implements Comparable<SyncCommand> {
         private Priority priority;
         private int delayTime = 0;
         private int expireTime;
-        private boolean needSwitchEdd = true;
+        private boolean needSwitchEdd;
         private List<Command> commandList;
 
         public Builder() {
             priority = Priority.NORMAL;
             expireTime = DEFAULT_EXPIRE_TIME;
+            needSwitchEdd = true;
         }
 
         public Builder setPriority(Priority priority) {

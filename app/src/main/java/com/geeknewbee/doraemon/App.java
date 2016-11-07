@@ -36,8 +36,10 @@ public class App extends BaseApplication {
     @Override
     public void onCreate() {
         //科大讯飞初始化
-        SpeechUtility.createUtility(App.this, SpeechConstant.APPID + "=" + getString(R.string.app_id));
         super.onCreate();
+        LogUtils.LOG_DEBUG = BuildConfig.NEED_DEBUG;
+        LogUtils.d(TAG, "onCreate");
+        instance = this;
         int pid = android.os.Process.myPid();
         String processAppName = getAppName(pid);
         // 如果app启用了远程的service，此application:onCreate会被调用多次
@@ -54,21 +56,28 @@ public class App extends BaseApplication {
 
     private void create() {
         init();
-        instance = this;
-        setupDatabase();
         initHuanXinSDK();
-        initBroadLink();
 
-        LogUtils.LOG_DEBUG = BuildConfig.NEED_DEBUG;
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                LogUtils.d(TAG, "begin init");
+                setupDatabase();
+                initBroadLink();
+
 //        Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(this));
-        AIConstant.setUseSpi(true);
+                AIConstant.setUseSpi(true);
 //        AIConstant.closeLog();
 //        AIConstant.setEchoEnable(true);
-        //方便调试
-        if (BuildConfig.NEED_DEBUG)
-            Stetho.initialize(Stetho.newInitializerBuilder(this).
-                    enableDumpapp(Stetho.defaultDumperPluginsProvider(this)).
-                    enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
+                //方便调试
+                if (BuildConfig.NEED_DEBUG)
+                    Stetho.initialize(Stetho.newInitializerBuilder(instance).
+                            enableDumpapp(Stetho.defaultDumperPluginsProvider(instance)).
+                            enableWebKitInspector(Stetho.defaultInspectorModulesProvider(instance)).build());
+                LogUtils.d(TAG, "end init");
+            }
+        }.start();
     }
 
 
@@ -97,6 +106,7 @@ public class App extends BaseApplication {
     protected void init() {
         boolean result = new AISpeechAuth().auth();
         LogUtils.d(TAG, "AISpeech auth result:" + result);
+        SpeechUtility.createUtility(App.this, SpeechConstant.APPID + "=" + getString(R.string.app_id));
 
 //        AIConstant.openLog();
 //        AIConstant.setSpiChannelsGainData(new byte[]{0, 0, 0, 0, 0, 0, 0, 0});
@@ -138,6 +148,7 @@ public class App extends BaseApplication {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        LogUtils.d(TAG, "attachBaseContext");
         MultiDex.install(this);
     }
 

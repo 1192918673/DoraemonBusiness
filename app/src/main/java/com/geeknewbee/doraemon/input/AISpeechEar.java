@@ -268,6 +268,9 @@ public class AISpeechEar implements IEar {
 
         @Override
         public void onResults(AIResult results) {
+            if (!isListening)
+                return;
+            
             setListerStatue(false);
             LogUtils.d(TAG, results.getResultObject().toString());
 
@@ -314,11 +317,12 @@ public class AISpeechEar implements IEar {
 
         @Override
         public void onError(AIError error) {
+            if (isListening)
+                EventBus.getDefault().post(new ASRResultEvent(false, "", "", "", "", ""));
             setListerStatue(false);
             LogUtils.d(TAG, "识别发生错误:" + error.getErrId());
             mASREngine.cancel();
             mASREngine.stopRecording();
-            EventBus.getDefault().post(new ASRResultEvent(false, "", "", "", "", ""));
         }
 
         @Override

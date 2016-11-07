@@ -45,14 +45,25 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LogUtils.d(App.TAG, "MainActivity onCreate");
+        LogUtils.d(App.TAG, "MainActivity  start onCreate");
         initView();
-        initData();
         EventBus.getDefault().register(this);
-        Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
-        LogUtils.d(ReadSenseService.TAG, "MainActivity 调用。。。");
-        Doraemon.getInstance(getApplicationContext()).startAFR();// 开启人脸检测
-        registerReceiver();
+        init();
+        LogUtils.d(App.TAG, "MainActivity  end onCreate");
+    }
+
+    private void init() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                initData();
+                Doraemon.getInstance(getApplicationContext()).startReceive(); // 开始接受服务器推送消息
+                LogUtils.d(ReadSenseService.TAG, "MainActivity 调用。。。");
+                Doraemon.getInstance(getApplicationContext()).startAFR();// 开启人脸检测
+                registerReceiver();
+            }
+        }.start();
     }
 
     @Override
@@ -147,6 +158,12 @@ public class MainActivity extends Activity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        LogUtils.d(App.TAG, "MainActivity  onWindowFocusChanged");
     }
 
     @Override

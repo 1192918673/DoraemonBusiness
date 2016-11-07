@@ -101,8 +101,9 @@ public class CommandQueue {
         commandSetLock.lock();
         try {
             LogUtils.d(TAG, "tryPerformCommand: size:" + commandsSet.size() + " thread:" + Thread.currentThread());
-            if (commandsSet.size() < 1) {
-                //一直等到最后一个任务执行完成再进行，声音模式的切换。不用每次执行完成都进行切换
+            if (commandsSet.size() < 1 && activeCommandList.isEmpty()) {
+                //一直等到最后一个任务执行完成并且没有正在执行的任务才进行声音模式的切换。
+                // 不用每次执行完成都进行切换
                 if (soundMonitorType != null)
                     Doraemon.getInstance(App.mContext).switchSoundMonitor(soundMonitorType);
                 return;
@@ -116,8 +117,8 @@ public class CommandQueue {
                     performCommand(next);
                 } else if (System.currentTimeMillis() > next.getExpireTimestamp()) {
                     //过期的Command的直接删除
-                    if (!iter.hasNext()) {
-                        //如果是最后的一个，需要切换到指定的模式
+                    if (!iter.hasNext() && activeCommandList.isEmpty()) {
+                        //如果是最后的一个并且没有正在正在执行的任务，需要切换到指定的模式
                         LogUtils.d(TAG, "is last command and is expire");
                         if (soundMonitorType != null)
                             Doraemon.getInstance(App.mContext).switchSoundMonitor(soundMonitorType);
@@ -185,7 +186,6 @@ public class CommandQueue {
                     LogUtils.d(TAG, "3333333333333-----------interrupt");
                     interrupt();
                 }
-                //2.如果需要启动EDD，启动EDD模式
                 if (syncCommand.needSwitchEdd)
                     Doraemon.getInstance(context).switchSoundMonitor(SoundMonitorType.EDD);
 
