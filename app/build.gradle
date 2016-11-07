@@ -33,8 +33,8 @@ project.afterEvaluate {
 }
 
 ext {
-    TestVersion = '1.0.0.25'
-    TestVersionCode = 1000025
+    TestVersion = '1.0.0.26'
+    TestVersionCode = 1000026
     Version = '1.0.0'
     VersionCode = 10000
     DevURLDOMAIN = '"http://doraemon.babadeyan.com"'
